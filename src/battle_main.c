@@ -1896,7 +1896,9 @@ void ModifyPersonalityForNature(u32 *personality, u32 newNature)
 u32 GeneratePersonalityForGender(u32 gender, u32 species)
 {
     const struct SpeciesInfo *speciesInfo = &gSpeciesInfo[species];
-    if (gender == MON_MALE)
+    if (gender == MON_GENDERLESS)
+        return 0;
+    else if (gender == MON_MALE)
         return ((255 - speciesInfo->genderRatio) / 2) + speciesInfo->genderRatio;
     else
         return speciesInfo->genderRatio / 2;
@@ -1969,6 +1971,8 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
                 personalityValue = (personalityValue & 0xFFFFFF00) | GeneratePersonalityForGender(MON_MALE, partyData[i].species);
             else if (partyData[i].gender == TRAINER_MON_FEMALE)
                 personalityValue = (personalityValue & 0xFFFFFF00) | GeneratePersonalityForGender(MON_FEMALE, partyData[i].species);
+            else if (partyData[i].gender == TRAINER_MON_RANDOM_GENDER)
+                personalityValue = (personalityValue & 0xFFFFFF00) | GeneratePersonalityForGender(Random() & 1 ? MON_MALE : MON_FEMALE, partyData[i].species);
             if (partyData[i].nature != 0)
                 ModifyPersonalityForNature(&personalityValue, partyData[i].nature - 1);
             if (partyData[i].isShiny)
