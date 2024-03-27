@@ -844,9 +844,13 @@ static const u8 sText_AttackerLostItsType[] = _("{B_ATK_NAME_WITH_PREFIX} lost\n
 static const u8 sText_ShedItsTail[] = _("{B_ATK_NAME_WITH_PREFIX} shed its tail\nto create a decoy!");
 static const u8 sText_SupersweetAromaWafts[] = _("A supersweet aroma is wafting from\nthe syrup covering {B_ATK_NAME_WITH_PREFIX}!");
 static const u8 sText_TidyingUpComplete[] = _("Tidying up complete!");
+static const u8 sText_FogIsDeep[] = _("Fog is deep…");
+static const u8 sText_FogWasBlownAway[] = _("The fog was blown away\nby Defog!");
 
 const u8 *const gBattleStringsTable[BATTLESTRINGS_COUNT] =
 {
+    [STRINGID_FOGBLOWNAWAY - BATTLESTRINGS_TABLE_START] = sText_FogWasBlownAway,
+    [STRINGID_FOGISDEEP - BATTLESTRINGS_TABLE_START] = sText_FogIsDeep,
     [STRINGID_TIDYINGUPCOMPLETE - BATTLESTRINGS_TABLE_START] = sText_TidyingUpComplete,
     [STRINGID_SUPERSWEETAROMAWAFTS - BATTLESTRINGS_TABLE_START] = sText_SupersweetAromaWafts,
     [STRINGID_SHEDITSTAIL - BATTLESTRINGS_TABLE_START] = sText_ShedItsTail,
@@ -1923,10 +1927,10 @@ const u16 gWeatherStartsStringIds[] =
     [WEATHER_RAIN]               = STRINGID_ITISRAINING,
     [WEATHER_SNOW]               = (B_OVERWORLD_SNOW >= GEN_9 ? STRINGID_STARTEDSNOW : STRINGID_STARTEDHAIL),
     [WEATHER_RAIN_THUNDERSTORM]  = STRINGID_ITISRAINING,
-    [WEATHER_FOG_HORIZONTAL]     = STRINGID_ITISRAINING,
+    [WEATHER_FOG_HORIZONTAL]     = STRINGID_FOGISDEEP,
     [WEATHER_VOLCANIC_ASH]       = STRINGID_ITISRAINING,
     [WEATHER_SANDSTORM]          = STRINGID_SANDSTORMISRAGING,
-    [WEATHER_FOG_DIAGONAL]       = STRINGID_ITISRAINING,
+    [WEATHER_FOG_DIAGONAL]       = STRINGID_FOGISDEEP,
     [WEATHER_UNDERWATER]         = STRINGID_ITISRAINING,
     [WEATHER_SHADE]              = STRINGID_ITISRAINING,
     [WEATHER_DROUGHT]            = STRINGID_SUNLIGHTSTRONG,
