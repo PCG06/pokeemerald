@@ -9084,10 +9084,9 @@ static const struct TrainerMon sParty_Clark[] = {
         .ev = TRAINER_PARTY_EVS(0, 200, 150, 4, 0, 0),
         .lvl = 16,
         .moves = {MOVE_STEALTH_ROCK, MOVE_SELF_DESTRUCT, MOVE_NONE, MOVE_NONE},
-        .nature = NATURE_BRAVE //hes sacrificing his life. so brave
+        .nature = NATURE_BRAVE, //hes sacrificing his life. so brave
     },
     {
-    
         .species = SPECIES_RHYHORN,
         .ability = ABILITY_ROCK_HEAD,
         .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
@@ -9096,8 +9095,7 @@ static const struct TrainerMon sParty_Clark[] = {
         .moves = {MOVE_ROCK_BLAST, MOVE_ROAR, MOVE_DRILL_RUN, MOVE_TAKE_DOWN},
         .nature = NATURE_ADAMANT
     },
-    { 
-    
+    {
         .species = SPECIES_CARKOL,
         .ability = ABILITY_STEAM_ENGINE,
         .heldItem = ITEM_SITRUS_BERRY,
