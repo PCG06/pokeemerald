@@ -4389,6 +4389,27 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem, s
             }
         }
         break;
+    case EVO_MODE_CANT_STOP:
+        level = GetMonData(mon, MON_DATA_LEVEL, 0);
+        friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, 0);
+
+        for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+        {
+            if (SanitizeSpeciesId(evolutions[i].targetSpecies) == SPECIES_NONE)
+                continue;
+
+            switch (evolutions[i].method)
+            {
+            case EVO_LEVEL_ITEM_COUNT_999:
+                if (CheckBagHasItem(evolutions[i].param, 999))
+                {
+                    targetSpecies = evolutions[i].targetSpecies;
+                    RemoveBagItem(evolutions[i].param, 999);
+                }
+                break;
+            }
+        }
+        break;
     case EVO_MODE_TRADE:
         for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
         {
@@ -5611,9 +5632,9 @@ static inline bool32 CanFirstMonBoostHeldItemRarity(void)
         return FALSE;
 
     ability = GetMonAbility(&gPlayerParty[0]);
-    if ((OW_COMPOUND_EYES < GEN_9) && ability == ABILITY_COMPOUND_EYES)
+    if (ability == ABILITY_COMPOUND_EYES)
         return TRUE;
-    else if ((OW_SUPER_LUCK == GEN_8) && ability == ABILITY_SUPER_LUCK)
+    else if ((OW_SUPER_LUCK >= GEN_8) && ability == ABILITY_SUPER_LUCK)
         return TRUE;
     return FALSE;
 }
