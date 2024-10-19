@@ -30,6 +30,7 @@
 #include "party_menu.h"
 #include "pokedex.h"
 #include "pokenav.h"
+#include "rtc.h"
 #include "safari_zone.h"
 #include "save.h"
 #include "scanline_effect.h"
@@ -94,6 +95,7 @@ EWRAM_DATA static u8 (*sSaveDialogCallback)(void) = NULL;
 EWRAM_DATA static u8 sSaveDialogTimer = 0;
 EWRAM_DATA static bool8 sSavingComplete = FALSE;
 EWRAM_DATA static u8 sSaveInfoWindowId = 0;
+EWRAM_DATA static u8 sCurrentTimeWindowId = 0;
 
 // Menu action callbacks
 static bool8 StartMenuPokedexCallback(void);
@@ -147,7 +149,7 @@ static bool8 FieldCB_ReturnToFieldStartMenu(void);
 static const struct WindowTemplate sWindowTemplate_SafariBalls = {
     .bg = 0,
     .tilemapLeft = 1,
-    .tilemapTop = 1,
+    .tilemapTop = 5,
     .width = 9,
     .height = 4,
     .paletteNum = 15,
@@ -169,7 +171,7 @@ static const u8 *const sPyramidFloorNames[FRONTIER_STAGES_PER_CHALLENGE + 1] =
 static const struct WindowTemplate sWindowTemplate_PyramidFloor = {
     .bg = 0,
     .tilemapLeft = 1,
-    .tilemapTop = 1,
+    .tilemapTop = 5,
     .width = 10,
     .height = 4,
     .paletteNum = 15,
@@ -179,11 +181,21 @@ static const struct WindowTemplate sWindowTemplate_PyramidFloor = {
 static const struct WindowTemplate sWindowTemplate_PyramidPeak = {
     .bg = 0,
     .tilemapLeft = 1,
-    .tilemapTop = 1,
+    .tilemapTop = 5,
     .width = 12,
     .height = 4,
     .paletteNum = 15,
     .baseBlock = 0x8
+};
+
+static const struct WindowTemplate sCurrentTimeWindowTemplate = {
+    .bg = 0, 
+    .tilemapLeft = 1, 
+    .tilemapTop = 1, 
+    .width = 9,
+    .height = 6,
+    .paletteNum = 15,
+    .baseBlock = 0x30
 };
 
 static const u8 sText_MenuDebug[] = _("DEBUG");
@@ -278,6 +290,8 @@ static void ShowSaveInfoWindow(void);
 static void RemoveSaveInfoWindow(void);
 static void HideStartMenuWindow(void);
 static void HideStartMenuDebug(void);
+static void ShowCurrentTimeWindow(void);
+static void UpdateClockDisplay(void);
 
 void SetDexPokemonPokenavFlags(void) // unused
 {
@@ -473,6 +487,10 @@ static void RemoveExtraStartMenuWindows(void)
         ClearStdWindowAndFrameToTransparent(sBattlePyramidFloorWindowId, FALSE);
         RemoveWindow(sBattlePyramidFloorWindowId);
     }
+    ClearStdWindowAndFrameToTransparent(sCurrentTimeWindowId, FALSE);
+    CopyWindowToVram(sCurrentTimeWindowId, 2);
+    RemoveWindow(sCurrentTimeWindowId);
+    FlagClear(FLAG_TEMP_5);
 }
 
 static bool32 PrintStartMenuActions(s8 *pIndex, u32 count)
@@ -526,6 +544,7 @@ static bool32 InitStartMenuStep(void)
         sInitStartMenuData[0]++;
         break;
     case 3:
+        ShowCurrentTimeWindow();
         if (GetSafariZoneFlag())
             ShowSafariBallsWindow();
         if (InBattlePyramid())
@@ -621,6 +640,7 @@ void ShowStartMenu(void)
 
 static bool8 HandleStartMenuInput(void)
 {
+    UpdateClockDisplay();
     if (JOY_NEW(DPAD_UP))
     {
         PlaySE(SE_SELECT);
@@ -1504,4 +1524,107 @@ void Script_ForceSaveGame(struct ScriptContext *ctx)
     ShowSaveInfoWindow();
     gMenuCallback = SaveCallback;
     sSaveDialogCallback = SaveSavingMessageCallback;
+}
+
+static void ShowCurrentTimeWindow(void)
+{
+    u8 timeInHours;
+
+    RtcCalcLocalTime();
+    sCurrentTimeWindowId = AddWindow(&sCurrentTimeWindowTemplate);
+    PutWindowTilemap(sCurrentTimeWindowId);
+    DrawStdWindowFrame(sCurrentTimeWindowId, FALSE);
+    FlagSet(FLAG_TEMP_5);
+
+    if (gLocalTime.hours < 12)
+    {
+        if (gLocalTime.hours == 0)
+            timeInHours = 12;
+        else
+            timeInHours = gLocalTime.hours;
+    }
+    else if (gLocalTime.hours == 12)
+    {
+        timeInHours = 12;
+    }
+    else
+    {
+        timeInHours = gLocalTime.hours - 12;
+    }
+
+    ConvertIntToDecimalStringN(gStringVar1, timeInHours, STR_CONV_MODE_LEADING_ZEROS, 2);
+    ConvertIntToDecimalStringN(gStringVar2, gLocalTime.minutes, STR_CONV_MODE_LEADING_ZEROS, 2);
+
+    if (gLocalTime.hours < 12)
+        StringExpandPlaceholders(gStringVar4, gText_CurrentTimeAM);
+    else
+        StringExpandPlaceholders(gStringVar4, gText_CurrentTimePM);
+
+    AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 1, 0xFF, NULL);
+
+    StringCopy(gStringVar4, gDayNameStringsTable[gLocalTime.dayOfWeek]);    
+    AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 16, 0xFF, NULL);
+    StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
+    ConvertIntToDecimalStringN(gStringVar2, GetDate(), STR_CONV_MODE_RIGHT_ALIGN, 2);
+    ConvertIntToDecimalStringN(gStringVar3, GetYear(), STR_CONV_MODE_RIGHT_ALIGN, 4);
+    StringExpandPlaceholders(gStringVar4, gText_Date);
+    AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 32, 0xFF, NULL);
+
+    CopyWindowToVram(sCurrentTimeWindowId, 2);
+}
+
+void UpdateClockDisplay(void)
+{
+    u8 timeInHours;
+
+    if (!FlagGet(FLAG_TEMP_5))
+        return;
+
+    RtcCalcLocalTime();
+
+    if (gLocalTime.hours < 12)
+    {
+        if (gLocalTime.hours == 0)
+            timeInHours = 12;
+        else
+            timeInHours = gLocalTime.hours;
+    }
+    else if (gLocalTime.hours == 12)
+    {
+        timeInHours = 12;
+    }
+    else
+    {
+        timeInHours = gLocalTime.hours - 12;
+    }
+
+    ConvertIntToDecimalStringN(gStringVar1, timeInHours, STR_CONV_MODE_LEADING_ZEROS, 2);
+    ConvertIntToDecimalStringN(gStringVar2, gLocalTime.minutes, STR_CONV_MODE_LEADING_ZEROS, 2);
+
+    if (gLocalTime.seconds % 2)
+    {
+        if (gLocalTime.hours < 12)
+            StringExpandPlaceholders(gStringVar4, gText_CurrentTimeAM);
+        else
+            StringExpandPlaceholders(gStringVar4, gText_CurrentTimePM);
+    }
+    else
+    {
+        if (gLocalTime.hours < 12)
+            StringExpandPlaceholders(gStringVar4, gText_CurrentTimeAMOff);
+        else
+            StringExpandPlaceholders(gStringVar4, gText_CurrentTimePMOff);
+    }
+
+    AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 1, 0xFF, NULL);
+
+    StringCopy(gStringVar4, gDayNameStringsTable[gLocalTime.dayOfWeek]);    
+    AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 16, 0xFF, NULL);
+    StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
+    ConvertIntToDecimalStringN(gStringVar2, GetDate(), STR_CONV_MODE_RIGHT_ALIGN, 2);
+    ConvertIntToDecimalStringN(gStringVar3, GetYear(), STR_CONV_MODE_RIGHT_ALIGN, 4);
+    StringExpandPlaceholders(gStringVar4, gText_Date);
+    AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 32, 0xFF, NULL);
+
+    CopyWindowToVram(sCurrentTimeWindowId, 2);
 }

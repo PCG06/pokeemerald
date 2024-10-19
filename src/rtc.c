@@ -291,6 +291,8 @@ void RtcCalcTimeDifference(struct SiiRtcInfo *rtc, struct Time *result, struct T
     result->minutes = ConvertBcdToBinary(rtc->minute) - t->minutes;
     result->hours = ConvertBcdToBinary(rtc->hour) - t->hours;
     result->days = days - t->days;
+    result->dayOfWeek = ConvertBcdToBinary(rtc->dayOfWeek) - t->dayOfWeek;
+    result->month = ConvertBcdToBinary(rtc->month) - t->month;
 
     if (result->seconds < 0)
     {
@@ -308,6 +310,23 @@ void RtcCalcTimeDifference(struct SiiRtcInfo *rtc, struct Time *result, struct T
     {
         result->hours += HOURS_PER_DAY;
         --result->days;
+        --result->dayOfWeek;
+    }
+
+    if (result->days < 0)
+    {
+        result->days += sNumDaysInMonths[t->month - 1];
+        --result->month;
+    }
+
+    if (result->month < 0)
+    {
+        result->month += MONTH_COUNT;
+    }
+
+    if (result->dayOfWeek < 0)
+    {
+        result->dayOfWeek += DAYS_PER_WEEK;
     }
 }
 
@@ -358,6 +377,8 @@ void CalcTimeDifference(struct Time *result, struct Time *t1, struct Time *t2)
     result->minutes = t2->minutes - t1->minutes;
     result->hours = t2->hours - t1->hours;
     result->days = t2->days - t1->days;
+    result->dayOfWeek = t2->dayOfWeek - t1->dayOfWeek;
+    result->month = t2->month - t1->month;
 
     if (result->seconds < 0)
     {
@@ -375,6 +396,23 @@ void CalcTimeDifference(struct Time *result, struct Time *t1, struct Time *t2)
     {
         result->hours += HOURS_PER_DAY;
         --result->days;
+        --result->dayOfWeek;
+    }
+
+    if (result->days < 0)
+    {
+        result->days += sNumDaysInMonths[t1->month - 1];
+        --result->month;
+    }
+
+    if (result->dayOfWeek < 0)
+    {
+        result->dayOfWeek += DAYS_PER_WEEK;
+    }
+
+    if (result->month < 0)
+    {
+        result->month += MONTH_COUNT;
     }
 }
 
@@ -417,4 +455,62 @@ void FormatDecimalTimeWithoutSeconds(u8 *txtPtr, s8 hour, s8 minute, bool32 is24
 
     *txtPtr++ = EOS;
     *txtPtr = EOS;
+}
+
+void RtcSetDayOfWeek(s8 dayOfWeek)
+{
+    RtcCalcLocalTime();
+    gLocalTime.dayOfWeek = dayOfWeek;
+    RtcGetInfo(&sRtc);
+    RtcCalcTimeDifference(&sRtc, &gSaveBlock2Ptr->localTimeOffset, &gLocalTime);
+}
+
+void RtcSetMonth(s8 month)
+{
+    RtcCalcLocalTime();
+    gLocalTime.month = month;
+    RtcGetInfo(&sRtc);
+    RtcCalcTimeDifference(&sRtc, &gSaveBlock2Ptr->localTimeOffset, &gLocalTime);
+}
+
+u8 GetDate(void)
+{
+    RtcGetInfo(&sRtc);
+
+    return ConvertBcdToBinary(sRtc.day);
+}
+
+u8 GetMonth(void)
+{
+    RtcGetInfo(&sRtc);
+
+    return ConvertBcdToBinary(sRtc.month);
+}
+
+u8 GetHour(void)
+{
+    RtcGetInfo(&sRtc);
+
+    return ConvertBcdToBinary(sRtc.hour);
+}
+
+u8 GetMinute(void)
+{
+    RtcGetInfo(&sRtc);
+
+    return ConvertBcdToBinary(sRtc.minute);
+}
+
+u8 GetSecond(void)
+{
+    RtcGetInfo(&sRtc);
+
+    return ConvertBcdToBinary(sRtc.second);
+}
+
+u32 GetYear(void)
+{
+    RtcGetInfo(&sRtc);
+
+    return (2000 + ConvertBcdToBinary(sRtc.year));
 }

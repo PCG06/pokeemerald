@@ -46,6 +46,7 @@
 #include "shop.h"
 #include "slot_machine.h"
 #include "sound.h"
+#include "strings.h"
 #include "string_util.h"
 #include "text.h"
 #include "text_window.h"
@@ -891,14 +892,23 @@ bool8 ScrCmd_dotimebasedevents(struct ScriptContext *ctx)
     return FALSE;
 }
 
+
+
 bool8 ScrCmd_gettime(struct ScriptContext *ctx)
 {
-    Script_RequestEffects(SCREFF_V1 | SCREFF_HARDWARE);
-
     RtcCalcLocalTime();
-    gSpecialVar_0x8000 = gLocalTime.hours;
-    gSpecialVar_0x8001 = gLocalTime.minutes;
-    gSpecialVar_0x8002 = gLocalTime.seconds;
+
+    gSpecialVar_0x8000 = GetTimeOfDay();
+    gSpecialVar_0x8001 = gLocalTime.month;
+    gSpecialVar_0x8002 = gLocalTime.dayOfWeek;
+    gSpecialVar_0x8003 = gLocalTime.hours;
+    gSpecialVar_0x8004 = gLocalTime.minutes;
+    gSpecialVar_0x8005 = gLocalTime.seconds;
+
+    StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
+    ConvertIntToDecimalStringN(gStringVar2, GetHour(), STR_CONV_MODE_RIGHT_ALIGN, 2);
+    ConvertIntToDecimalStringN(gStringVar3, GetMinute(), STR_CONV_MODE_RIGHT_ALIGN, 2);
+
     return FALSE;
 }
 
@@ -3139,4 +3149,17 @@ void Script_EndTrainerCanSeeIf(struct ScriptContext *ctx)
     u8 condition = ScriptReadByte(ctx);
     if (ctx->breakOnTrainerBattle && sScriptConditionTable[condition][ctx->comparisonResult] == 1)
         StopScript(ctx);
+}
+
+bool8 ScrCmd_bufferdayofweekstring(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    u8 dayOfWeek = ScriptReadByte(ctx);
+    if (dayOfWeek <= DAY_SATURDAY)
+        StringCopy(sScriptStringVars[stringVarIndex], gDayNameStringsTable[dayOfWeek]);
+    else if (dayOfWeek == DAYS_COUNT)
+        StringCopy(sScriptStringVars[stringVarIndex], gDayNameStringsTable[gLocalTime.dayOfWeek]);
+    else
+        StringCopy(gStringVar3, gText_None);
+    return FALSE;
 }

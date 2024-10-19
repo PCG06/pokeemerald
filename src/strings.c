@@ -1,4 +1,5 @@
 #include "global.h"
+#include "siirtc.h"
 #include "strings.h"
 #include "battle_pyramid_bag.h"
 #include "item_menu.h"
@@ -1295,3 +1296,59 @@ const u8 gText_PM[] = _("PM");
 const u8 gText_Relearn[] = _("{START_BUTTON} RELEARN"); // future note: don't decap this, because it mimics the summary screen BG graphics which will not get decapped
 const u8 gText_Rename[] = _("RENAME");
 const u8 gText_CannotSendMonToBoxHM[] = _("Cannot send that mon to the box,\nbecause it knows a HM move.{PAUSE_UNTIL_PRESS}");
+
+const u8 *const gDayNameStringsTable[] =
+{
+    [DAY_SUNDAY] = gText_Sunday,
+    [DAY_MONDAY] = gText_Monday,
+    [DAY_TUESDAY] = gText_Tuesday,
+    [DAY_WEDNESDAY] = gText_Wednesday,
+    [DAY_THURSDAY] = gText_Thursday,
+    [DAY_FRIDAY] = gText_Friday,
+    [DAY_SATURDAY] = gText_Saturday,
+};
+
+const u8 gText_Sunday[]    = _("Sunday");
+const u8 gText_Monday[]    = _("Monday");
+const u8 gText_Tuesday[]   = _("Tuesday");
+const u8 gText_Wednesday[] = _("Wednesday");
+const u8 gText_Thursday[]  = _("Thursday");
+const u8 gText_Friday[]    = _("Friday");
+const u8 gText_Saturday[]  = _("Saturday");
+
+const u8 *const gMonthNameStringsTable[] =
+{
+    [MONTH_JAN] = gText_January,
+    [MONTH_FEB] = gText_February,
+    [MONTH_MAR] = gText_March,
+    [MONTH_APR] = gText_April,
+    [MONTH_MAY] = gText_May,
+    [MONTH_JUN] = gText_June,
+    [MONTH_JUL] = gText_July,
+    [MONTH_AUG] = gText_August,
+    [MONTH_SEP] = gText_September,
+    [MONTH_OCT] = gText_October,
+    [MONTH_NOV] = gText_November,
+    [MONTH_DEC] = gText_December,
+};
+
+const u8 gText_January[]    = _("Jan");
+const u8 gText_February[]   = _("Feb");
+const u8 gText_March[]      = _("Mar");
+const u8 gText_April[]      = _("Apr");
+const u8 gText_May[]        = _("May");
+const u8 gText_June[]       = _("Jun");
+const u8 gText_July[]       = _("Jul");
+const u8 gText_August[]     = _("Aug");
+const u8 gText_September[]  = _("Sep");
+const u8 gText_October[]    = _("Oct");
+const u8 gText_November[]   = _("Nov");
+const u8 gText_December[]   = _("Dec");
+
+const u8 gText_CurrentTime[] = _("Time: {STR_VAR_1}:{STR_VAR_2}");
+const u8 gText_CurrentTimeOff[] = _("Time: {STR_VAR_1} {STR_VAR_2}");
+const u8 gText_CurrentTimeAM[] = _("Time: {STR_VAR_1}:{STR_VAR_2} AM");
+const u8 gText_CurrentTimeAMOff[] = _("Time: {STR_VAR_1} {STR_VAR_2} AM");
+const u8 gText_CurrentTimePM[] = _("Time: {STR_VAR_1}:{STR_VAR_2} PM");
+const u8 gText_CurrentTimePMOff[] = _("Time: {STR_VAR_1} {STR_VAR_2} PM");
+const u8 gText_Date[] = _("{STR_VAR_1} {STR_VAR_2}, {STR_VAR_3}");

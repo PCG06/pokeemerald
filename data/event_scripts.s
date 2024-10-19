@@ -48,6 +48,7 @@
 #include "constants/roulette.h"
 #include "constants/script_menu.h"
 #include "constants/secret_bases.h"
+#include "constants/siirtc.h"
 #include "constants/songs.h"
 #include "constants/sound.h"
 #include "constants/species.h"

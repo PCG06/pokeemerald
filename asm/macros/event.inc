@@ -2510,3 +2510,11 @@
 	compare \a, \b
 	cant_see_if 5
 	.endm
+
+	@ Writes the choosen day of the week string to the specified buffer (index 0 = Sunday).
+	@ Otherwise, if dayOfWeek eq 7 or is not specified, writes the current day of week string.
+	.macro bufferdayofweekstring stringVarId:req, dayOfWeek=DAYS_COUNT
+	.byte SCR_OP_BUFFERDAYOFWEEKSTRING
+	stringvar \stringVarId
+	.byte \dayOfWeek
+	.endm
