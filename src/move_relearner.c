@@ -144,6 +144,7 @@
 #define MENU_STATE_PRINT_TEXT_THEN_FANFARE 31
 #define MENU_STATE_WAIT_FOR_FANFARE 32
 #define MENU_STATE_WAIT_FOR_A_BUTTON 33
+#define MENU_STATE_WAIT_FOR_TEXT 34
 
 // The different versions of hearts are selected using animation
 // commands.
@@ -158,8 +159,6 @@ enum {
 #define TAG_LIST_ARROWS 5425
 #define GFXTAG_UI       5525
 #define PALTAG_UI       5526
-
-#define MAX_RELEARNER_MOVES max(MAX_LEVEL_UP_MOVES, 25)
 
 static EWRAM_DATA struct
 {
@@ -577,9 +576,16 @@ static void DoMoveRelearnerMain(void)
         }
         break;
     case MENU_STATE_PRINT_TRYING_TO_LEARN_PROMPT:
-        PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnTryingToLearnMove);
-        sMoveRelearnerStruct->state++;
-        break;
+        if (VarGet(VAR_TEMP_1) > VarGet(VAR_TEMP_2))
+        {
+            PrintMessageWithPlaceholders(gText_MoveRelearnerCantAffordThatMove);
+            sMoveRelearnerStruct->state = MENU_STATE_WAIT_FOR_TEXT;
+        }
+        else
+        {
+            PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnTryingToLearnMove);
+            sMoveRelearnerStruct->state++;
+        }
     case MENU_STATE_WAIT_FOR_TRYING_TO_LEARN:
         if (!MoveRelearnerRunTextPrinters())
         {
@@ -748,6 +754,10 @@ static void DoMoveRelearnerMain(void)
             sMoveRelearnerStruct->state = MENU_STATE_FADE_AND_RETURN;
         }
         break;
+    case MENU_STATE_WAIT_FOR_TEXT:
+        if (!MoveRelearnerRunTextPrinters())
+          sMoveRelearnerStruct->state = MENU_STATE_SETUP_BATTLE_MODE;
+        break;
     }
 }
 
@@ -910,7 +920,21 @@ static void CreateLearnableMovesList(void)
     s32 i;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
 
-    sMoveRelearnerStruct->numMenuChoices = GetMoveRelearnerMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
+    switch(VarGet(VAR_MOVE_RELEARNER_STATE))
+    {
+    
+        case MOVE_RELEARNER_EGG_MOVES:
+            sMoveRelearnerStruct->numMenuChoices = GetRelearnerEggMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
+        break;
+
+        case MOVE_RELEARNER_TM_MOVES:
+            sMoveRelearnerStruct->numMenuChoices = GetRelearnerTMMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
+        break;
+
+        default:
+            sMoveRelearnerStruct->numMenuChoices = GetRelearnerLevelUpMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
+        break;
+	}
 
     for (i = 0; i < sMoveRelearnerStruct->numMenuChoices; i++)
     {
