@@ -1262,7 +1262,7 @@ void PutBattleUpdateOnTheAir(u8 opponentLinkPlayerId, u16 move, u16 speciesPlaye
 
             if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
                 show->battleUpdate.battleType = 2;
-            else if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
+            else if (IsDoubleBattle())
                 show->battleUpdate.battleType = 1;
             else
                 show->battleUpdate.battleType = 0;
@@ -5334,7 +5334,8 @@ static void DoTVShow3CheersForPokeblocks(void)
         if (show->threeCheers.sheen > 24)
         {
             StringCopy(gStringVar2, gText_Excellent);
-        } else if (show->threeCheers.sheen > 22)
+        }
+        else if (show->threeCheers.sheen > 22)
         {
             StringCopy(gStringVar2, gText_VeryGood);
         }
