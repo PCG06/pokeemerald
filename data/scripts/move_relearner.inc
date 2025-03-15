@@ -1,5 +1,3 @@
-@ I originally wrote this script in .pory, hence why this is so ugly.
-
 Common_EventScript_MoveRelearner::
 	lock
 	faceplayer
@@ -14,14 +12,14 @@ Common_EventScript_MoveRelearnerDynMultiChoice::
 	dynmultipush MoveRelearner_Text_LevelUpMoves, 0
 	call_if_set FLAG_SYS_RECEIVED_EGG_MOVES, MoveRelearner_EventScript_PushEggMoves
 	call_if_set FLAG_SYS_RECEIVED_TM_MOVES, MoveRelearner_EventScript_PushTMMoves
-	dynmultipush MoveRelearner_Text_SeeYa, 4
+	dynmultipush MoveRelearner_Text_SeeYa, 3
 	dynmultistack 0, 0, FALSE, 5, 0, 0, DYN_MULTICHOICE_CB_NONE
 	closemessage
 	switch VAR_RESULT
 	case 0, MoveRelearner_EventScript_TeachLevelUpMoves
 	case 1, MoveRelearner_EventScript_TeachEggMoves
 	case 2, MoveRelearner_EventScript_TeachTMMoves
-	case 4, MoveRelearner_EventScript_PleaseComeAgain
+	case 3, MoveRelearner_EventScript_PleaseComeAgain
 MoveRelearner_EventScript_PleaseComeAgain:
 	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
 	release
