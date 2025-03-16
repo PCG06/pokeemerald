@@ -134,7 +134,8 @@
 #define MENU_STATE_CONFIRM_DELETE_OLD_MOVE 18
 #define MENU_STATE_PRINT_WHICH_MOVE_PROMPT 19
 #define MENU_STATE_SHOW_MOVE_SUMMARY_SCREEN 20
-// States 21, 22, and 23 are skipped.
+#define MENU_STATE_RETURN_TO_PARTY_MENU 21
+// States 22 and 23 are skipped.
 #define MENU_STATE_PRINT_STOP_TEACHING 24
 #define MENU_STATE_WAIT_FOR_STOP_TEACHING 25
 #define MENU_STATE_CONFIRM_STOP_TEACHING 26
@@ -145,7 +146,6 @@
 #define MENU_STATE_PRINT_TEXT_THEN_FANFARE 31
 #define MENU_STATE_WAIT_FOR_FANFARE 32
 #define MENU_STATE_WAIT_FOR_A_BUTTON 33
-#define MENU_STATE_WAIT_FOR_TEXT 34
 
 // The different versions of hearts are selected using animation
 // commands.
@@ -417,6 +417,9 @@ void CB2_InitLearnMove(void)
         case MOVE_RELEARNER_TM_MOVES: 
             StringCopy(gStringVar3, COMPOUND_STRING("TM move"));
             break;
+        case MOVE_RELEARNER_TUTOR_MOVES: 
+            StringCopy(gStringVar3, COMPOUND_STRING("tutor move"));
+            break;
         default:
             StringCopy(gStringVar3, COMPOUND_STRING("level up move"));
             break;
@@ -513,7 +516,6 @@ static void DoMoveRelearnerMain(void)
         sMoveRelearnerStruct->state++;
         break;
     case MENU_STATE_SETUP_BATTLE_MODE:
-
         HideHeartSpritesAndShowTeachMoveText(FALSE);
         sMoveRelearnerStruct->state++;
         AddScrollArrows();
@@ -596,16 +598,8 @@ static void DoMoveRelearnerMain(void)
         }
         break;
     case MENU_STATE_PRINT_TRYING_TO_LEARN_PROMPT:
-        if (VarGet(VAR_TEMP_1) > VarGet(VAR_TEMP_2))
-        {
-            PrintMessageWithPlaceholders(gText_MoveRelearnerCantAffordThatMove);
-            sMoveRelearnerStruct->state = MENU_STATE_WAIT_FOR_TEXT;
-        }
-        else
-        {
-            PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnTryingToLearnMove);
-            sMoveRelearnerStruct->state++;
-        }
+        PrintMessageWithPlaceholders(gText_MoveRelearnerPkmnTryingToLearnMove);
+        sMoveRelearnerStruct->state++;
     case MENU_STATE_WAIT_FOR_TRYING_TO_LEARN:
         if (!MoveRelearnerRunTextPrinters())
         {
@@ -691,18 +685,19 @@ static void DoMoveRelearnerMain(void)
             FreeMoveRelearnerResources();
         }
         break;
-    case 21:
-        if (!MoveRelearnerRunTextPrinters())
+    case MENU_STATE_RETURN_TO_PARTY_MENU:
+        if (!gPaletteFade.active)
         {
-            sMoveRelearnerStruct->state = MENU_STATE_FADE_AND_RETURN;
+            FreeMoveRelearnerResources();
+            SetMainCallback2(CB2_ReturnToPartyMenuFromSummaryScreen);
         }
-        break;
-    case 22:
-        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         break;
     case MENU_STATE_FADE_AND_RETURN:
         BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
-        sMoveRelearnerStruct->state++;
+        if (P_FLAG_OW_MOVE_RELEARNER != 0 && FlagGet(P_FLAG_OW_MOVE_RELEARNER))
+            sMoveRelearnerStruct->state++;
+        else
+            sMoveRelearnerStruct->state = MENU_STATE_RETURN_TO_PARTY_MENU;
         break;
     case MENU_STATE_RETURN_TO_FIELD:
         if (!gPaletteFade.active)
@@ -795,12 +790,11 @@ static void DoMoveRelearnerMain(void)
         if (JOY_NEW(A_BUTTON))
         {
             PlaySE(SE_SELECT);
-            sMoveRelearnerStruct->state = MENU_STATE_FADE_AND_RETURN;
+            if (P_FLAG_OW_MOVE_RELEARNER != 0 && FlagGet(P_FLAG_OW_MOVE_RELEARNER))
+                sMoveRelearnerStruct->state = MENU_STATE_FADE_AND_RETURN;
+            else
+                sMoveRelearnerStruct->state = MENU_STATE_RETURN_TO_PARTY_MENU;
         }
-        break;
-    case MENU_STATE_WAIT_FOR_TEXT:
-        if (!MoveRelearnerRunTextPrinters())
-          sMoveRelearnerStruct->state = MENU_STATE_SETUP_BATTLE_MODE;
         break;
     }
 }
@@ -973,6 +967,10 @@ static void CreateLearnableMovesList(void)
 
         case MOVE_RELEARNER_TM_MOVES:
             sMoveRelearnerStruct->numMenuChoices = GetRelearnerTMMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
+        break;
+
+        case MOVE_RELEARNER_TUTOR_MOVES:
+            sMoveRelearnerStruct->numMenuChoices = GetRelearnerTutorMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
         break;
 
         default:

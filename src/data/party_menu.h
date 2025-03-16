@@ -718,6 +718,7 @@ struct
     [MENU_LEVEL_UP_MOVES] = {COMPOUND_STRING("LEVEL MOVES"), CursorCb_ChangeLevelUpMoves},
 	[MENU_EGG_MOVES] = {COMPOUND_STRING("EGG MOVES"), CursorCb_ChangeEggMoves},
 	[MENU_TM_MOVES] = {COMPOUND_STRING("TM MOVES"), CursorCb_ChangeTMMoves},
+	[MENU_TUTOR_MOVES] = {COMPOUND_STRING("TUTOR MOVES"), CursorCb_ChangeTutorMoves},
     [MENU_SUB_MOVES] = {COMPOUND_STRING("LEARN MOVES"), CursorCb_LearnMovesSubMenu},
     [MENU_TOSS] = {gMenuText_Toss, CursorCb_Toss},
     [MENU_CATALOG_BULB] = {COMPOUND_STRING("Light bulb"), CursorCb_CatalogBulb},
