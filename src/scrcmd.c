@@ -34,6 +34,7 @@
 #include "palette.h"
 #include "party_menu.h"
 #include "pokedex.h"
+#include "pokemon_icon.h"
 #include "pokemon_storage_system.h"
 #include "random.h"
 #include "overworld.h"
@@ -66,6 +67,8 @@ static EWRAM_DATA u16 sMovingNpcId = 0;
 static EWRAM_DATA u16 sMovingNpcMapGroup = 0;
 static EWRAM_DATA u16 sMovingNpcMapNum = 0;
 static EWRAM_DATA u16 sFieldEffectScriptId = 0;
+static EWRAM_DATA u8 sTeamPreviewWindowId = 0;
+static EWRAM_DATA u8 sSpriteIdData[PARTY_SIZE] = {0};
 
 static u8 sBrailleWindowId;
 static bool8 sIsScriptedWildDouble;
@@ -3139,4 +3142,60 @@ void Script_EndTrainerCanSeeIf(struct ScriptContext *ctx)
     u8 condition = ScriptReadByte(ctx);
     if (ctx->breakOnTrainerBattle && sScriptConditionTable[condition][ctx->comparisonResult] == 1)
         StopScript(ctx);
+}
+
+static const struct WindowTemplate sTeamPreviewWindowTemplate = {
+    .bg = 0,
+    .tilemapLeft = 3,
+    .tilemapTop = 5,
+    .width = 24,
+    .height = 3,
+    .paletteNum = 15,
+    .baseBlock = 8
+};
+
+bool8 ScrCmd_showteampreview(struct ScriptContext *ctx)
+{
+    u16 trainerId = VarGet(ScriptReadHalfword(ctx));
+    u8 partySize = GetTrainerPartySizeFromId(trainerId);
+    const struct TrainerMon *party = GetTrainerPartyFromId(trainerId);
+    struct WindowTemplate teamPreviewWindow = sTeamPreviewWindowTemplate;
+    u32 xOffset, yOffset;
+
+    teamPreviewWindow.width = partySize * 4;
+    teamPreviewWindow.tilemapLeft = (30 - teamPreviewWindow.width) / 2;
+
+    sTeamPreviewWindowId = AddWindow(&teamPreviewWindow);
+
+    PutWindowTilemap(sTeamPreviewWindowId);
+    FillWindowPixelBuffer(sTeamPreviewWindowId, PIXEL_FILL(1));
+    DrawStdWindowFrame(sTeamPreviewWindowId, FALSE);
+
+    xOffset = ((teamPreviewWindow.width * 8) - (partySize * 32)) / 2 + (teamPreviewWindow.tilemapLeft * 8) + 16;
+    yOffset = 50;
+
+    for (u8 i = 0; i < partySize; i++)
+    {
+        LoadMonIconPalette(party[i].species);
+        sSpriteIdData[i] = CreateMonIcon(party[i].species, SpriteCB_MonIcon, xOffset, yOffset, 0, 0);
+        gSprites[sSpriteIdData[i]].oam.priority = 0;
+        xOffset += 32;
+    }
+
+    LoadMonIconPalettes();
+    CopyWindowToVram(sTeamPreviewWindowId, COPYWIN_FULL);
+    return FALSE;
+}
+
+bool8 ScrCmd_hideteampreview(struct ScriptContext *ctx)
+{
+    u8 partySize = GetTrainerPartySizeFromId(gSpecialVar_0x8000);
+
+    ClearStdWindowAndFrame(sTeamPreviewWindowId, FALSE);
+
+    for (u8 i = 0; i < partySize; i++)
+        FreeAndDestroyMonIconSprite(&gSprites[sSpriteIdData[i]]);
+
+    RemoveWindow(sTeamPreviewWindowId);
+    return FALSE;
 }
