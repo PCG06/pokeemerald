@@ -437,9 +437,15 @@ $(OBJ_DIR)/sym_ewram.ld: sym_ewram.txt
 
 MOVES_JSON_DIR := $(TOOLS_DIR)/learnset_helpers/porymoves_files
 TEACHABLE_DEPS := $(shell find data/ -type f -name '*.inc') $(INCLUDE_DIRS)/constants/tms_hms.h $(C_SUBDIR)/pokemon.c $(wildcard $(MOVES_JSON_DIR)/*.json)
+POKESETS_DEPS :=  $(TOOLS_DIR)/pokemon_sets/pokemon_sets.json
 
 $(DATA_SRC_SUBDIR)/pokemon/teachable_learnsets.h: $(TEACHABLE_DEPS)
 	python3 $(TOOLS_DIR)/learnset_helpers/teachable.py
+
+
+$(DATA_SRC_SUBDIR)/pokemon/pokemon_sets.h: $(POKESETS_DEPS)
+	python3 $(TOOLS_DIR)/pokemon_sets/convert_sets.py
+	python3 $(TOOLS_DIR)/pokemon_sets/missing_sets.py
 
 # Linker script
 LD_SCRIPT := ld_script_modern.ld

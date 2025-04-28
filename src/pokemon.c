@@ -709,6 +709,7 @@ const struct NatureInfo gNaturesInfo[NUM_NATURES] =
 #include "data/object_events/object_event_pic_tables_followers.h"
 
 #include "data/pokemon/species_info.h"
+#include "data/pokemon/pokemon_sets.h"
 
 #define PP_UP_SHIFTS(val)           val,        (val) << 2,        (val) << 4,        (val) << 6
 #define PP_UP_SHIFTS_INV(val) (u8)~(val), (u8)~((val) << 2), (u8)~((val) << 4), (u8)~((val) << 6)
@@ -7093,4 +7094,45 @@ u32 GetTeraTypeFromPersonality(struct Pokemon *mon)
 {
     const u8 *types = gSpeciesInfo[GetMonData(mon, MON_DATA_SPECIES)].types;
     return (GetMonData(mon, MON_DATA_PERSONALITY) & 0x1) == 0 ? types[0] : types[1];
+}
+
+bool32 DoesSpeciesHaveSet(u16 species)
+{
+    return (gPokemonSets[species].moves[0] > MOVE_POUND && gPokemonSets[species].ability > ABILITY_NONE) || species == SPECIES_EGG;
+}
+
+u32 CheckMonAbilitySlot(u16 species, const u16 ability)
+{
+    for (u8 i = 0; i < NUM_ABILITY_SLOTS; i++)
+    {
+        if (gSpeciesInfo[species].abilities[i] == ability)
+            return i;
+    }
+    return FALSE;
+}
+
+u32 CanMonLearnMove(u16 species, const u16 move)
+{
+    const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
+    const u16 * eggMoveLearnset = GetSpeciesEggMoves(species);
+    u16 j;
+
+    // Check teachable up moves
+    if (CanLearnTeachableMove(species, move))
+        return TRUE;
+
+    // Check level up moves
+    for (j = 0; learnset[j].move != LEVEL_UP_MOVE_END; j++)
+    {
+        if (move == learnset[j].move)
+            return TRUE;
+    }
+
+    // Check level up moves
+    for (j = 0; eggMoveLearnset[j] != MOVE_UNAVAILABLE; j++)
+    {
+        if (move == eggMoveLearnset[j])
+            return TRUE;
+    }
+    return FALSE;
 }

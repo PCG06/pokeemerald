@@ -494,6 +494,17 @@ struct Ability
     u8 failsOnImposter:1; // doesn't work on an Imposter mon; when can we actually use this?
 };
 
+struct PokemonSets
+{
+    u8 name[CODE_NAME_LENGTH + 1]; // we use these names in our code system
+    u16 item;
+    u16 ability;
+    u8 nature;
+    u8 evs[NUM_STATS];
+    u8 ivs[NUM_STATS];
+    u16 moves[MAX_MON_MOVES];
+};
+
 enum {
     AFFINE_NONE,
     AFFINE_TURN_UP,
@@ -622,6 +633,7 @@ extern const struct SpriteTemplate gBattlerSpriteTemplates[];
 extern const u32 sExpCandyExperienceTable[];
 extern const struct Ability gAbilitiesInfo[];
 extern const struct NatureInfo gNaturesInfo[];
+extern const struct PokemonSets gPokemonSets[];
 
 void ZeroBoxMonData(struct BoxPokemon *boxMon);
 void ZeroMonData(struct Pokemon *mon);
@@ -810,5 +822,8 @@ uq4_12_t GetDynamaxLevelHPMultiplier(u32 dynamaxLevel, bool32 inverseMultiplier)
 u32 GetRegionalFormByRegion(u32 species, u32 region);
 bool32 IsSpeciesForeignRegionalForm(u32 species, u32 currentRegion);
 u32 GetTeraTypeFromPersonality(struct Pokemon *mon);
+bool32 DoesSpeciesHaveSet(u16 species);
+u32 CheckMonAbilitySlot(u16 species, const u16 ability);
+u32 CanMonLearnMove(u16 species, const u16 move);
 
 #endif // GUARD_POKEMON_H
