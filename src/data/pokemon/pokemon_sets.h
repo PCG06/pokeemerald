@@ -6718,9 +6718,9 @@ const struct PokemonSets gPokemonSets[NUM_SPECIES] =
 
     [SPECIES_SHAYMIN_LAND] = // Serene
     {
-        .name = _("Shaymin-S"),
+        .name = _("Shaymin"),
         .item = ITEM_CHOICE_SCARF,
-        .ability = ABILITY_SERENE_GRACE,
+        .ability = ABILITY_NATURAL_CURE,
         .teraType = TYPE_NORMAL,
         .nature = NATURE_TIMID,
         .evs = {0, 0, 0, 252, 252, 4},
@@ -8664,7 +8664,7 @@ const struct PokemonSets gPokemonSets[NUM_SPECIES] =
     {
         .name = _("Larvesta"),
         .item = ITEM_EVIOLITE,
-        .ability = ABILITY_HUSTLE,
+        .ability = ABILITY_FLAME_BODY,
         .teraType = TYPE_NORMAL,
         .nature = NATURE_IMPISH,
         .evs = {76, 0, 236, 36, 0, 156},
