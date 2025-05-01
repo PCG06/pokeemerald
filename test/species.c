@@ -1,4 +1,5 @@
 #include "global.h"
+#include "move.h"
 #include "string_util.h"
 #include "test/test.h"
 #include "constants/form_change_types.h"
@@ -179,7 +180,7 @@ TEST("gPokemonSets abilities are valid")
 
 TEST("gPokemonSets moves are valid")
 {
-    KNOWN_FAILING; // because of generational TMs
+    TO_DO; // because of generational TMs
 
     u32 species = SPECIES_NONE;
     u32 i;
@@ -196,7 +197,7 @@ TEST("gPokemonSets moves are valid")
     {
         if (species == SPECIES_SMEARGLE)
         {
-            If (!IsMoveSketchBanned(j))
+            if (!IsMoveSketchBanned(j))
                 valid = TRUE;
         }
         else

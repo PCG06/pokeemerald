@@ -88,7 +88,7 @@ def parse_sets(text):
                 line = lines[i]
                 if line.startswith("Ability:"):
                     data["ability"] = line.split(":", 1)[1].strip()
-                elif "Nature" in line:
+                elif line.endswith(" Nature"):
                     data["nature"] = line.split()[0]
                 elif line.startswith("EVs:"):
                     data["evs"] = parse_stat_line(line[4:].strip(), DEFAULT_EV)
