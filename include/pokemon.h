@@ -496,9 +496,10 @@ struct Ability
 
 struct PokemonSets
 {
-    u8 name[CODE_NAME_LENGTH + 1]; // we use these names in our code system
+    u8 name[CODE_NAME_LENGTH + 1]; // name is used in the code system to differentiate forms
     u16 item;
     u16 ability;
+    u8 teraType;
     u8 nature;
     u8 evs[NUM_STATS];
     u8 ivs[NUM_STATS];

@@ -1,12 +1,9 @@
-import json
 import os
 from collections import OrderedDict
 
-# Configuration
-INPUT_FILE = 'tools/pokemon_sets/pokemon_sets.json'
+INPUT_FILE = 'src/data/pokemon/pokemon.sets'
 OUTPUT_FILE = 'src/data/pokemon/pokemon_sets.h'
 
-# Default values
 DEFAULT_IV = 31
 DEFAULT_EV = 0
 DEFAULT_MOVE = "MOVE_NONE"
@@ -14,120 +11,134 @@ DEFAULT_ITEM = "ITEM_NONE"
 DEFAULT_NATURE = "NATURE_HARDY"
 DEFAULT_ABILITY = "ABILITY_NONE"
 
+# Stat order: HP, ATK, DEF, SPEED, SPATK, SPDEF
+STAT_INDEX = {
+    'hp': 0,
+    'atk': 1,
+    'def': 2,
+    'spe': 3, 'speed': 3,
+    'spa': 4, 'spatk': 4, 'spattack': 4,
+    'spd': 5, 'spdef': 5, 'spdefense': 5
+}
+
+def sanitize(name):
+    return name.replace("'", "").replace("%", "").replace("-", "_").replace(' ', '_')
+
 def convert_species(name):
-    """Convert species name to constant format"""
-    name = name.replace("'", "").replace("%", "").replace("-", "_")
-    return f"SPECIES_{name.upper().replace(' ', '_')}"
+    return f"SPECIES_{sanitize(name).upper()}"
 
 def convert_item(item):
-    if isinstance(item, list):
-        item = item[0]
-    item = item.replace("'", "").replace("-", "_")
-    return f"ITEM_{item.upper().replace(' ', '_')}"
-
-def convert_nature(nature):
-    if isinstance(nature, list):
-        nature = nature[0]
-    return f"NATURE_{nature.upper()}"
+    return f"ITEM_{sanitize(item).upper()}"
 
 def convert_ability(ability):
-    if isinstance(ability, list):
-        ability = ability[0]
-    ability = ability.replace("'", "").replace("-", "_").replace(" ", "_")
-    return f"ABILITY_{ability.upper()}"
+    return f"ABILITY_{sanitize(ability).upper()}"
+
+def convert_nature(nature):
+    return f"NATURE_{nature.upper()}"
 
 def convert_move(move):
-    if isinstance(move, list):
-        move = move[0]
     if "Hidden Power" in move:
         return "MOVE_HIDDEN_POWER"
-    move = move.replace("'", "").replace("-", "_")
-    return f"MOVE_{move.upper().replace(' ', '_')}"
+    return f"MOVE_{sanitize(move).upper()}"
 
-def process_pokemon(set_data, species_name):
-    """Generate array elements for one Pokémon set"""
-    # Get display name (default to species name if not specified)
-    display_name = set_data.get("name", species_name)
+def parse_stat_line(text, default):
+    stats = [default] * 6
+    if not text:
+        return stats
+    for part in text.split('/'):
+        part = part.strip()
+        if part:
+            value, stat = part.rsplit(' ', 1)
+            stats[STAT_INDEX[stat.lower()]] = int(value)
+    return stats
+
+def parse_sets(text):
+    lines = [line.strip() for line in text.strip().splitlines() if line.strip()]
+    sets = OrderedDict()
+    i = 0
+    while i < len(lines):
+        if lines[i].startswith("==="):
+            display_name = lines[i].strip("= ")
+            i += 1
+            
+            comment = lines[i].strip("= ") if i < len(lines) else ""
+            i += 1
+            
+            species = "None"
+            item = "None"
+            if i < len(lines) and "@" in lines[i]:
+                species, item = [x.strip() for x in lines[i].split("@")]
+                i += 1
+            
+            data = {
+                "display_name": display_name,
+                "comment": comment,
+                "species": species,
+                "item": item,
+                "ability": "None",
+                "tera_type": "Normal",
+                "nature": "Hardy",
+                "evs": [DEFAULT_EV] * 6,
+                "ivs": [DEFAULT_IV] * 6,
+                "moves": []
+            }
+            
+            # Parse remaining attributes
+            while i < len(lines) and not lines[i].startswith("==="):
+                line = lines[i]
+                if line.startswith("Ability:"):
+                    data["ability"] = line.split(":", 1)[1].strip()
+                elif "Nature" in line:
+                    data["nature"] = line.split()[0]
+                elif line.startswith("EVs:"):
+                    data["evs"] = parse_stat_line(line[4:].strip(), DEFAULT_EV)
+                elif line.startswith("IVs:"):
+                    data["ivs"] = parse_stat_line(line[4:].strip(), DEFAULT_IV)
+                elif line.startswith("Tera Type:"):
+                    data["tera_type"] = line.split(":", 1)[1].strip()
+                elif line.startswith("-"):
+                    data["moves"].append(line[2:].strip())
+                i += 1
+            
+            sets[species] = data
+        else:
+            i += 1
+    return sets
+
+def generate_struct(species, data):
+    species_key = convert_species(data["species"])
+    moves = (data["moves"] + [""]*4)[:4]
+    move_str = ', '.join(convert_move(m) if m else DEFAULT_MOVE for m in moves)
+    tera_type = f"TYPE_{data['tera_type'].upper()}" if data["tera_type"] else "TYPE_NONE"
     
-    # Process EVs
-    evs = [DEFAULT_EV]*6
-    if "evs" in set_data:
-        ev_data = set_data["evs"]
-        if isinstance(ev_data, list):
-            ev_data = ev_data[0]
-        stat_map = {"hp":0, "atk":1, "def":2, "spe":3, "spa":4, "spd":5}
-        for stat, value in ev_data.items():
-            if stat.lower() in stat_map:
-                evs[stat_map[stat.lower()]] = value
-
-    # Process IVs
-    ivs = [DEFAULT_IV]*6
-    if "ivs" in set_data:
-        iv_data = set_data["ivs"]
-        if isinstance(iv_data, list):
-            iv_data = iv_data[0]
-        stat_map = {"hp":0, "atk":1, "def":2, "spe":3, "spa":4, "spd":5}
-        for stat, value in iv_data.items():
-            if stat.lower() in stat_map:
-                ivs[stat_map[stat.lower()]] = value
-
-    # Process moves
-    moves = []
-    if "moves" in set_data:
-        moves = [convert_move(m) for m in set_data["moves"][:4]]
-    moves += [DEFAULT_MOVE] * (4 - len(moves))
-
-    # Process other attributes
-    item = convert_item(set_data["item"]) if "item" in set_data else DEFAULT_ITEM
-    nature = convert_nature(set_data["nature"]) if "nature" in set_data else DEFAULT_NATURE
-    ability = convert_ability(set_data["ability"]) if "ability" in set_data else DEFAULT_ABILITY
-
-    return f"""        .name = _("{display_name}"),
-        .item = {item},
-        .ability = {ability},
-        .nature = {nature},
-        .evs = {{{', '.join(map(str, evs))}}},
-        .ivs = {{{', '.join(map(str, ivs))}}},
-        .moves = {{{', '.join(moves)}}}"""
+    return f"""    [{species_key}] = // {data['comment']}
+    {{
+        .name = _("{data['display_name']}"),
+        .item = {convert_item(data['item'])},
+        .ability = {convert_ability(data['ability'])},
+        .teraType = {tera_type},
+        .nature = {convert_nature(data['nature'])},
+        .evs = {{{data['evs'][0]}, {data['evs'][1]}, {data['evs'][2]}, {data['evs'][3]}, {data['evs'][4]}, {data['evs'][5]}}},
+        .ivs = {{{data['ivs'][0]}, {data['ivs'][1]}, {data['ivs'][2]}, {data['ivs'][3]}, {data['ivs'][4]}, {data['ivs'][5]}}},
+        .moves = {{{move_str}}}
+    }}"""
 
 def main():
-    # Read JSON data
-    with open(INPUT_FILE, 'r') as f:
-        data = json.load(f, object_pairs_hook=OrderedDict)
-
-    # Prepare output directory
+    with open(INPUT_FILE) as f:
+        text = f.read()
+    sets = parse_sets(text)
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-
-    # Generate header file
     with open(OUTPUT_FILE, 'w') as f:
-        f.write("""#include "constants/species.h"
-#include "constants/items.h"
-#include "constants/abilities.h"
-#include "constants/moves.h"
+        f.write('#include "constants/species.h"\n')
+        f.write('#include "constants/items.h"\n')
+        f.write('#include "constants/abilities.h"\n')
+        f.write('#include "constants/moves.h"\n\n')
+        f.write("//\n")
+        f.write("// DO NOT MODIFY THIS FILE! It is auto-generated from pokemon.sets\n")
+        f.write("//\n")
+        f.write("const struct PokemonSets gPokemonSets[NUM_SPECIES] =\n{\n")
+        f.write(",\n\n".join(generate_struct(species, data) for species, data in sets.items()))
+        f.write("\n};\n")
 
-// Auto-generated from pokemon_sets.json
-const struct PokemonSets gPokemonSets[NUM_SPECIES] =
-{
-""")
-        
-        species_dict = OrderedDict()
-        for species, species_data in data.items():
-            for set_name, set_data in species_data.items():
-                species_key = convert_species(species)
-                set_comment = f"// {set_name}"
-                species_dict[species_key] = (process_pokemon(set_data, species), set_comment)
-                break  # Only take first set per species
-
-        # Write all species entries
-        for i, (species, (set_code, set_comment)) in enumerate(species_dict.items()):
-            f.write(f"    [{species}] = {set_comment}\n    {{\n{set_code}\n    }}")
-            if i != len(species_dict) - 1:
-                f.write(",\n\n")  # Comma and extra newline between entries
-            else:
-                f.write("\n")  # No comma after last entry
-        
-        f.write("""};
-""")
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
