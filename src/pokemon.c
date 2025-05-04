@@ -7114,10 +7114,11 @@ u32 CheckMonAbilitySlot(u16 species, const u16 ability)
 u32 CanMonLearnMove(u16 species, const u16 move)
 {
     const struct LevelUpMove *learnset = GetSpeciesLevelUpLearnset(species);
-    const u16 * eggMoveLearnset = GetSpeciesEggMoves(species);
+    const u16 *eggMoveLearnset = sNoneEggMoveLearnset;
     u16 j;
+    u16 preSpecies = species;
 
-    // Check teachable up moves
+    // Check teachable moves
     if (CanLearnTeachableMove(species, move))
         return TRUE;
 
@@ -7128,7 +7129,12 @@ u32 CanMonLearnMove(u16 species, const u16 move)
             return TRUE;
     }
 
-    // Check level up moves
+    // Check egg move
+    while (preSpecies != SPECIES_NONE)
+    {
+        eggMoveLearnset = GetSpeciesEggMoves(preSpecies);
+        preSpecies = GetSpeciesPreEvolution(preSpecies);
+    }
     for (j = 0; eggMoveLearnset[j] != MOVE_UNAVAILABLE; j++)
     {
         if (move == eggMoveLearnset[j])
