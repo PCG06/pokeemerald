@@ -2970,6 +2970,8 @@ bool32 CanThrowLastUsedBall(void)
         return FALSE;
     if (!CheckBagHasItem(gBallToDisplay, 1))
         return FALSE;
+    if (gSaveBlock2Ptr->optionsDisableBagUse)
+        return FALSE;
 
     return TRUE;
 }

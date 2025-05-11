@@ -391,7 +391,7 @@ static void HandleInputChooseAction(u32 battler)
             BtlController_EmitTwoReturnValues(battler, BUFFER_B, B_ACTION_CANCEL_PARTNER, 0);
             PlayerBufferExecCompleted(battler);
         }
-        else if (B_QUICK_MOVE_CURSOR_TO_RUN)
+        else if (B_QUICK_MOVE_CURSOR_TO_RUN || gSaveBlock2Ptr->optionsQuickRunButton == OPTIONS_QUICK_RUN_B_BUTTON)
         {
             if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER)) // If wild battle, pressing B moves cursor to "Run".
             {
@@ -418,6 +418,15 @@ static void HandleInputChooseAction(u32 battler)
         TryHideLastUsedBall();
         BtlController_EmitTwoReturnValues(battler, BUFFER_B, B_ACTION_THROW_BALL, 0);
         PlayerBufferExecCompleted(battler);
+    }
+    else if (JOY_NEW(R_BUTTON) && gSaveBlock2Ptr->optionsQuickRunButton == OPTIONS_QUICK_RUN_R_BUTTON)
+    {
+        if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER)) // If wild battle, pressing R "Runs" away.
+        {
+            PlaySE(SE_SELECT);
+            BtlController_EmitTwoReturnValues(battler, BUFFER_B, B_ACTION_RUN, 0);
+            PlayerBufferExecCompleted(battler);
+        }
     }
 }
 
