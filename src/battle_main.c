@@ -450,6 +450,7 @@ void CB2_InitBattle(void)
 static void CB2_InitBattleInternal(void)
 {
     s32 i;
+    bool32 isDoubleBattle = (IsTrainerDoubleBattle(TRAINER_BATTLE_PARAM.opponentA) || (gSaveBlock2Ptr->optionsDoubleBattlesOff == FALSE && GetTrainerPartySizeFromId(TRAINER_BATTLE_PARAM.opponentA) >= 2));
 
     SetHBlankCallback(NULL);
     SetVBlankCallback(NULL);
@@ -515,7 +516,7 @@ static void CB2_InitBattleInternal(void)
                                                                         | BATTLE_TYPE_TRAINER_HILL
                                                                         | BATTLE_TYPE_RECORDED)))
     {
-        gBattleTypeFlags |= (IsTrainerDoubleBattle(TRAINER_BATTLE_PARAM.opponentA) ? BATTLE_TYPE_DOUBLE : 0);
+        gBattleTypeFlags |= (isDoubleBattle ? BATTLE_TYPE_DOUBLE : 0);
     }
 
     InitBattleBgsVideo();

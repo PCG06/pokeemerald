@@ -46,6 +46,7 @@ enum
     MENUITEM_BATTLE_BATTLESTYLE,
     MENUITEM_BATTLE_BAGUSE,
     MENUITEM_BATTLE_QUICKRUN,
+    MENUITEM_BATTLE_DOUBLEBATTLE,
     MENUITEM_BATTLE_CANCEL,
     MENUITEM_BATTLE_COUNT,
 };
@@ -185,6 +186,7 @@ static void InstantText_DrawChoices(int selection, int y);
 static void BattleScene_DrawChoices(int selection, int y);
 static void BattleStyle_DrawChoices(int selection, int y);
 static void BagUse_DrawChoices(int selection, int y);
+static void DoubleBattle_DrawChoices(int selection, int y);
 static void QuickRun_DrawChoices(int selection, int y);
 static void SoundMode_DrawChoices(int selection, int y);
 static void ButtonMode_DrawChoices(int selection, int y);
@@ -247,6 +249,7 @@ static const MenuItemFunctions sItemFunctionsBattle[MENUITEM_BATTLE_COUNT] =
     [MENUITEM_BATTLE_BATTLESTYLE]  = {BattleStyle_DrawChoices, TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_BAGUSE]       = {BagUse_DrawChoices,      TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_QUICKRUN]     = {QuickRun_DrawChoices,    ThreeOptions_ProcessInput},
+    [MENUITEM_BATTLE_DOUBLEBATTLE] = {DoubleBattle_DrawChoices, TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_CANCEL]       = {NULL, NULL},
 };
 
@@ -271,6 +274,7 @@ static const u8 *const sOptionMenuItemsNamesBattle[MENUITEM_BATTLE_COUNT] =
     [MENUITEM_BATTLE_BATTLESTYLE]   = gText_BattleStyle,
     [MENUITEM_BATTLE_BAGUSE]        = gText_BagUse,
     [MENUITEM_BATTLE_QUICKRUN]      = gText_QuickRun,
+    [MENUITEM_BATTLE_DOUBLEBATTLE]  = gText_DoubleBattles,
     [MENUITEM_BATTLE_CANCEL]        = gText_OptionMenuSave,
 };
 
@@ -317,6 +321,7 @@ static bool8 CheckConditions(int selection)
         case MENUITEM_BATTLE_BATTLESTYLE:
         case MENUITEM_BATTLE_BAGUSE:
         case MENUITEM_BATTLE_QUICKRUN:
+        case MENUITEM_BATTLE_DOUBLEBATTLE:
         case MENUITEM_BATTLE_CANCEL:
         case MENUITEM_BATTLE_COUNT:
             return TRUE;
@@ -355,6 +360,8 @@ static const u8 sText_Desc_BagUse_Off[]         = _("Disables the use of items f
 static const u8 sText_Desc_QuickRunOptionR[]    = _("Run from wild battles by pressing\nthe {R_BUTTON} button.");
 static const u8 sText_Desc_QuickRunOptionBA[]   = _("Move the cursor to RUN by pressing\nthe {B_BUTTON} button.");
 static const u8 sText_Desc_QuickRunOptionOff[]  = _("Disables quick running from wild\nbattles.");
+static const u8 sText_Desc_DoubleBattles_On[]          = _("All Trainer battles will be double\nbattles.");
+static const u8 sText_Desc_DoubleBattles_Off[]         = _("All Trainer battles will be single\nbattles, unless forced.");
 
 static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
 static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
@@ -374,6 +381,7 @@ static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][
     [MENUITEM_BATTLE_BATTLESTYLE] = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty},
     [MENUITEM_BATTLE_BAGUSE]      = {sText_Desc_BagUse_On,            sText_Desc_BagUse_Off,            sText_Empty},
     [MENUITEM_BATTLE_QUICKRUN]    = {sText_Desc_QuickRunOptionR,      sText_Desc_QuickRunOptionBA,      sText_Desc_QuickRunOptionOff},
+    [MENUITEM_BATTLE_DOUBLEBATTLE] = {sText_Desc_DoubleBattles_On,    sText_Desc_DoubleBattles_Off,     sText_Empty},
     [MENUITEM_BATTLE_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                      sText_Empty},
 };
 
@@ -400,6 +408,7 @@ static const u8 *const sOptionMenuItemDescriptionsDisabledBattle[MENUITEM_BATTLE
     [MENUITEM_BATTLE_BATTLESTYLE] = sText_Empty,
     [MENUITEM_BATTLE_BAGUSE]      = sText_Empty,
     [MENUITEM_BATTLE_QUICKRUN]    = sText_Empty,
+    [MENUITEM_BATTLE_DOUBLEBATTLE]  = sText_Empty,
     [MENUITEM_BATTLE_CANCEL]      = sText_Empty,
 };
 
@@ -737,6 +746,7 @@ void CB2_InitOptionPlusMenu(void)
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE]   = gSaveBlock2Ptr->optionsBattleStyle;
         sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE]        = gSaveBlock2Ptr->optionsDisableBagUse;
         sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN]      = gSaveBlock2Ptr->optionsQuickRunButton;
+        sOptions->sel_battle[MENUITEM_BATTLE_DOUBLEBATTLE]  = gSaveBlock2Ptr->optionsDoubleBattlesOff;
 
         sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE]       = gSaveBlock2Ptr->optionsSound;
 
@@ -967,6 +977,7 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsBattleStyle      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE];
     gSaveBlock2Ptr->optionsDisableBagUse    = sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE];
     gSaveBlock2Ptr->optionsQuickRunButton   = sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN];
+    gSaveBlock2Ptr->optionsDoubleBattlesOff = sOptions->sel_battle[MENUITEM_BATTLE_DOUBLEBATTLE];
 
     gSaveBlock2Ptr->optionsSound            = sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE];
 
@@ -1250,6 +1261,16 @@ static void BagUse_DrawChoices(int selection, int y)
     DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
 }
 
+static void DoubleBattle_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_BATTLE_DOUBLEBATTLE);
+    u8 styles[2] = {0};
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+}
+
 static void SoundMode_DrawChoices(int selection, int y)
 {
     bool8 active = CheckConditions(MENUITEM_SOUND_SOUNDMODE);
@@ -1274,7 +1295,7 @@ static void ButtonMode_DrawChoices(int selection, int y)
 
 static void QuickRun_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_GENERAL_BUTTONMODE);
+    bool8 active = CheckConditions(MENUITEM_BATTLE_QUICKRUN);
     u8 styles[3] = {0};
     int xMid = GetMiddleX(gText_QuickRunOptionR, gText_QuickRunOptionBA, gText_BattleSceneOff);
     styles[selection] = 1;

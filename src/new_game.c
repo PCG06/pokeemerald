@@ -102,6 +102,9 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->regionMapZoom = FALSE;
     // tx_optionsPlus
     gSaveBlock2Ptr->optionsDisableMatchCall = FALSE;
+    gSaveBlock2Ptr->optionsDisableBagUse = FALSE;
+    gSaveBlock2Ptr->optionsQuickRunButton = OPTIONS_QUICK_RUN_R_BUTTON;
+    gSaveBlock2Ptr->optionsDoubleBattlesOff = TRUE;
 }
 
 static void ClearPokedexFlags(void)

@@ -548,6 +548,7 @@ struct SaveBlock2
              u16 optionsDisableMatchCall:1; // whether match calls are disabled
              u16 optionsDisableBagUse:1; // whether bag use is disabled in battle
              u16 optionsQuickRunButton:2; // OPTIONS_QUICK_RUN[R_BUTTON/B_BUTTON/OFF]
+             u16 optionsDoubleBattlesOff:1; // whether all trainer battles should be doubles
              //u16 padding1:4;
              //u16 padding2;
     /*0x18*/ struct Pokedex pokedex;

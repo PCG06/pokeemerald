@@ -1012,6 +1012,7 @@ const u8 gText_BagUse[] = _("BAG USE");
 const u8 gText_QuickRun[] = _("QUICK RUN");
 const u8 gText_QuickRunOptionR[] = _("R");
 const u8 gText_QuickRunOptionBA[] = _("B > A");
+const u8 gText_DoubleBattles[] = _("DOUBLE BATTLES");
 const u8 gText_NumPlayerLink[] = _("{STR_VAR_1}P LINK");
 const u8 gText_BronzeCard[] = _("BRONZE");
 const u8 gText_CopperCard[] = _("COPPER");

@@ -280,6 +280,7 @@ extern const u8 gText_BagUse[];
 extern const u8 gText_QuickRun[];
 extern const u8 gText_QuickRunOptionR[];
 extern const u8 gText_QuickRunOptionBA[];
+extern const u8 gText_DoubleBattles[];
 extern const u8 gText_OptionMenuSave[];
 extern const u8 gText_ButtonMode[];
 
