@@ -286,7 +286,6 @@ struct BerryCrushGame
     u8 localId;
     u8 playerCount;
     u8 taskId;
-    u8 textSpeed;
     u8 cmdState;
     u8 unused; // Never read
     u8 nextCmd;
@@ -1155,22 +1154,6 @@ static void SetNamesAndTextSpeed(struct BerryCrushGame *game)
     {
         memset(game->players[i].name, 1, PLAYER_NAME_LENGTH);
         game->players[i].name[PLAYER_NAME_LENGTH] = EOS;
-    }
-
-    switch (gSaveBlock2Ptr->optionsTextSpeed)
-    {
-    case OPTIONS_TEXT_SPEED_SLOW:
-        game->textSpeed = 8;
-        break;
-    case OPTIONS_TEXT_SPEED_MID:
-        game->textSpeed = 4;
-        break;
-    case OPTIONS_TEXT_SPEED_FAST:
-        game->textSpeed = 1;
-        break;
-    case OPTIONS_TEXT_SPEED_FASTER:
-        game->textSpeed = 1;
-        break;
     }
 }
 
@@ -2256,11 +2239,11 @@ static u32 Cmd_PrintMessage(struct BerryCrushGame *game, u8 *args)
         if (args[1] & F_MSG_EXPAND)
         {
             StringExpandPlaceholders(gStringVar4, sMessages[args[0]]);
-            AddTextPrinterParameterized2(0, FONT_NORMAL, gStringVar4, game->textSpeed, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+            AddTextPrinterParameterized2(0, FONT_NORMAL, gStringVar4, 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
         }
         else
         {
-            AddTextPrinterParameterized2(0, FONT_NORMAL, sMessages[args[0]], game->textSpeed, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+            AddTextPrinterParameterized2(0, FONT_NORMAL, sMessages[args[0]], 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
         }
         CopyWindowToVram(0, COPYWIN_FULL);
         break;
@@ -3389,9 +3372,9 @@ static u32 Cmd_StopGame(struct BerryCrushGame *game, u8 *args)
     case 0:
         DrawDialogueFrame(0, FALSE);
         if (game->playAgainState == PLAY_AGAIN_NO_BERRIES)
-            AddTextPrinterParameterized2(0, FONT_NORMAL, sMessages[MSG_NO_BERRIES], game->textSpeed, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+            AddTextPrinterParameterized2(0, FONT_NORMAL, sMessages[MSG_NO_BERRIES], 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
         else
-            AddTextPrinterParameterized2(0, FONT_NORMAL, sMessages[MSG_DROPPED], game->textSpeed, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
+            AddTextPrinterParameterized2(0, FONT_NORMAL, sMessages[MSG_DROPPED], 1, 0, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_GRAY);
         CopyWindowToVram(0, COPYWIN_FULL);
         break;
     case 1:

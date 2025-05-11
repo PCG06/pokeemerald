@@ -29,7 +29,7 @@ enum
 // Menu items
 enum
 {
-    MENUITEM_MAIN_TEXTSPEED,
+    MENUITEM_MAIN_INSTANTTEXT,
     MENUITEM_MAIN_BATTLESCENE,
     MENUITEM_MAIN_BATTLESTYLE,
     MENUITEM_MAIN_SOUND,
@@ -157,7 +157,7 @@ static int GetMiddleX(const u8 *txt1, const u8 *txt2, const u8 *txt3);
 static int XOptions_ProcessInput(int x, int selection);
 static int TwoOptions_ProcessInput(int selection);
 static int ThreeOptions_ProcessInput(int selection);
-static int FourOptions_ProcessInput(int selection);
+static int UNUSED FourOptions_ProcessInput(int selection);
 static int UNUSED ElevenOptions_ProcessInput(int selection);
 static int Sound_ProcessInput(int selection);
 static int FrameType_ProcessInput(int selection);
@@ -167,9 +167,9 @@ static u8 MenuItemCount(void);
 static u8 MenuItemCancel(void);
 static void DrawDescriptionText(void);
 static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style, bool8 active);
-static void DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active);
+static void UNUSED DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active);
 static void ReDrawAll(void);
-static void TextSpeed_DrawChoices(int selection, int y);
+static void InstantText_DrawChoices(int selection, int y);
 static void BattleScene_DrawChoices(int selection, int y);
 static void BattleStyle_DrawChoices(int selection, int y);
 static void Sound_DrawChoices(int selection, int y);
@@ -220,7 +220,7 @@ struct // MENU_MAIN
     int (*processInput)(int selection);
 } static const sItemFunctionsMain[MENUITEM_MAIN_COUNT] =
 {
-    [MENUITEM_MAIN_TEXTSPEED]    = {TextSpeed_DrawChoices,   FourOptions_ProcessInput},
+    [MENUITEM_MAIN_INSTANTTEXT]  = {InstantText_DrawChoices,   TwoOptions_ProcessInput},
     [MENUITEM_MAIN_BATTLESCENE]  = {BattleScene_DrawChoices, TwoOptions_ProcessInput},
     [MENUITEM_MAIN_BATTLESTYLE]  = {BattleStyle_DrawChoices, TwoOptions_ProcessInput},
     [MENUITEM_MAIN_SOUND]        = {Sound_DrawChoices,       Sound_ProcessInput},
@@ -242,7 +242,7 @@ struct // MENU_CUSTOM
 
 static const u8 *const sOptionMenuItemsNamesMain[MENUITEM_MAIN_COUNT] =
 {
-    [MENUITEM_MAIN_TEXTSPEED]   = gText_TextSpeed,
+    [MENUITEM_MAIN_INSTANTTEXT] = gText_InstantText,
     [MENUITEM_MAIN_BATTLESCENE] = gText_BattleScene,
     [MENUITEM_MAIN_BATTLESTYLE] = gText_BattleStyle,
     [MENUITEM_MAIN_SOUND]       = gText_Sound,
@@ -278,7 +278,7 @@ static bool8 CheckConditions(int selection)
     case MENU_MAIN:
         switch(selection)
         {
-        case MENUITEM_MAIN_TEXTSPEED:
+        case MENUITEM_MAIN_INSTANTTEXT:
         case MENUITEM_MAIN_BATTLESCENE:
         case MENUITEM_MAIN_BATTLESTYLE:
         case MENUITEM_MAIN_SOUND:
@@ -304,7 +304,8 @@ static bool8 CheckConditions(int selection)
 // Descriptions
 static const u8 sText_Empty[]                   = _("");
 static const u8 sText_Desc_Save[]               = _("Save your settings.");
-static const u8 sText_Desc_TextSpeed[]          = _("Choose one of the four text-display\nspeeds.");
+static const u8 sText_Desc_InstantTextOn[]      = _("Instant text is enabled.");
+static const u8 sText_Desc_InstantTextOff[]     = _("Instant text is disabled.");
 static const u8 sText_Desc_BattleScene_On[]     = _("Show the POKéMON battle animations.");
 static const u8 sText_Desc_BattleScene_Off[]    = _("Skip the POKéMON battle animations.");
 static const u8 sText_Desc_BattleStyle_Shift[]  = _("Get the option to switch your\nPOKéMON after the enemies faints.");
@@ -317,7 +318,7 @@ static const u8 sText_Desc_ButtonMode_LA[]      = _("The L button acts as anothe
 static const u8 sText_Desc_FrameType[]          = _("Choose the frame surrounding the\nwindows.");
 static const u8 *const sOptionMenuItemDescriptionsMain[MENUITEM_MAIN_COUNT][3] =
 {
-    [MENUITEM_MAIN_TEXTSPEED]   = {sText_Desc_TextSpeed,            sText_Empty,                sText_Empty},
+    [MENUITEM_MAIN_INSTANTTEXT] = {sText_Desc_InstantTextOn,        sText_Desc_InstantTextOff,  sText_Empty},
     [MENUITEM_MAIN_BATTLESCENE] = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off, sText_Empty},
     [MENUITEM_MAIN_BATTLESTYLE] = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set, sText_Empty},
     [MENUITEM_MAIN_SOUND]       = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,     sText_Empty},
@@ -333,12 +334,13 @@ static const u8 sText_Desc_SurfOff[]            = _("Disables the SURF theme whe
 static const u8 sText_Desc_SurfOn[]             = _("Enables the SURF theme\nwhen using SURF.");
 static const u8 sText_Desc_BikeOff[]            = _("Disables the BIKE theme when\nusing the BIKE.");
 static const u8 sText_Desc_BikeOn[]             = _("Enables the BIKE theme when\nusing the BIKE.");
-static const u8 sText_Desc_FontType[]           = _("Choose the font design.");
+static const u8 sText_Desc_FontTypeEmerald[]    = _("Text will be displayed in Emerald\nfont.");
+static const u8 sText_Desc_FontTypeFRLG[]       = _("Text will be displayed in FRLG\nfont.");
 static const u8 sText_Desc_OverworldCallsOn[]   = _("TRAINERs will be able to call you,\noffering rematches and info.");
 static const u8 sText_Desc_OverworldCallsOff[]  = _("You will not receive calls.\nSpecial events will still occur.");
 static const u8 *const sOptionMenuItemDescriptionsCustom[MENUITEM_CUSTOM_COUNT][2] =
 {
-    [MENUITEM_CUSTOM_FONT]        = {sText_Desc_FontType,           sText_Desc_FontType},
+    [MENUITEM_CUSTOM_FONT]        = {sText_Desc_FontTypeEmerald,    sText_Desc_FontTypeFRLG},
     [MENUITEM_CUSTOM_MATCHCALL]   = {sText_Desc_OverworldCallsOn,   sText_Desc_OverworldCallsOff},
     [MENUITEM_CUSTOM_CANCEL]      = {sText_Desc_Save,               sText_Empty},
 };
@@ -347,7 +349,7 @@ static const u8 *const sOptionMenuItemDescriptionsCustom[MENUITEM_CUSTOM_COUNT][
 static const u8 sText_Desc_Disabled_Textspeed[]     = _("Only active if xyz.");
 static const u8 *const sOptionMenuItemDescriptionsDisabledMain[MENUITEM_MAIN_COUNT] =
 {
-    [MENUITEM_MAIN_TEXTSPEED]   = sText_Desc_Disabled_Textspeed,
+    [MENUITEM_MAIN_INSTANTTEXT] = sText_Desc_Disabled_Textspeed,
     [MENUITEM_MAIN_BATTLESCENE] = sText_Empty,
     [MENUITEM_MAIN_BATTLESTYLE] = sText_Empty,
     [MENUITEM_MAIN_SOUND]       = sText_Empty,
@@ -383,7 +385,7 @@ static const u8 *const OptionTextDescription(void)
         if (!CheckConditions(menuItem))
             return sOptionMenuItemDescriptionsDisabledMain[menuItem];
         selection = sOptions->sel[menuItem];
-        if (menuItem == MENUITEM_MAIN_TEXTSPEED || menuItem == MENUITEM_MAIN_FRAMETYPE)
+        if (menuItem == MENUITEM_MAIN_FRAMETYPE)
             selection = 0;
         return sOptionMenuItemDescriptionsMain[menuItem][selection];
     break;
@@ -662,7 +664,7 @@ void CB2_InitOptionPlusMenu(void)
         gMain.state++;
         break;
     case 6:
-        sOptions->sel[MENUITEM_MAIN_TEXTSPEED]          = gSaveBlock2Ptr->optionsTextSpeed;
+        sOptions->sel[MENUITEM_MAIN_INSTANTTEXT]          = gSaveBlock2Ptr->optionsInstantTextOff;
         sOptions->sel[MENUITEM_MAIN_BATTLESCENE]        = gSaveBlock2Ptr->optionsBattleSceneOff;
         sOptions->sel[MENUITEM_MAIN_BATTLESTYLE]        = gSaveBlock2Ptr->optionsBattleStyle;
         sOptions->sel[MENUITEM_MAIN_SOUND]              = gSaveBlock2Ptr->optionsSound;
@@ -867,7 +869,7 @@ static void Task_OptionMenuProcessInput(u8 taskId)
 
 static void Task_OptionMenuSave(u8 taskId)
 {
-    gSaveBlock2Ptr->optionsTextSpeed        = sOptions->sel[MENUITEM_MAIN_TEXTSPEED];
+    gSaveBlock2Ptr->optionsInstantTextOff        = sOptions->sel[MENUITEM_MAIN_INSTANTTEXT];
     gSaveBlock2Ptr->optionsBattleSceneOff   = sOptions->sel[MENUITEM_MAIN_BATTLESCENE];
     gSaveBlock2Ptr->optionsBattleStyle      = sOptions->sel[MENUITEM_MAIN_BATTLESTYLE];
     gSaveBlock2Ptr->optionsSound            = sOptions->sel[MENUITEM_MAIN_SOUND];
@@ -1008,7 +1010,7 @@ static int ThreeOptions_ProcessInput(int selection)
     return XOptions_ProcessInput(3, selection);
 }
 
-static int FourOptions_ProcessInput(int selection)
+static int UNUSED FourOptions_ProcessInput(int selection)
 {
     return XOptions_ProcessInput(4, selection);
 }
@@ -1065,7 +1067,7 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style, bool8 act
     DrawRightSideChoiceText(text, x, y+1, choosen, active);
 }
 
-static void DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active)
+static void UNUSED DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active)
 {
     static const u8 choiceOrders[][3] =
     {
@@ -1119,11 +1121,14 @@ static void ReDrawAll(void)
 // Process Input functions ****SPECIFIC****
 static const u8 sText_Faster[] = _("FASTER");
 static const u8 sText_Instant[] = _("INSTANT");
-static const u8 *const sTextSpeedStrings[] = {gText_TextSpeedSlow, gText_TextSpeedMid, gText_TextSpeedFast, sText_Faster};
-static void TextSpeed_DrawChoices(int selection, int y)
+static void InstantText_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_MAIN_TEXTSPEED);
-    DrawChoices_Options_Four(sTextSpeedStrings, selection, y, active);
+    bool8 active = CheckConditions(MENUITEM_MAIN_INSTANTTEXT);
+    u8 styles[2] = {0};
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
 }
 
 static void BattleScene_DrawChoices(int selection, int y)
