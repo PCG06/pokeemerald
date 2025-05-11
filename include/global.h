@@ -546,7 +546,6 @@ struct SaveBlock2
              u16 regionMapZoom:1; // whether the map is zoomed in
              // tx_optionsPlus
              u16 optionsDisableMatchCall:1; // whether match calls are disabled
-             u16 optionsCurrentFont:1; // OPTIONS_FONT_[EMERALD/FRLG]
              //u16 padding1:4;
              //u16 padding2;
     /*0x18*/ struct Pokedex pokedex;

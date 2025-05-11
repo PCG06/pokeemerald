@@ -102,7 +102,6 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->regionMapZoom = FALSE;
     // tx_optionsPlus
     gSaveBlock2Ptr->optionsDisableMatchCall = FALSE;
-    gSaveBlock2Ptr->optionsCurrentFont = OPTIONS_FONT_EMERALD;
 }
 
 static void ClearPokedexFlags(void)
