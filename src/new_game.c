@@ -105,6 +105,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsDisableBagUse = FALSE;
     gSaveBlock2Ptr->optionsQuickRunButton = OPTIONS_QUICK_RUN_R_BUTTON;
     gSaveBlock2Ptr->optionsDoubleBattlesOff = TRUE;
+    gSaveBlock2Ptr->optionsShowBattleMoveInfoOff = FALSE;
 }
 
 static void ClearPokedexFlags(void)

@@ -1753,7 +1753,7 @@ static void MoveSelectionDisplayMoveType(u32 battler)
 
 static void TryMoveSelectionDisplayMoveDescription(u32 battler)
 {
-    if (!B_SHOW_MOVE_DESCRIPTION)
+    if (!B_SHOW_MOVE_DESCRIPTION || gSaveBlock2Ptr->optionsShowBattleMoveInfoOff)
         return;
 
     if (gBattleStruct->descriptionSubmenu)

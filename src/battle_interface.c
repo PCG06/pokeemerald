@@ -3044,7 +3044,7 @@ static void DestroyLastUsedBallGfx(struct Sprite *sprite)
 
 void TryToAddMoveInfoWindow(void)
 {
-    if (!B_SHOW_MOVE_DESCRIPTION)
+    if (!B_SHOW_MOVE_DESCRIPTION || gSaveBlock2Ptr->optionsShowBattleMoveInfoOff)
         return;
 
     LoadSpritePalette(&sSpritePalette_AbilityPopUp);
