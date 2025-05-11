@@ -21,29 +21,39 @@
 
 enum
 {
-    MENU_MAIN,
-    MENU_CUSTOM,
+    MENU_GENERAL, // General - non battle and non sound related, basically everything else
+    MENU_BATTLE,  // Battle - anything that affects battles
+    MENU_SOUND,   // Sound - anything that affects sound
     MENU_COUNT,
 };
 
 // Menu items
+// General options
 enum
 {
-    MENUITEM_MAIN_INSTANTTEXT,
-    MENUITEM_MAIN_BATTLESCENE,
-    MENUITEM_MAIN_BATTLESTYLE,
-    MENUITEM_MAIN_SOUND,
-    MENUITEM_MAIN_BUTTONMODE,
-    MENUITEM_MAIN_FRAMETYPE,
-    MENUITEM_MAIN_CANCEL,
-    MENUITEM_MAIN_COUNT,
+    MENUITEM_GENERAL_INSTANTTEXT,
+    MENUITEM_GENERAL_BUTTONMODE,
+    MENUITEM_GENERAL_FRAMETYPE,
+    MENUITEM_GENERAL_MATCHCALL,
+    MENUITEM_GENERAL_CANCEL,
+    MENUITEM_GENERAL_COUNT,
 };
 
+// Battle options
 enum
 {
-    MENUITEM_CUSTOM_MATCHCALL,
-    MENUITEM_CUSTOM_CANCEL,
-    MENUITEM_CUSTOM_COUNT,
+    MENUITEM_BATTLE_BATTLESCENE,
+    MENUITEM_BATTLE_BATTLESTYLE,
+    MENUITEM_BATTLE_CANCEL,
+    MENUITEM_BATTLE_COUNT,
+};
+
+// Sound options
+enum
+{
+    MENUITEM_SOUND_SOUNDMODE,
+    MENUITEM_SOUND_CANCEL,
+    MENUITEM_SOUND_COUNT,
 };
 
 // Window Ids
@@ -125,8 +135,9 @@ static const struct BgTemplate sOptionMenuBgTemplates[] =
 struct OptionMenu
 {
     u8 submenu;
-    u8 sel[MENUITEM_MAIN_COUNT];
-    u8 sel_custom[MENUITEM_CUSTOM_COUNT];
+    u8 sel_general[MENUITEM_GENERAL_COUNT];
+    u8 sel_battle[MENUITEM_BATTLE_COUNT];
+    u8 sel_sound[MENUITEM_SOUND_COUNT];
     int menuCursor[MENU_COUNT];
     int visibleCursor[MENU_COUNT];
     u8 arrowTaskId;
@@ -171,10 +182,10 @@ static void ReDrawAll(void);
 static void InstantText_DrawChoices(int selection, int y);
 static void BattleScene_DrawChoices(int selection, int y);
 static void BattleStyle_DrawChoices(int selection, int y);
-static void Sound_DrawChoices(int selection, int y);
+static void SoundMode_DrawChoices(int selection, int y);
 static void ButtonMode_DrawChoices(int selection, int y);
 static void FrameType_DrawChoices(int selection, int y);
-static void DrawChoices_MatchCall(int selection, int y);
+static void MatchCall_DrawChoices(int selection, int y);
 static void DrawBgWindowFrames(void);
 
 // EWRAM vars
@@ -212,57 +223,66 @@ static const u16 sScrollBgPalette[] = INCBIN_U16("graphics/ui_options_plus/scrol
 #define TEXT_COLOR_OPTIONS_RED_DARK_SHADOW      14
 
 // Menu draw and input functions
-struct // MENU_MAIN
-{
+typedef struct {
     void (*drawChoices)(int selection, int y);
     int (*processInput)(int selection);
-} static const sItemFunctionsMain[MENUITEM_MAIN_COUNT] =
+} MenuItemFunctions;
+
+static const MenuItemFunctions sItemFunctionsGeneral[MENUITEM_GENERAL_COUNT] =
 {
-    [MENUITEM_MAIN_INSTANTTEXT]  = {InstantText_DrawChoices,   TwoOptions_ProcessInput},
-    [MENUITEM_MAIN_BATTLESCENE]  = {BattleScene_DrawChoices, TwoOptions_ProcessInput},
-    [MENUITEM_MAIN_BATTLESTYLE]  = {BattleStyle_DrawChoices, TwoOptions_ProcessInput},
-    [MENUITEM_MAIN_SOUND]        = {Sound_DrawChoices,       Sound_ProcessInput},
-    [MENUITEM_MAIN_BUTTONMODE]   = {ButtonMode_DrawChoices,  ThreeOptions_ProcessInput},
-    [MENUITEM_MAIN_FRAMETYPE]    = {FrameType_DrawChoices,   FrameType_ProcessInput},
-    [MENUITEM_MAIN_CANCEL]       = {NULL, NULL},
+    [MENUITEM_GENERAL_INSTANTTEXT]  = {InstantText_DrawChoices,   TwoOptions_ProcessInput},
+    [MENUITEM_GENERAL_BUTTONMODE]   = {ButtonMode_DrawChoices,    ThreeOptions_ProcessInput},
+    [MENUITEM_GENERAL_FRAMETYPE]    = {FrameType_DrawChoices,     FrameType_ProcessInput},
+    [MENUITEM_GENERAL_MATCHCALL]    = {MatchCall_DrawChoices,     TwoOptions_ProcessInput},
+    [MENUITEM_GENERAL_CANCEL]       = {NULL, NULL},
 };
 
-struct // MENU_CUSTOM
+static const MenuItemFunctions sItemFunctionsBattle[MENUITEM_BATTLE_COUNT] =
 {
-    void (*drawChoices)(int selection, int y);
-    int (*processInput)(int selection);
-} static const sItemFunctionsCustom[MENUITEM_CUSTOM_COUNT] =
-{
-    [MENUITEM_CUSTOM_MATCHCALL]    = {DrawChoices_MatchCall,   TwoOptions_ProcessInput},
-    [MENUITEM_CUSTOM_CANCEL]       = {NULL, NULL},
+    [MENUITEM_BATTLE_BATTLESCENE]  = {BattleScene_DrawChoices, TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_BATTLESTYLE]  = {BattleStyle_DrawChoices, TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_CANCEL]       = {NULL, NULL},
 };
 
-static const u8 *const sOptionMenuItemsNamesMain[MENUITEM_MAIN_COUNT] =
+static const MenuItemFunctions sItemFunctionsSound[MENUITEM_SOUND_COUNT] =
 {
-    [MENUITEM_MAIN_INSTANTTEXT] = gText_InstantText,
-    [MENUITEM_MAIN_BATTLESCENE] = gText_BattleScene,
-    [MENUITEM_MAIN_BATTLESTYLE] = gText_BattleStyle,
-    [MENUITEM_MAIN_SOUND]       = gText_Sound,
-    [MENUITEM_MAIN_BUTTONMODE]  = gText_ButtonMode,
-    [MENUITEM_MAIN_FRAMETYPE]   = gText_Frame,
-    [MENUITEM_MAIN_CANCEL]      = gText_OptionMenuSave,
+    [MENUITEM_SOUND_SOUNDMODE]    = {SoundMode_DrawChoices,       Sound_ProcessInput},
+    [MENUITEM_SOUND_CANCEL]       = {NULL, NULL},
 };
 
-static const u8 *const sOptionMenuItemsNamesCustom[MENUITEM_CUSTOM_COUNT] =
+static const u8 *const sOptionMenuItemsNamesGeneral[MENUITEM_GENERAL_COUNT] =
 {
-    [MENUITEM_CUSTOM_MATCHCALL]   = gText_OptionMatchCalls,
-    [MENUITEM_CUSTOM_CANCEL]      = gText_OptionMenuSave,
+    [MENUITEM_GENERAL_INSTANTTEXT]  = gText_InstantText,
+    [MENUITEM_GENERAL_BUTTONMODE]   = gText_ButtonMode,
+    [MENUITEM_GENERAL_FRAMETYPE]    = gText_Frame,
+    [MENUITEM_GENERAL_MATCHCALL]    = gText_OptionMatchCalls,
+    [MENUITEM_GENERAL_CANCEL]       = gText_OptionMenuSave,
+};
+
+static const u8 *const sOptionMenuItemsNamesBattle[MENUITEM_BATTLE_COUNT] =
+{
+    [MENUITEM_BATTLE_BATTLESCENE]   = gText_BattleScene,
+    [MENUITEM_BATTLE_BATTLESTYLE]   = gText_BattleStyle,
+    [MENUITEM_BATTLE_CANCEL]        = gText_OptionMenuSave,
+};
+
+static const u8 *const sOptionMenuItemsNamesSound[MENUITEM_SOUND_COUNT] =
+{
+    [MENUITEM_SOUND_SOUNDMODE]  = gText_Sound,
+    [MENUITEM_SOUND_CANCEL]     = gText_OptionMenuSave,
 };
 
 static const u8 *const OptionTextRight(u8 menuItem)
 {
     switch (sOptions->submenu)
     {
-    case MENU_CUSTOM:
-        return sOptionMenuItemsNamesCustom[menuItem];
+    case MENU_BATTLE:
+        return sOptionMenuItemsNamesBattle[menuItem];
+    case MENU_SOUND:
+        return sOptionMenuItemsNamesSound[menuItem];
     default:
-    case MENU_MAIN:
-        return sOptionMenuItemsNamesMain[menuItem];
+    case MENU_GENERAL:
+        return sOptionMenuItemsNamesGeneral[menuItem];
     }
 }
 
@@ -271,25 +291,32 @@ static bool8 CheckConditions(int selection)
 {
     switch (sOptions->submenu)
     {
-    case MENU_MAIN:
+    case MENU_GENERAL:
         switch(selection)
         {
-        case MENUITEM_MAIN_INSTANTTEXT:
-        case MENUITEM_MAIN_BATTLESCENE:
-        case MENUITEM_MAIN_BATTLESTYLE:
-        case MENUITEM_MAIN_SOUND:
-        case MENUITEM_MAIN_BUTTONMODE:
-        case MENUITEM_MAIN_FRAMETYPE:
-        case MENUITEM_MAIN_CANCEL:
-        case MENUITEM_MAIN_COUNT:
+        case MENUITEM_GENERAL_INSTANTTEXT:
+        case MENUITEM_GENERAL_BUTTONMODE:
+        case MENUITEM_GENERAL_FRAMETYPE:
+        case MENUITEM_GENERAL_MATCHCALL:
+        case MENUITEM_GENERAL_CANCEL:
+        case MENUITEM_GENERAL_COUNT:
             return TRUE;
         }
-    case MENU_CUSTOM:
+    case MENU_BATTLE:
         switch(selection)
         {
-        case MENUITEM_CUSTOM_MATCHCALL:
-        case MENUITEM_CUSTOM_CANCEL:
-        case MENUITEM_CUSTOM_COUNT:
+        case MENUITEM_BATTLE_BATTLESCENE:
+        case MENUITEM_BATTLE_BATTLESTYLE:
+        case MENUITEM_BATTLE_CANCEL:
+        case MENUITEM_BATTLE_COUNT:
+            return TRUE;
+        }
+    case MENU_SOUND:
+        switch(selection)
+        {
+        case MENUITEM_SOUND_SOUNDMODE:
+        case MENUITEM_SOUND_CANCEL:
+        case MENUITEM_SOUND_COUNT:
             return TRUE;
         }
     }
@@ -299,63 +326,68 @@ static bool8 CheckConditions(int selection)
 // Descriptions
 static const u8 sText_Empty[]                   = _("");
 static const u8 sText_Desc_Save[]               = _("Save your settings.");
+
 static const u8 sText_Desc_InstantTextOn[]      = _("Instant text is enabled.");
 static const u8 sText_Desc_InstantTextOff[]     = _("Instant text is disabled.");
-static const u8 sText_Desc_BattleScene_On[]     = _("Show the POKéMON battle animations.");
-static const u8 sText_Desc_BattleScene_Off[]    = _("Skip the POKéMON battle animations.");
-static const u8 sText_Desc_BattleStyle_Shift[]  = _("Get the option to switch your\nPOKéMON after the enemies faints.");
-static const u8 sText_Desc_BattleStyle_Set[]    = _("No free switch after fainting the\nenemies POKéMON.");
-static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
-static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
 static const u8 sText_Desc_ButtonMode[]         = _("All buttons work as normal.");
 static const u8 sText_Desc_ButtonMode_LR[]      = _("On some screens the L and R buttons\nact as left and right.");
 static const u8 sText_Desc_ButtonMode_LA[]      = _("The L button acts as another A\nbutton for one-handed play.");
 static const u8 sText_Desc_FrameType[]          = _("Choose the frame surrounding the\nwindows.");
-static const u8 *const sOptionMenuItemDescriptionsMain[MENUITEM_MAIN_COUNT][3] =
+static const u8 sText_Desc_MatchCallOn[]        = _("TRAINERs will be able to call you,\noffering rematches and info.");
+static const u8 sText_Desc_MatchCallOff[]       = _("You will not receive calls.\nSpecial events will still occur.");
+
+static const u8 sText_Desc_BattleScene_On[]     = _("Show the POKéMON battle animations.");
+static const u8 sText_Desc_BattleScene_Off[]    = _("Skip the POKéMON battle animations.");
+static const u8 sText_Desc_BattleStyle_Shift[]  = _("Get the option to switch your\nPOKéMON after the enemies faints.");
+static const u8 sText_Desc_BattleStyle_Set[]    = _("No free switch after fainting the\nenemies POKéMON.");
+
+static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
+static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
+
+static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT][3] =
 {
-    [MENUITEM_MAIN_INSTANTTEXT] = {sText_Desc_InstantTextOn,        sText_Desc_InstantTextOff,  sText_Empty},
-    [MENUITEM_MAIN_BATTLESCENE] = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off, sText_Empty},
-    [MENUITEM_MAIN_BATTLESTYLE] = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set, sText_Empty},
-    [MENUITEM_MAIN_SOUND]       = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,     sText_Empty},
-    [MENUITEM_MAIN_BUTTONMODE]  = {sText_Desc_ButtonMode,           sText_Desc_ButtonMode_LR,   sText_Desc_ButtonMode_LA},
-    [MENUITEM_MAIN_FRAMETYPE]   = {sText_Desc_FrameType,            sText_Empty,                sText_Empty},
-    [MENUITEM_MAIN_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                sText_Empty},
+    [MENUITEM_GENERAL_INSTANTTEXT] = {sText_Desc_InstantTextOn,        sText_Desc_InstantTextOff,       sText_Empty},
+    [MENUITEM_GENERAL_BUTTONMODE]  = {sText_Desc_ButtonMode,           sText_Desc_ButtonMode_LR,        sText_Desc_ButtonMode_LA},
+    [MENUITEM_GENERAL_FRAMETYPE]   = {sText_Desc_FrameType,            sText_Empty,                     sText_Empty},
+    [MENUITEM_GENERAL_MATCHCALL]   = {sText_Desc_MatchCallOn,          sText_Desc_MatchCallOff,         sText_Empty},
+    [MENUITEM_GENERAL_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                     sText_Empty},
 };
 
-// Custom
-static const u8 sText_Desc_BattleHPBar[]        = _("Choose how fast the HP BAR will get\ndrained in battles.");
-static const u8 sText_Desc_BattleExpBar[]       = _("Choose how fast the EXP BAR will get\nfilled in battles.");
-static const u8 sText_Desc_SurfOff[]            = _("Disables the SURF theme when\nusing SURF.");
-static const u8 sText_Desc_SurfOn[]             = _("Enables the SURF theme\nwhen using SURF.");
-static const u8 sText_Desc_BikeOff[]            = _("Disables the BIKE theme when\nusing the BIKE.");
-static const u8 sText_Desc_BikeOn[]             = _("Enables the BIKE theme when\nusing the BIKE.");
-static const u8 sText_Desc_OverworldCallsOn[]   = _("TRAINERs will be able to call you,\noffering rematches and info.");
-static const u8 sText_Desc_OverworldCallsOff[]  = _("You will not receive calls.\nSpecial events will still occur.");
-static const u8 *const sOptionMenuItemDescriptionsCustom[MENUITEM_CUSTOM_COUNT][2] =
+static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][3] =
 {
-    [MENUITEM_CUSTOM_MATCHCALL]   = {sText_Desc_OverworldCallsOn,   sText_Desc_OverworldCallsOff},
-    [MENUITEM_CUSTOM_CANCEL]      = {sText_Desc_Save,               sText_Empty},
+    [MENUITEM_BATTLE_BATTLESCENE] = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off,       sText_Empty},
+    [MENUITEM_BATTLE_BATTLESTYLE] = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty},
+    [MENUITEM_BATTLE_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                      sText_Empty},
+};
+
+static const u8 *const sOptionMenuItemDescriptionsSound[MENUITEM_SOUND_COUNT][3] =
+{
+    [MENUITEM_SOUND_SOUNDMODE]       = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,            sText_Empty},
+    [MENUITEM_SOUND_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                       sText_Empty},
 };
 
 // Disabled Descriptions
 static const u8 sText_Desc_Disabled_Textspeed[]     = _("Only active if xyz.");
-static const u8 *const sOptionMenuItemDescriptionsDisabledMain[MENUITEM_MAIN_COUNT] =
+static const u8 *const sOptionMenuItemDescriptionsDisabledGeneral[MENUITEM_GENERAL_COUNT] =
 {
-    [MENUITEM_MAIN_INSTANTTEXT] = sText_Desc_Disabled_Textspeed,
-    [MENUITEM_MAIN_BATTLESCENE] = sText_Empty,
-    [MENUITEM_MAIN_BATTLESTYLE] = sText_Empty,
-    [MENUITEM_MAIN_SOUND]       = sText_Empty,
-    [MENUITEM_MAIN_BUTTONMODE]  = sText_Empty,
-    [MENUITEM_MAIN_FRAMETYPE]   = sText_Empty,
-    [MENUITEM_MAIN_CANCEL]      = sText_Empty,
+    [MENUITEM_GENERAL_INSTANTTEXT] = sText_Desc_Disabled_Textspeed,
+    [MENUITEM_GENERAL_BUTTONMODE]  = sText_Empty,
+    [MENUITEM_GENERAL_FRAMETYPE]   = sText_Empty,
+    [MENUITEM_GENERAL_MATCHCALL]   = sText_Empty,
+    [MENUITEM_GENERAL_CANCEL]      = sText_Empty,
 };
 
-// Disabled Custom
-static const u8 sText_Desc_Disabled_BattleHPBar[]   = _("Only active if xyz.");
-static const u8 *const sOptionMenuItemDescriptionsDisabledCustom[MENUITEM_CUSTOM_COUNT] =
+static const u8 *const sOptionMenuItemDescriptionsDisabledBattle[MENUITEM_BATTLE_COUNT] =
 {
-    [MENUITEM_CUSTOM_MATCHCALL]   = sText_Empty,
-    [MENUITEM_CUSTOM_CANCEL]      = sText_Empty,
+    [MENUITEM_BATTLE_BATTLESCENE] = sText_Empty,
+    [MENUITEM_BATTLE_BATTLESTYLE] = sText_Empty,
+    [MENUITEM_BATTLE_CANCEL]      = sText_Empty,
+};
+
+static const u8 *const sOptionMenuItemDescriptionsDisabledSound[MENUITEM_SOUND_COUNT] =
+{
+    [MENUITEM_SOUND_SOUNDMODE]       = sText_Empty,
+    [MENUITEM_SOUND_CANCEL]      = sText_Empty,
 };
 
 static const u8 *const OptionTextDescription(void)
@@ -365,21 +397,24 @@ static const u8 *const OptionTextDescription(void)
 
     switch (sOptions->submenu)
     {
-    case MENU_CUSTOM:
-        if (!CheckConditions(menuItem))
-            return sOptionMenuItemDescriptionsDisabledMain[menuItem];
-        selection = sOptions->sel_custom[menuItem];
-        return sOptionMenuItemDescriptionsCustom[menuItem][selection];
-    break;
+    case MENU_BATTLE:
+        if (menuItem >= MENUITEM_BATTLE_COUNT || !CheckConditions(menuItem))
+            return sOptionMenuItemDescriptionsDisabledBattle[menuItem];
+        selection = sOptions->sel_battle[menuItem];
+        return sOptionMenuItemDescriptionsBattle[menuItem][selection];
+    case MENU_SOUND:
+        if (menuItem >= MENUITEM_SOUND_COUNT || !CheckConditions(menuItem))
+            return sOptionMenuItemDescriptionsDisabledSound[menuItem];
+        selection = sOptions->sel_sound[menuItem];
+        return sOptionMenuItemDescriptionsSound[menuItem][selection];
     default:
-    case MENU_MAIN:
-        if (!CheckConditions(menuItem))
-            return sOptionMenuItemDescriptionsDisabledMain[menuItem];
-        selection = sOptions->sel[menuItem];
-        if (menuItem == MENUITEM_MAIN_FRAMETYPE)
+    case MENU_GENERAL:
+        if (menuItem >= MENUITEM_GENERAL_COUNT || !CheckConditions(menuItem))
+            return sOptionMenuItemDescriptionsDisabledGeneral[menuItem];
+        selection = sOptions->sel_general[menuItem];
+        if (menuItem == MENUITEM_GENERAL_FRAMETYPE)
             selection = 0;
-        return sOptionMenuItemDescriptionsMain[menuItem][selection];
-    break;
+        return sOptionMenuItemDescriptionsGeneral[menuItem][selection];
     }
 }
 
@@ -387,11 +422,13 @@ static u8 MenuItemCount(void)
 {
     switch (sOptions->submenu)
     {
-    case MENU_CUSTOM:
-        return MENUITEM_CUSTOM_COUNT;
+    case MENU_BATTLE:
+        return MENUITEM_BATTLE_COUNT;
+    case MENU_SOUND:
+        return MENUITEM_SOUND_COUNT;
     default:
-    case MENU_MAIN:
-        return MENUITEM_MAIN_COUNT;
+    case MENU_GENERAL:
+        return MENUITEM_GENERAL_COUNT;
     }
 }
 
@@ -399,11 +436,13 @@ static u8 MenuItemCancel(void)
 {
     switch (sOptions->submenu)
     {
-    case MENU_CUSTOM:   
-        return MENUITEM_CUSTOM_CANCEL;
+    case MENU_BATTLE:
+        return MENUITEM_BATTLE_CANCEL;
+    case MENU_SOUND:
+        return MENUITEM_SOUND_CANCEL;
     default:
-    case MENU_MAIN:
-        return MENUITEM_MAIN_CANCEL;
+    case MENU_GENERAL:
+        return MENUITEM_GENERAL_CANCEL;
     }
 }
 
@@ -425,10 +464,15 @@ static void VBlankCB(void)
     ChangeBgY(3, 96, BG_COORD_ADD);
 }
 
-static const u8 sText_TopBar_Main[]         = _("GENERAL");
-static const u8 sText_TopBar_Main_Right[]   = _("{R_BUTTON}CUSTOM");
-static const u8 sText_TopBar_Custom[]       = _("CUSTOM");
-static const u8 sText_TopBar_Custom_Left[]  = _("{L_BUTTON}GENERAL");
+static const u8 sText_TopBar_General[]         = _("GENERAL");
+static const u8 sText_TopBar_General_Right[]   = _("{R_BUTTON}BATTLE");
+static const u8 sText_TopBar_General_Left[]    = _("{L_BUTTON}SOUND");
+static const u8 sText_TopBar_Battle[]          = _("BATTLE");
+static const u8 sText_TopBar_Battle_Left[]     = _("{L_BUTTON}GENERAL");
+static const u8 sText_TopBar_Battle_Right[]    = _("{R_BUTTON}SOUND");
+static const u8 sText_TopBar_Sound[]           = _("SOUND");
+static const u8 sText_TopBar_Sound_Left[]      = _("{L_BUTTON}BATTLE");
+static const u8 sText_TopBar_Sound_Right[]     = _("{R_BUTTON}GENERAL");
 static void DrawTopBarText(void)
 {
     const u8 color[3] = { 0, TEXT_COLOR_WHITE, TEXT_COLOR_OPTIONS_GRAY_FG };
@@ -436,13 +480,20 @@ static void DrawTopBarText(void)
     FillWindowPixelBuffer(WIN_TOPBAR, PIXEL_FILL(0));
     switch (sOptions->submenu)
     {
-        case MENU_MAIN:
-            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 105, 1, color, 0, sText_TopBar_Main);
-            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 190, 1, color, 0, sText_TopBar_Main_Right);
+        case MENU_GENERAL:
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 105, 1, color, 0, sText_TopBar_General);
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 2, 1, color, 0, sText_TopBar_General_Left);  // Show L to go to SOUND
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 190, 1, color, 0, sText_TopBar_General_Right);
             break;
-        case MENU_CUSTOM:
-            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 105, 1, color, 0, sText_TopBar_Custom);
-            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 2, 1, color, 0, sText_TopBar_Custom_Left);
+        case MENU_BATTLE:
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 105, 1, color, 0, sText_TopBar_Battle);
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 2, 1, color, 0, sText_TopBar_Battle_Left);
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 190, 1, color, 0, sText_TopBar_Battle_Right);
+            break;
+        case MENU_SOUND:
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 105, 1, color, 0, sText_TopBar_Sound);
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 2, 1, color, 0, sText_TopBar_Sound_Left);
+            AddTextPrinterParameterized3(WIN_TOPBAR, FONT_SMALL, 190, 1, color, 0, sText_TopBar_Sound_Right);  // Show R to go to GENERAL
             break;
     }
     PutWindowTilemap(WIN_TOPBAR);
@@ -513,7 +564,6 @@ static void DrawRightSideChoiceText(const u8 *text, int x, int y, bool8 choosen,
         color_gray[2] = TEXT_COLOR_OPTIONS_GRAY_FG;
     }
 
-
     if (choosen)
         AddTextPrinterParameterized4(WIN_OPTIONS, FONT_NORMAL, x, y, 0, 0, color_red, TEXT_SKIP_DRAW, text);
     else
@@ -524,13 +574,17 @@ static void DrawChoices(u32 id, int y) //right side draw function
 {
     switch (sOptions->submenu)
     {
-        case MENU_MAIN:
-            if (sItemFunctionsMain[id].drawChoices != NULL)
-                sItemFunctionsMain[id].drawChoices(sOptions->sel[id], y);
+        case MENU_GENERAL:
+            if (sItemFunctionsGeneral[id].drawChoices != NULL)
+                sItemFunctionsGeneral[id].drawChoices(sOptions->sel_general[id], y);
             break;
-        case MENU_CUSTOM:
-            if (sItemFunctionsCustom[id].drawChoices != NULL)
-                sItemFunctionsCustom[id].drawChoices(sOptions->sel_custom[id], y);
+        case MENU_BATTLE:
+            if (sItemFunctionsBattle[id].drawChoices != NULL)
+                sItemFunctionsBattle[id].drawChoices(sOptions->sel_battle[id], y);
+            break;
+        case MENU_SOUND:
+            if (sItemFunctionsSound[id].drawChoices != NULL)
+                sItemFunctionsSound[id].drawChoices(sOptions->sel_sound[id], y);
             break;
     }
 }
@@ -655,16 +709,17 @@ void CB2_InitOptionPlusMenu(void)
         gMain.state++;
         break;
     case 6:
-        sOptions->sel[MENUITEM_MAIN_INSTANTTEXT]          = gSaveBlock2Ptr->optionsInstantTextOff;
-        sOptions->sel[MENUITEM_MAIN_BATTLESCENE]        = gSaveBlock2Ptr->optionsBattleSceneOff;
-        sOptions->sel[MENUITEM_MAIN_BATTLESTYLE]        = gSaveBlock2Ptr->optionsBattleStyle;
-        sOptions->sel[MENUITEM_MAIN_SOUND]              = gSaveBlock2Ptr->optionsSound;
-        sOptions->sel[MENUITEM_MAIN_BUTTONMODE]         = gSaveBlock2Ptr->optionsButtonMode;
-        sOptions->sel[MENUITEM_MAIN_FRAMETYPE]          = gSaveBlock2Ptr->optionsWindowFrameType;
+        sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT] = gSaveBlock2Ptr->optionsInstantTextOff;
+        sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE]  = gSaveBlock2Ptr->optionsButtonMode;
+        sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE]   = gSaveBlock2Ptr->optionsWindowFrameType;
+        sOptions->sel_general[MENUITEM_GENERAL_MATCHCALL]   = gSaveBlock2Ptr->optionsDisableMatchCall;
 
-        sOptions->sel_custom[MENUITEM_CUSTOM_MATCHCALL] = gSaveBlock2Ptr->optionsDisableMatchCall;
+        sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE]   = gSaveBlock2Ptr->optionsBattleSceneOff;
+        sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE]   = gSaveBlock2Ptr->optionsBattleStyle;
 
-        sOptions->submenu = MENU_MAIN;
+        sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE]       = gSaveBlock2Ptr->optionsSound;
+
+        sOptions->submenu = MENU_GENERAL;
 
         gMain.state++;
         break;
@@ -686,7 +741,7 @@ void CB2_InitOptionPlusMenu(void)
     case 10:
         u8 UNUSED taskId = CreateTask(Task_OptionMenuFadeIn, 0); // No idea, but sure, ig
         
-        sOptions->arrowTaskId = AddScrollIndicatorArrowPairParameterized(SCROLL_ARROW_UP, 240 / 2, 20, 110, MENUITEM_MAIN_COUNT - 1, 110, 110, 0);
+        sOptions->arrowTaskId = AddScrollIndicatorArrowPairParameterized(SCROLL_ARROW_UP, 240 / 2, 20, 110, MENUITEM_GENERAL_COUNT - 1, 110, 110, 0);
 
         for (i = 0; i < min(OPTIONS_ON_SCREEN, MenuItemCount()); i++)
             DrawChoices(i, i * Y_DIFF);
@@ -800,46 +855,69 @@ static void Task_OptionMenuProcessInput(u8 taskId)
     }
     else if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
     {
-        if (sOptions->submenu == MENU_MAIN)
+        switch (sOptions->submenu)
         {
-            int cursor = sOptions->menuCursor[sOptions->submenu];
-            u8 previousOption = sOptions->sel[cursor];
-            if (CheckConditions(cursor))
+            case MENU_GENERAL:
             {
-                if (sItemFunctionsMain[cursor].processInput != NULL)
+                int cursor = sOptions->menuCursor[sOptions->submenu];
+                u8 previousOption = sOptions->sel_general[cursor];
+                if (CheckConditions(cursor))
                 {
-                    sOptions->sel[cursor] = sItemFunctionsMain[cursor].processInput(previousOption);
-                    ReDrawAll();
-                    DrawDescriptionText();
-                }
+                    if (sItemFunctionsGeneral[cursor].processInput != NULL)
+                    {
+                        sOptions->sel_general[cursor] = sItemFunctionsGeneral[cursor].processInput(previousOption);
+                        ReDrawAll();
+                        DrawDescriptionText();
+                    }
 
-                if (previousOption != sOptions->sel[cursor])
-                    DrawChoices(cursor, sOptions->visibleCursor[sOptions->submenu] * Y_DIFF);
+                    if (previousOption != sOptions->sel_general[cursor])
+                        DrawChoices(cursor, sOptions->visibleCursor[sOptions->submenu] * Y_DIFF);
+                }
+                break;
             }
-        }
-        else if (sOptions->submenu == MENU_CUSTOM)
-        {
-            int cursor = sOptions->menuCursor[sOptions->submenu];
-            u8 previousOption = sOptions->sel_custom[cursor];
-            if (CheckConditions(cursor))
+            case MENU_BATTLE:
             {
-                if (sItemFunctionsCustom[cursor].processInput != NULL)
+                int cursor = sOptions->menuCursor[sOptions->submenu];
+                u8 previousOption = sOptions->sel_battle[cursor];
+                if (CheckConditions(cursor))
                 {
-                    sOptions->sel_custom[cursor] = sItemFunctionsCustom[cursor].processInput(previousOption);
-                    ReDrawAll();
-                    DrawDescriptionText();
-                }
+                    if (sItemFunctionsBattle[cursor].processInput != NULL)
+                    {
+                        sOptions->sel_battle[cursor] = sItemFunctionsBattle[cursor].processInput(previousOption);
+                        ReDrawAll();
+                        DrawDescriptionText();
+                    }
 
-                if (previousOption != sOptions->sel_custom[cursor])
-                    DrawChoices(cursor, sOptions->visibleCursor[sOptions->submenu] * Y_DIFF);
+                    if (previousOption != sOptions->sel_battle[cursor])
+                        DrawChoices(cursor, sOptions->visibleCursor[sOptions->submenu] * Y_DIFF);
+                }
+                break;
+            }
+            case MENU_SOUND:
+            {
+                int cursor = sOptions->menuCursor[sOptions->submenu];
+                u8 previousOption = sOptions->sel_sound[cursor];
+                if (CheckConditions(cursor))
+                {
+                    if (sItemFunctionsSound[cursor].processInput != NULL)
+                    {
+                        sOptions->sel_sound[cursor] = sItemFunctionsSound[cursor].processInput(previousOption);
+                        ReDrawAll();
+                        DrawDescriptionText();
+                    }
+
+                    if (previousOption != sOptions->sel_sound[cursor])
+                        DrawChoices(cursor, sOptions->visibleCursor[sOptions->submenu] * Y_DIFF);
+                }
+                break;
             }
         }
     }
     else if (JOY_NEW(R_BUTTON))
     {
-        if (sOptions->submenu != MENU_CUSTOM)
-            sOptions->submenu++;
-
+        // Circular navigation: GENERAL → BATTLE → SOUND → GENERAL
+        sOptions->submenu = (sOptions->submenu + 1) % MENU_COUNT;
+        
         DrawTopBarText();
         ReDrawAll();
         HighlightOptionMenuItem();
@@ -847,8 +925,8 @@ static void Task_OptionMenuProcessInput(u8 taskId)
     }
     else if (JOY_NEW(L_BUTTON))
     {
-        if (sOptions->submenu != 0)
-            sOptions->submenu--;
+        // Circular navigation: GENERAL ← BATTLE ← SOUND ← GENERAL
+        sOptions->submenu = (sOptions->submenu + MENU_COUNT - 1) % MENU_COUNT;
         
         DrawTopBarText();
         ReDrawAll();
@@ -859,14 +937,15 @@ static void Task_OptionMenuProcessInput(u8 taskId)
 
 static void Task_OptionMenuSave(u8 taskId)
 {
-    gSaveBlock2Ptr->optionsInstantTextOff        = sOptions->sel[MENUITEM_MAIN_INSTANTTEXT];
-    gSaveBlock2Ptr->optionsBattleSceneOff   = sOptions->sel[MENUITEM_MAIN_BATTLESCENE];
-    gSaveBlock2Ptr->optionsBattleStyle      = sOptions->sel[MENUITEM_MAIN_BATTLESTYLE];
-    gSaveBlock2Ptr->optionsSound            = sOptions->sel[MENUITEM_MAIN_SOUND];
-    gSaveBlock2Ptr->optionsButtonMode       = sOptions->sel[MENUITEM_MAIN_BUTTONMODE];
-    gSaveBlock2Ptr->optionsWindowFrameType  = sOptions->sel[MENUITEM_MAIN_FRAMETYPE];
+    gSaveBlock2Ptr->optionsInstantTextOff   = sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT];
+    gSaveBlock2Ptr->optionsButtonMode       = sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE];
+    gSaveBlock2Ptr->optionsWindowFrameType  = sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE];
+    gSaveBlock2Ptr->optionsDisableMatchCall = sOptions->sel_general[MENUITEM_GENERAL_MATCHCALL];
 
-    gSaveBlock2Ptr->optionsDisableMatchCall = sOptions->sel_custom[MENUITEM_CUSTOM_MATCHCALL];
+    gSaveBlock2Ptr->optionsBattleSceneOff   = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE];
+    gSaveBlock2Ptr->optionsBattleStyle      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE];
+
+    gSaveBlock2Ptr->optionsSound            = sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE];
 
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
     gTasks[taskId].func = Task_OptionMenuFadeOut;
@@ -1108,11 +1187,9 @@ static void ReDrawAll(void)
 }
 
 // Process Input functions ****SPECIFIC****
-static const u8 sText_Faster[] = _("FASTER");
-static const u8 sText_Instant[] = _("INSTANT");
 static void InstantText_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_MAIN_INSTANTTEXT);
+    bool8 active = CheckConditions(MENUITEM_GENERAL_INSTANTTEXT);
     u8 styles[2] = {0};
     styles[selection] = 1;
 
@@ -1122,7 +1199,7 @@ static void InstantText_DrawChoices(int selection, int y)
 
 static void BattleScene_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_MAIN_BATTLESCENE);
+    bool8 active = CheckConditions(MENUITEM_BATTLE_BATTLESCENE);
     u8 styles[2] = {0};
     styles[selection] = 1;
 
@@ -1132,7 +1209,7 @@ static void BattleScene_DrawChoices(int selection, int y)
 
 static void BattleStyle_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_MAIN_BATTLESTYLE);
+    bool8 active = CheckConditions(MENUITEM_BATTLE_BATTLESTYLE);
     u8 styles[2] = {0};
     styles[selection] = 1;
 
@@ -1140,9 +1217,9 @@ static void BattleStyle_DrawChoices(int selection, int y)
     DrawOptionMenuChoice(gText_BattleStyleSet, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleStyleSet, 198), y, styles[1], active);
 }
 
-static void Sound_DrawChoices(int selection, int y)
+static void SoundMode_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_MAIN_SOUND);
+    bool8 active = CheckConditions(MENUITEM_SOUND_SOUNDMODE);
     u8 styles[2] = {0};
     styles[selection] = 1;
 
@@ -1152,7 +1229,7 @@ static void Sound_DrawChoices(int selection, int y)
 
 static void ButtonMode_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_MAIN_BUTTONMODE);
+    bool8 active = CheckConditions(MENUITEM_GENERAL_BUTTONMODE);
     u8 styles[3] = {0};
     int xMid = GetMiddleX(gText_ButtonTypeNormal, gText_ButtonTypeLR, gText_ButtonTypeLEqualsA);
     styles[selection] = 1;
@@ -1164,7 +1241,7 @@ static void ButtonMode_DrawChoices(int selection, int y)
 
 static void FrameType_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_MAIN_FRAMETYPE);
+    bool8 active = CheckConditions(MENUITEM_GENERAL_FRAMETYPE);
     u8 text[16];
     u8 n = selection + 1;
     u16 i;
@@ -1194,16 +1271,15 @@ static void FrameType_DrawChoices(int selection, int y)
     DrawOptionMenuChoice(text, 128, y, 1, active);
 }
 
-static void DrawChoices_MatchCall(int selection, int y)
+static void MatchCall_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_CUSTOM_MATCHCALL);
+    bool8 active = CheckConditions(MENUITEM_GENERAL_MATCHCALL);
     u8 styles[2] = {0};
     styles[selection] = 1;
 
     DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
     DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[1], active);
 }
-
 
 // Background tilemap
 #define TILE_TOP_CORNER_L 0x1A2 // 418
