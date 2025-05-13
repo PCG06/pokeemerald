@@ -185,17 +185,17 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style, bool8 act
 static void UNUSED DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active);
 static void ReDrawAll(void);
 static void InstantText_DrawChoices(int selection, int y);
-static void BattleScene_DrawChoices(int selection, int y);
-static void BattleStyle_DrawChoices(int selection, int y);
-static void BagUse_DrawChoices(int selection, int y);
-static void BattleSpeed_DrawChoices(int selection, int y);
-static void DoubleBattle_DrawChoices(int selection, int y);
-static void MoveInfo_DrawChoices(int selection, int y);
-static void QuickRun_DrawChoices(int selection, int y);
-static void SoundMode_DrawChoices(int selection, int y);
 static void ButtonMode_DrawChoices(int selection, int y);
 static void FrameType_DrawChoices(int selection, int y);
 static void MatchCall_DrawChoices(int selection, int y);
+static void BattleScene_DrawChoices(int selection, int y);
+static void BattleStyle_DrawChoices(int selection, int y);
+static void BattleSpeed_DrawChoices(int selection, int y);
+static void BagUse_DrawChoices(int selection, int y);
+static void QuickRun_DrawChoices(int selection, int y);
+static void DoubleBattle_DrawChoices(int selection, int y);
+static void MoveInfo_DrawChoices(int selection, int y);
+static void SoundMode_DrawChoices(int selection, int y);
 static void DrawBgWindowFrames(void);
 
 // EWRAM vars
@@ -270,7 +270,7 @@ static const u8 *const sOptionMenuItemsNamesGeneral[MENUITEM_GENERAL_COUNT] =
     [MENUITEM_GENERAL_INSTANTTEXT]  = gText_InstantText,
     [MENUITEM_GENERAL_BUTTONMODE]   = gText_ButtonMode,
     [MENUITEM_GENERAL_FRAMETYPE]    = gText_Frame,
-    [MENUITEM_GENERAL_MATCHCALL]    = gText_OptionMatchCalls,
+    [MENUITEM_GENERAL_MATCHCALL]    = gText_MatchCalls,
     [MENUITEM_GENERAL_CANCEL]       = gText_OptionMenuSave,
 };
 
@@ -1255,6 +1255,60 @@ static void InstantText_DrawChoices(int selection, int y)
     DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
 }
 
+static void ButtonMode_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_GENERAL_BUTTONMODE);
+    u8 styles[3] = {0};
+    int xMid = GetMiddleX(gText_ButtonTypeNormal, gText_ButtonTypeLR, gText_ButtonTypeLEqualsA);
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_ButtonTypeNormal, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_ButtonTypeLR, xMid, y, styles[1], active);
+    DrawOptionMenuChoice(gText_ButtonTypeLEqualsA, GetStringRightAlignXOffset(1, gText_ButtonTypeLEqualsA, 198), y, styles[2], active);
+}
+
+static void FrameType_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_GENERAL_FRAMETYPE);
+    u8 text[16];
+    u8 n = selection + 1;
+    u16 i;
+
+    for (i = 0; gText_FrameTypeNumber[i] != EOS && i <= 5; i++)
+        text[i] = gText_FrameTypeNumber[i];
+
+    // Convert a number to decimal string
+    if (n / 10 != 0)
+    {
+        text[i] = n / 10 + CHAR_0;
+        i++;
+        text[i] = n % 10 + CHAR_0;
+        i++;
+    }
+    else
+    {
+        text[i] = n % 10 + CHAR_0;
+        i++;
+        text[i] = 0x77;
+        i++;
+    }
+
+    text[i] = EOS;
+
+    DrawOptionMenuChoice(gText_FrameType, 104, y, 0, active);
+    DrawOptionMenuChoice(text, 128, y, 1, active);
+}
+
+static void MatchCall_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_GENERAL_MATCHCALL);
+    u8 styles[2] = {0};
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[1], active);
+}
+
 static void BattleScene_DrawChoices(int selection, int y)
 {
     bool8 active = CheckConditions(MENUITEM_BATTLE_BATTLESCENE);
@@ -1307,6 +1361,18 @@ static void BagUse_DrawChoices(int selection, int y)
     DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
 }
 
+static void QuickRun_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_BATTLE_QUICKRUN);
+    u8 styles[3] = {0};
+    int xMid = GetMiddleX(gText_QuickRunOptionR, gText_QuickRunOptionBA, gText_BattleSceneOff);
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_QuickRunOptionR, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_QuickRunOptionBA, xMid, y, styles[1], active);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[2], active);
+}
+
 static void DoubleBattle_DrawChoices(int selection, int y)
 {
     bool8 active = CheckConditions(MENUITEM_BATTLE_DOUBLEBATTLE);
@@ -1335,72 +1401,6 @@ static void SoundMode_DrawChoices(int selection, int y)
 
     DrawOptionMenuChoice(gText_SoundMono, 104, y, styles[0], active);
     DrawOptionMenuChoice(gText_SoundStereo, GetStringRightAlignXOffset(FONT_NORMAL, gText_SoundStereo, 198), y, styles[1], active);
-}
-
-static void ButtonMode_DrawChoices(int selection, int y)
-{
-    bool8 active = CheckConditions(MENUITEM_GENERAL_BUTTONMODE);
-    u8 styles[3] = {0};
-    int xMid = GetMiddleX(gText_ButtonTypeNormal, gText_ButtonTypeLR, gText_ButtonTypeLEqualsA);
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_ButtonTypeNormal, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_ButtonTypeLR, xMid, y, styles[1], active);
-    DrawOptionMenuChoice(gText_ButtonTypeLEqualsA, GetStringRightAlignXOffset(1, gText_ButtonTypeLEqualsA, 198), y, styles[2], active);
-}
-
-static void QuickRun_DrawChoices(int selection, int y)
-{
-    bool8 active = CheckConditions(MENUITEM_BATTLE_QUICKRUN);
-    u8 styles[3] = {0};
-    int xMid = GetMiddleX(gText_QuickRunOptionR, gText_QuickRunOptionBA, gText_BattleSceneOff);
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_QuickRunOptionR, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_QuickRunOptionBA, xMid, y, styles[1], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[2], active);
-}
-
-static void FrameType_DrawChoices(int selection, int y)
-{
-    bool8 active = CheckConditions(MENUITEM_GENERAL_FRAMETYPE);
-    u8 text[16];
-    u8 n = selection + 1;
-    u16 i;
-
-    for (i = 0; gText_FrameTypeNumber[i] != EOS && i <= 5; i++)
-        text[i] = gText_FrameTypeNumber[i];
-
-    // Convert a number to decimal string
-    if (n / 10 != 0)
-    {
-        text[i] = n / 10 + CHAR_0;
-        i++;
-        text[i] = n % 10 + CHAR_0;
-        i++;
-    }
-    else
-    {
-        text[i] = n % 10 + CHAR_0;
-        i++;
-        text[i] = 0x77;
-        i++;
-    }
-
-    text[i] = EOS;
-
-    DrawOptionMenuChoice(gText_FrameType, 104, y, 0, active);
-    DrawOptionMenuChoice(text, 128, y, 1, active);
-}
-
-static void MatchCall_DrawChoices(int selection, int y)
-{
-    bool8 active = CheckConditions(MENUITEM_GENERAL_MATCHCALL);
-    u8 styles[2] = {0};
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[1], active);
 }
 
 // Background tilemap
