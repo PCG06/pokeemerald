@@ -44,6 +44,7 @@ enum
 {
     MENUITEM_BATTLE_BATTLESCENE,
     MENUITEM_BATTLE_BATTLESTYLE,
+    MENUITEM_BATTLE_BATTLESPEED,
     MENUITEM_BATTLE_BAGUSE,
     MENUITEM_BATTLE_QUICKRUN,
     MENUITEM_BATTLE_DOUBLEBATTLE,
@@ -171,7 +172,7 @@ static int GetMiddleX(const u8 *txt1, const u8 *txt2, const u8 *txt3);
 static int XOptions_ProcessInput(int x, int selection);
 static int TwoOptions_ProcessInput(int selection);
 static int ThreeOptions_ProcessInput(int selection);
-static int UNUSED FourOptions_ProcessInput(int selection);
+static int FourOptions_ProcessInput(int selection);
 static int UNUSED ElevenOptions_ProcessInput(int selection);
 static int Sound_ProcessInput(int selection);
 static int FrameType_ProcessInput(int selection);
@@ -187,6 +188,7 @@ static void InstantText_DrawChoices(int selection, int y);
 static void BattleScene_DrawChoices(int selection, int y);
 static void BattleStyle_DrawChoices(int selection, int y);
 static void BagUse_DrawChoices(int selection, int y);
+static void BattleSpeed_DrawChoices(int selection, int y);
 static void DoubleBattle_DrawChoices(int selection, int y);
 static void MoveInfo_DrawChoices(int selection, int y);
 static void QuickRun_DrawChoices(int selection, int y);
@@ -249,6 +251,7 @@ static const MenuItemFunctions sItemFunctionsBattle[MENUITEM_BATTLE_COUNT] =
 {
     [MENUITEM_BATTLE_BATTLESCENE]  = {BattleScene_DrawChoices, TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_BATTLESTYLE]  = {BattleStyle_DrawChoices, TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_BATTLESPEED]  = {BattleSpeed_DrawChoices, FourOptions_ProcessInput},
     [MENUITEM_BATTLE_BAGUSE]       = {BagUse_DrawChoices,      TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_QUICKRUN]     = {QuickRun_DrawChoices,    ThreeOptions_ProcessInput},
     [MENUITEM_BATTLE_DOUBLEBATTLE] = {DoubleBattle_DrawChoices, TwoOptions_ProcessInput},
@@ -275,6 +278,7 @@ static const u8 *const sOptionMenuItemsNamesBattle[MENUITEM_BATTLE_COUNT] =
 {
     [MENUITEM_BATTLE_BATTLESCENE]   = gText_BattleScene,
     [MENUITEM_BATTLE_BATTLESTYLE]   = gText_BattleStyle,
+    [MENUITEM_BATTLE_BATTLESPEED]   = gText_BattleSpeed,
     [MENUITEM_BATTLE_BAGUSE]        = gText_BagUse,
     [MENUITEM_BATTLE_QUICKRUN]      = gText_QuickRun,
     [MENUITEM_BATTLE_DOUBLEBATTLE]  = gText_DoubleBattles,
@@ -323,6 +327,7 @@ static bool8 CheckConditions(int selection)
         {
         case MENUITEM_BATTLE_BATTLESCENE:
         case MENUITEM_BATTLE_BATTLESTYLE:
+        case MENUITEM_BATTLE_BATTLESPEED:
         case MENUITEM_BATTLE_BAGUSE:
         case MENUITEM_BATTLE_QUICKRUN:
         case MENUITEM_BATTLE_DOUBLEBATTLE:
@@ -369,6 +374,10 @@ static const u8 sText_Desc_DoubleBattles_On[]   = _("All Trainer battles will be
 static const u8 sText_Desc_DoubleBattles_Off[]  = _("All Trainer battles will be single\nbattles, unless forced.");
 static const u8 sText_Desc_MoveInfo_On[]        = _("Shows a window with information of\nmoves.");
 static const u8 sText_Desc_MoveInfo_Off[]       = _("Disables move information window.");
+static const u8 sText_Desc_BattleSpeed_1x[]     = _("Battle animations will play at default\nspeed.");
+static const u8 sText_Desc_BattleSpeed_2x[]     = _("Battle animations will play in 2x\n speed.");
+static const u8 sText_Desc_BattleSpeed_3x[]     = _("Battle animations will play in 3x\n speed.");
+static const u8 sText_Desc_BattleSpeed_4x[]     = _("Battle animations will play in 4x\n speed.");
 
 static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
 static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
@@ -382,15 +391,16 @@ static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT
     [MENUITEM_GENERAL_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                     sText_Empty},
 };
 
-static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][3] =
+static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][4] =
 {
-    [MENUITEM_BATTLE_BATTLESCENE] = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off,       sText_Empty},
-    [MENUITEM_BATTLE_BATTLESTYLE] = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty},
-    [MENUITEM_BATTLE_BAGUSE]      = {sText_Desc_BagUse_On,            sText_Desc_BagUse_Off,            sText_Empty},
-    [MENUITEM_BATTLE_QUICKRUN]    = {sText_Desc_QuickRunOptionR,      sText_Desc_QuickRunOptionBA,      sText_Desc_QuickRunOptionOff},
-    [MENUITEM_BATTLE_DOUBLEBATTLE] = {sText_Desc_DoubleBattles_On,    sText_Desc_DoubleBattles_Off,     sText_Empty},
-    [MENUITEM_BATTLE_MOVEINFO]    = {sText_Desc_MoveInfo_On,          sText_Desc_MoveInfo_Off,          sText_Empty},
-    [MENUITEM_BATTLE_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                      sText_Empty},
+    [MENUITEM_BATTLE_BATTLESCENE] = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off,       sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_BATTLESTYLE] = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_BATTLESPEED] = {sText_Desc_BattleSpeed_1x,       sText_Desc_BattleSpeed_2x,        sText_Desc_BattleSpeed_3x,      sText_Desc_BattleSpeed_4x},
+    [MENUITEM_BATTLE_BAGUSE]      = {sText_Desc_BagUse_On,            sText_Desc_BagUse_Off,            sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_QUICKRUN]    = {sText_Desc_QuickRunOptionR,      sText_Desc_QuickRunOptionBA,      sText_Desc_QuickRunOptionOff,   sText_Empty},
+    [MENUITEM_BATTLE_DOUBLEBATTLE] = {sText_Desc_DoubleBattles_On,    sText_Desc_DoubleBattles_Off,     sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_MOVEINFO]    = {sText_Desc_MoveInfo_On,          sText_Desc_MoveInfo_Off,          sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                      sText_Empty,                    sText_Empty},
 };
 
 static const u8 *const sOptionMenuItemDescriptionsSound[MENUITEM_SOUND_COUNT][3] =
@@ -414,6 +424,7 @@ static const u8 *const sOptionMenuItemDescriptionsDisabledBattle[MENUITEM_BATTLE
 {
     [MENUITEM_BATTLE_BATTLESCENE] = sText_Empty,
     [MENUITEM_BATTLE_BATTLESTYLE] = sText_Empty,
+    [MENUITEM_BATTLE_BATTLESPEED] = sText_Empty,
     [MENUITEM_BATTLE_BAGUSE]      = sText_Empty,
     [MENUITEM_BATTLE_QUICKRUN]    = sText_Empty,
     [MENUITEM_BATTLE_DOUBLEBATTLE]  = sText_Empty,
@@ -753,6 +764,7 @@ void CB2_InitOptionPlusMenu(void)
 
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE]   = gSaveBlock2Ptr->optionsBattleSceneOff;
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE]   = gSaveBlock2Ptr->optionsBattleStyle;
+        sOptions->sel_battle[MENUITEM_BATTLE_BATTLESPEED]   = gSaveBlock2Ptr->optionsBattleSpeed;
         sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE]        = gSaveBlock2Ptr->optionsDisableBagUse;
         sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN]      = gSaveBlock2Ptr->optionsQuickRunButton;
         sOptions->sel_battle[MENUITEM_BATTLE_DOUBLEBATTLE]  = gSaveBlock2Ptr->optionsDoubleBattlesOff;
@@ -985,6 +997,7 @@ static void Task_OptionMenuSave(u8 taskId)
 
     gSaveBlock2Ptr->optionsBattleSceneOff   = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE];
     gSaveBlock2Ptr->optionsBattleStyle      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE];
+    gSaveBlock2Ptr->optionsBattleSpeed      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESPEED];
     gSaveBlock2Ptr->optionsDisableBagUse    = sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE];
     gSaveBlock2Ptr->optionsQuickRunButton   = sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN];
     gSaveBlock2Ptr->optionsDoubleBattlesOff = sOptions->sel_battle[MENUITEM_BATTLE_DOUBLEBATTLE];
@@ -1123,7 +1136,7 @@ static int ThreeOptions_ProcessInput(int selection)
     return XOptions_ProcessInput(3, selection);
 }
 
-static int UNUSED FourOptions_ProcessInput(int selection)
+static int FourOptions_ProcessInput(int selection)
 {
     return XOptions_ProcessInput(4, selection);
 }
@@ -1260,6 +1273,28 @@ static void BattleStyle_DrawChoices(int selection, int y)
 
     DrawOptionMenuChoice(gText_BattleStyleShift, 104, y, styles[0], active);
     DrawOptionMenuChoice(gText_BattleStyleSet, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleStyleSet, 198), y, styles[1], active);
+}
+
+static void BattleSpeed_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_BATTLE_BATTLESPEED);
+    u8 styles[4] = {0};
+    s32 width1x, width2x, width3x, width4x, xMid, gap;
+
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSpeed1x, 104, y, styles[0], active);
+
+    width1x = GetStringWidth(1, gText_BattleSpeed1x, 0);
+    width2x = GetStringWidth(1, gText_BattleSpeed2x, 0);
+    width3x = GetStringWidth(1, gText_BattleSpeed3x, 0);
+    width4x = GetStringWidth(1, gText_BattleSpeed4x, 0);
+    gap = ((198 - 104 - width1x - width2x - width3x - width4x) / 3) + 1;
+
+    xMid = 104 + width1x + gap;
+    DrawOptionMenuChoice(gText_BattleSpeed2x, xMid, y, styles[1], active);
+    DrawOptionMenuChoice(gText_BattleSpeed3x, xMid + width2x + gap, y, styles[2], active);
+    DrawOptionMenuChoice(gText_BattleSpeed4x, 198 - width4x, y, styles[3], active);
 }
 
 static void BagUse_DrawChoices(int selection, int y)

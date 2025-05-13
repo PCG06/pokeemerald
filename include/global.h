@@ -550,6 +550,7 @@ struct SaveBlock2
              u16 optionsQuickRunButton:2; // OPTIONS_QUICK_RUN[R_BUTTON/B_BUTTON/OFF]
              u16 optionsDoubleBattlesOff:1; // whether all trainer battles should be doubles
              u16 optionsShowBattleMoveInfoOff:1; // whetheer to show battle move info
+             u16 optionsBattleSpeed:4; // OPTIONS_BATTLE_SPEED_[1X/2X/3X/4X]
              //u16 padding1:4;
              //u16 padding2;
     /*0x18*/ struct Pokedex pokedex;
