@@ -276,6 +276,8 @@ extern const u8 gText_MoveInfo[];
 extern const u8 gText_Sound[];
 extern const u8 gText_SoundMono[];
 extern const u8 gText_SoundStereo[];
+extern const u8 gText_BikeMusic[];
+extern const u8 gText_SurfMusic[];
 extern const u8 gText_Option[];
 extern const u8 gText_OptionMenuSave[];
 extern const u8 gText_OptionMenuCancel[];

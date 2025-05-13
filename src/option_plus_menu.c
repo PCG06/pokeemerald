@@ -57,6 +57,8 @@ enum
 enum
 {
     MENUITEM_SOUND_SOUNDMODE,
+    MENUITEM_SOUND_BIKEMUSIC,
+    MENUITEM_SOUND_SURFMUSIC,
     MENUITEM_SOUND_CANCEL,
     MENUITEM_SOUND_COUNT,
 };
@@ -196,6 +198,8 @@ static void QuickRun_DrawChoices(int selection, int y);
 static void DoubleBattle_DrawChoices(int selection, int y);
 static void MoveInfo_DrawChoices(int selection, int y);
 static void SoundMode_DrawChoices(int selection, int y);
+static void BikeMusic_DrawChoices(int selection, int y);
+static void SurfMusic_DrawChoices(int selection, int y);
 static void DrawBgWindowFrames(void);
 
 // EWRAM vars
@@ -249,19 +253,21 @@ static const MenuItemFunctions sItemFunctionsGeneral[MENUITEM_GENERAL_COUNT] =
 
 static const MenuItemFunctions sItemFunctionsBattle[MENUITEM_BATTLE_COUNT] =
 {
-    [MENUITEM_BATTLE_BATTLESCENE]  = {BattleScene_DrawChoices, TwoOptions_ProcessInput},
-    [MENUITEM_BATTLE_BATTLESTYLE]  = {BattleStyle_DrawChoices, TwoOptions_ProcessInput},
-    [MENUITEM_BATTLE_BATTLESPEED]  = {BattleSpeed_DrawChoices, FourOptions_ProcessInput},
-    [MENUITEM_BATTLE_BAGUSE]       = {BagUse_DrawChoices,      TwoOptions_ProcessInput},
-    [MENUITEM_BATTLE_QUICKRUN]     = {QuickRun_DrawChoices,    ThreeOptions_ProcessInput},
-    [MENUITEM_BATTLE_DOUBLEBATTLE] = {DoubleBattle_DrawChoices, TwoOptions_ProcessInput},
-    [MENUITEM_BATTLE_MOVEINFO]     = {MoveInfo_DrawChoices,    TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_BATTLESCENE]  = {BattleScene_DrawChoices,    TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_BATTLESTYLE]  = {BattleStyle_DrawChoices,    TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_BATTLESPEED]  = {BattleSpeed_DrawChoices,    FourOptions_ProcessInput},
+    [MENUITEM_BATTLE_BAGUSE]       = {BagUse_DrawChoices,         TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_QUICKRUN]     = {QuickRun_DrawChoices,       ThreeOptions_ProcessInput},
+    [MENUITEM_BATTLE_DOUBLEBATTLE] = {DoubleBattle_DrawChoices,   TwoOptions_ProcessInput},
+    [MENUITEM_BATTLE_MOVEINFO]     = {MoveInfo_DrawChoices,       TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_CANCEL]       = {NULL, NULL},
 };
 
 static const MenuItemFunctions sItemFunctionsSound[MENUITEM_SOUND_COUNT] =
 {
     [MENUITEM_SOUND_SOUNDMODE]    = {SoundMode_DrawChoices,       Sound_ProcessInput},
+    [MENUITEM_SOUND_BIKEMUSIC]    = {BikeMusic_DrawChoices,       TwoOptions_ProcessInput},
+    [MENUITEM_SOUND_SURFMUSIC]    = {SurfMusic_DrawChoices,       TwoOptions_ProcessInput},
     [MENUITEM_SOUND_CANCEL]       = {NULL, NULL},
 };
 
@@ -289,6 +295,8 @@ static const u8 *const sOptionMenuItemsNamesBattle[MENUITEM_BATTLE_COUNT] =
 static const u8 *const sOptionMenuItemsNamesSound[MENUITEM_SOUND_COUNT] =
 {
     [MENUITEM_SOUND_SOUNDMODE]  = gText_Sound,
+    [MENUITEM_SOUND_BIKEMUSIC]  = gText_BikeMusic,
+    [MENUITEM_SOUND_SURFMUSIC]  = gText_SurfMusic,
     [MENUITEM_SOUND_CANCEL]     = gText_OptionMenuSave,
 };
 
@@ -340,6 +348,8 @@ static bool8 CheckConditions(int selection)
         switch(selection)
         {
         case MENUITEM_SOUND_SOUNDMODE:
+        case MENUITEM_SOUND_BIKEMUSIC:
+        case MENUITEM_SOUND_SURFMUSIC:
         case MENUITEM_SOUND_CANCEL:
         case MENUITEM_SOUND_COUNT:
             return TRUE;
@@ -381,6 +391,10 @@ static const u8 sText_Desc_BattleSpeed_4x[]     = _("Battle animations will play
 
 static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
 static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
+static const u8 sText_Desc_BikeMusicOn[]        = _("Bike theme music will play\nwhile cycling.");
+static const u8 sText_Desc_BikeMusicOff[]       = _("Normal route music continues\nwhile cycling.");
+static const u8 sText_Desc_SurfMusicOn[]        = _("Surf theme music will play\nwhile on water.");
+static const u8 sText_Desc_SurfMusicOff[]       = _("Normal water route music continues\nwhile surfing.");
 
 static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT][3] =
 {
@@ -393,20 +407,22 @@ static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT
 
 static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][4] =
 {
-    [MENUITEM_BATTLE_BATTLESCENE] = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off,       sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_BATTLESTYLE] = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_BATTLESPEED] = {sText_Desc_BattleSpeed_1x,       sText_Desc_BattleSpeed_2x,        sText_Desc_BattleSpeed_3x,      sText_Desc_BattleSpeed_4x},
-    [MENUITEM_BATTLE_BAGUSE]      = {sText_Desc_BagUse_On,            sText_Desc_BagUse_Off,            sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_QUICKRUN]    = {sText_Desc_QuickRunOptionR,      sText_Desc_QuickRunOptionBA,      sText_Desc_QuickRunOptionOff,   sText_Empty},
+    [MENUITEM_BATTLE_BATTLESCENE]  = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off,       sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_BATTLESTYLE]  = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_BATTLESPEED]  = {sText_Desc_BattleSpeed_1x,       sText_Desc_BattleSpeed_2x,        sText_Desc_BattleSpeed_3x,      sText_Desc_BattleSpeed_4x},
+    [MENUITEM_BATTLE_BAGUSE]       = {sText_Desc_BagUse_On,            sText_Desc_BagUse_Off,            sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_QUICKRUN]     = {sText_Desc_QuickRunOptionR,      sText_Desc_QuickRunOptionBA,      sText_Desc_QuickRunOptionOff,   sText_Empty},
     [MENUITEM_BATTLE_DOUBLEBATTLE] = {sText_Desc_DoubleBattles_On,    sText_Desc_DoubleBattles_Off,     sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_MOVEINFO]    = {sText_Desc_MoveInfo_On,          sText_Desc_MoveInfo_Off,          sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                      sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_MOVEINFO]     = {sText_Desc_MoveInfo_On,          sText_Desc_MoveInfo_Off,          sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_CANCEL]       = {sText_Desc_Save,                 sText_Empty,                      sText_Empty,                    sText_Empty},
 };
 
 static const u8 *const sOptionMenuItemDescriptionsSound[MENUITEM_SOUND_COUNT][3] =
 {
-    [MENUITEM_SOUND_SOUNDMODE]       = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,            sText_Empty},
-    [MENUITEM_SOUND_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                       sText_Empty},
+    [MENUITEM_SOUND_SOUNDMODE]     = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,            sText_Empty},
+    [MENUITEM_SOUND_BIKEMUSIC]     = {sText_Desc_BikeMusicOn,          sText_Desc_BikeMusicOff,           sText_Empty},
+    [MENUITEM_SOUND_SURFMUSIC]     = {sText_Desc_SurfMusicOn,          sText_Desc_SurfMusicOff,           sText_Empty},
+    [MENUITEM_SOUND_CANCEL]        = {sText_Desc_Save,                 sText_Empty,                       sText_Empty},
 };
 
 // Disabled Descriptions
@@ -434,7 +450,9 @@ static const u8 *const sOptionMenuItemDescriptionsDisabledBattle[MENUITEM_BATTLE
 
 static const u8 *const sOptionMenuItemDescriptionsDisabledSound[MENUITEM_SOUND_COUNT] =
 {
-    [MENUITEM_SOUND_SOUNDMODE]       = sText_Empty,
+    [MENUITEM_SOUND_SOUNDMODE]   = sText_Empty,
+    [MENUITEM_SOUND_BIKEMUSIC]   = sText_Empty,
+    [MENUITEM_SOUND_SURFMUSIC]   = sText_Empty,
     [MENUITEM_SOUND_CANCEL]      = sText_Empty,
 };
 
@@ -771,6 +789,8 @@ void CB2_InitOptionPlusMenu(void)
         sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO]      = gSaveBlock2Ptr->optionsShowBattleMoveInfoOff;
 
         sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE]       = gSaveBlock2Ptr->optionsSound;
+        sOptions->sel_sound[MENUITEM_SOUND_BIKEMUSIC]       = gSaveBlock2Ptr->optionsBikeMusicOff;
+        sOptions->sel_sound[MENUITEM_SOUND_SURFMUSIC]       = gSaveBlock2Ptr->optionsSurfMusicOff;
 
         sOptions->submenu = MENU_GENERAL;
 
@@ -1004,6 +1024,8 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsShowBattleMoveInfoOff = sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO];
 
     gSaveBlock2Ptr->optionsSound            = sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE];
+    gSaveBlock2Ptr->optionsBikeMusicOff     = sOptions->sel_sound[MENUITEM_SOUND_BIKEMUSIC];
+    gSaveBlock2Ptr->optionsSurfMusicOff     = sOptions->sel_sound[MENUITEM_SOUND_SURFMUSIC];
 
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
     gTasks[taskId].func = Task_OptionMenuFadeOut;
@@ -1401,6 +1423,26 @@ static void SoundMode_DrawChoices(int selection, int y)
 
     DrawOptionMenuChoice(gText_SoundMono, 104, y, styles[0], active);
     DrawOptionMenuChoice(gText_SoundStereo, GetStringRightAlignXOffset(FONT_NORMAL, gText_SoundStereo, 198), y, styles[1], active);
+}
+
+static void BikeMusic_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_SOUND_BIKEMUSIC);
+    u8 styles[2] = {0};
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+}
+
+static void SurfMusic_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_SOUND_SURFMUSIC);
+    u8 styles[2] = {0};
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
 }
 
 // Background tilemap

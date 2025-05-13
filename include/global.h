@@ -549,6 +549,8 @@ struct SaveBlock2
              u16 optionsDoubleBattlesOff:1; // whether all trainer battles should be doubles
              u16 optionsShowBattleMoveInfoOff:1; // whether to show battle move info
              u16 optionsSound:1; // OPTIONS_SOUND_[MONO/STEREO]
+             u16 optionsBikeMusicOff:1; // whether cycling music is disabled
+             u16 optionsSurfMusicOff:1; // whether surfing music is disabled
              u16 regionMapZoom:1; // whether the map is zoomed in
              //u16 padding1:4;
              //u16 padding2;
