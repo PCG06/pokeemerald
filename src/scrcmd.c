@@ -3154,12 +3154,37 @@ void Script_EndTrainerCanSeeIf(struct ScriptContext *ctx)
 bool8 ScrCmd_bufferdayofweekstring(struct ScriptContext *ctx)
 {
     u8 stringVarIndex = ScriptReadByte(ctx);
-    u8 dayOfWeek = ScriptReadByte(ctx);
+    u16 dayOfWeek = VarGet(ScriptReadHalfword(ctx));
     if (dayOfWeek <= DAY_SATURDAY)
-        StringCopy(sScriptStringVars[stringVarIndex], gDayNameStringsTable[dayOfWeek]);
+        StringCopy(sScriptStringVars[stringVarIndex], gDayOfWeekNameStringsTable[dayOfWeek]);
     else if (dayOfWeek == DAYS_COUNT)
-        StringCopy(sScriptStringVars[stringVarIndex], gDayNameStringsTable[gLocalTime.dayOfWeek]);
+        StringCopy(sScriptStringVars[stringVarIndex], gDayOfWeekNameStringsTable[gLocalTime.dayOfWeek]);
     else
         StringCopy(gStringVar3, gText_None);
+    return FALSE;
+}
+
+bool8 ScrCmd_buffermonthstring(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    u16 month = VarGet(ScriptReadHalfword(ctx));
+    if (month == 0)
+        StringCopy(sScriptStringVars[stringVarIndex], gMonthNameStringsTable[gLocalTime.month]);
+    else if (month <= MONTH_DEC)
+        StringCopy(sScriptStringVars[stringVarIndex], gMonthNameStringsTable[month]);
+    else
+        StringCopy(gStringVar3, gText_None);
+    return FALSE;
+}
+
+bool8 ScrCmd_getcurrentdayofweek(struct ScriptContext *ctx)
+{
+    gSpecialVar_Result = gLocalTime.dayOfWeek;
+    return FALSE;
+}
+
+bool8 ScrCmd_getcurrentmonth(struct ScriptContext *ctx)
+{
+    gSpecialVar_Result = gLocalTime.month;
     return FALSE;
 }

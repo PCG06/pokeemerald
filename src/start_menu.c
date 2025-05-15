@@ -1562,7 +1562,7 @@ static void ShowCurrentTimeWindow(void)
 
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 1, 0xFF, NULL);
 
-    StringCopy(gStringVar4, gDayNameStringsTable[gLocalTime.dayOfWeek]);    
+    StringCopy(gStringVar4, gDayOfWeekNameStringsTable[gLocalTime.dayOfWeek]);    
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 16, 0xFF, NULL);
     StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
     ConvertIntToDecimalStringN(gStringVar2, GetDate(), STR_CONV_MODE_RIGHT_ALIGN, 2);
@@ -1618,7 +1618,7 @@ void UpdateClockDisplay(void)
 
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 1, 0xFF, NULL);
 
-    StringCopy(gStringVar4, gDayNameStringsTable[gLocalTime.dayOfWeek]);    
+    StringCopy(gStringVar4, gDayOfWeekNameStringsTable[gLocalTime.dayOfWeek]);    
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 16, 0xFF, NULL);
     StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
     ConvertIntToDecimalStringN(gStringVar2, GetDate(), STR_CONV_MODE_RIGHT_ALIGN, 2);

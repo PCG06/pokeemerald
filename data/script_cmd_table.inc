@@ -143,7 +143,7 @@ gScriptCmdTable::
 	script_cmd_table_entry SCR_OP_HIDEMONPIC                    ScrCmd_hidemonpic,                  requests_effects=1  @ 0x76
 	script_cmd_table_entry SCR_OP_SHOWCONTESTPAINTING           ScrCmd_showcontestpainting,         requests_effects=1  @ 0x77
 	script_cmd_table_entry SCR_OP_BRAILLEMESSAGE                ScrCmd_braillemessage,              requests_effects=1  @ 0x78
-	script_cmd_table_entry SCR_OP_BUFFERDAYOFWEEKSTRING         ScrCmd_bufferdayofweekstring        requests_effects=1  @ 0x79
+	script_cmd_table_entry SCR_OP_GIVEMON                       ScrCmd_nop1,                        requests_effects=1  @ 0x79
 	script_cmd_table_entry SCR_OP_GIVEEGG                       ScrCmd_giveegg,                     requests_effects=1  @ 0x7a
 	script_cmd_table_entry SCR_OP_SETMONMOVE                    ScrCmd_setmonmove,                  requests_effects=1  @ 0x7b
 	script_cmd_table_entry SCR_OP_CHECKPARTYMOVE                ScrCmd_checkpartymove,              requests_effects=1  @ 0x7c

@@ -1297,7 +1297,7 @@ const u8 gText_Relearn[] = _("{START_BUTTON} RELEARN"); // future note: don't de
 const u8 gText_Rename[] = _("RENAME");
 const u8 gText_CannotSendMonToBoxHM[] = _("Cannot send that mon to the box,\nbecause it knows a HM move.{PAUSE_UNTIL_PRESS}");
 
-const u8 *const gDayNameStringsTable[] =
+const u8 *const gDayOfWeekNameStringsTable[] =
 {
     [DAY_SUNDAY] = gText_Sunday,
     [DAY_MONDAY] = gText_Monday,

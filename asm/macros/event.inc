@@ -2514,7 +2514,25 @@
 	@ Writes the choosen day of the week string to the specified buffer (index 0 = Sunday).
 	@ Otherwise, if dayOfWeek eq 7 or is not specified, writes the current day of week string.
 	.macro bufferdayofweekstring stringVarId:req, dayOfWeek=DAYS_COUNT
-	.byte SCR_OP_BUFFERDAYOFWEEKSTRING
+	callnative ScrCmd_bufferdayofweekstring, requests_effects=1
 	stringvar \stringVarId
-	.byte \dayOfWeek
+	.2byte \dayOfWeek
+	.endm
+
+	@ Writes the choosen month string to the specified buffer (index 1 = January).
+	@ Otherwise, if month eq 0 or is not specified, writes the current month string.
+	.macro buffermonthstring stringVarId:req, month=0
+	callnative ScrCmd_buffermonthstring, requests_effects=1
+	stringvar \stringVarId
+	.2byte \month
+	.endm
+
+	@ Stores current day of week in VAR_RESULT.
+	.macro getcurrentdayofweek
+	callnative ScrCmd_getcurrentdayofweek, requests_effects=1
+	.endm
+
+	@ Stores current month in VAR_RESULT.
+	.macro getcurrentmonth
+	callnative ScrCmd_getcurrentmonth, requests_effects=1
 	.endm

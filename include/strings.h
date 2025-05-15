@@ -2422,7 +2422,7 @@ extern const u8 gText_Rename[]; // change nickname from summary screen
 extern const u8 gText_CannotSendMonToBoxHM[];
 
 // Day Strings
-extern const u8 *const gDayNameStringsTable[];
+extern const u8 *const gDayOfWeekNameStringsTable[];
 
 extern const u8 gText_Sunday[];
 extern const u8 gText_Monday[];
