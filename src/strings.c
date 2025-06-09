@@ -992,6 +992,7 @@ const u8 gText_ButtonTypeLEqualsA[] = _("L=A");
 const u8 gText_FrameType[] = _("TYPE");
 const u8 gText_Frame[] = _("FRAME");
 const u8 gText_FrameTypeNumber[] = _("");
+const u8 gText_Followers[] = _("FOLLOWERS");
 const u8 gText_MatchCalls[] = _("OVERWORLD CALLS");
 const u8 gText_BattleScene[] = _("BATTLE SCENE");
 const u8 gText_BattleSceneOn[] = _("ON");

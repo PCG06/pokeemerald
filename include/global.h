@@ -573,6 +573,7 @@ struct SaveBlock2
              u16 optionsInstantTextOff:1; // whether instant text is disabled
              u8 optionsButtonMode;  // OPTIONS_BUTTON_MODE_[NORMAL/LR/L_EQUALS_A]
              u16 optionsWindowFrameType:5; // Specifies one of the 20 decorative borders for text boxes
+             u16 optionsFollowersOff:1; // whether ow followers are disabled
              u16 optionsDisableMatchCall:1; // whether match calls are disabled
              u16 optionsBattleSceneOff:1; // whether battle animations are disabled
              u16 optionsBattleStyle:1; // OPTIONS_BATTLE_STYLE_[SHIFT/SET]
