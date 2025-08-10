@@ -256,6 +256,7 @@ extern const u8 gText_FrameType[];
 extern const u8 gText_Frame[];
 extern const u8 gText_FrameTypeNumber[];
 extern const u8 gText_Followers[];
+extern const u8 gText_AutoRun[];
 extern const u8 gText_MatchCalls[];
 extern const u8 gText_BattleScene[];
 extern const u8 gText_BattleSceneOn[];  // We also use this for other

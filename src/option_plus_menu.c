@@ -18,6 +18,8 @@
 #include "constants/rgb.h"
 #include "menu_helpers.h"
 #include "decompress.h"
+#include "event_data.h"
+#include "constants/flags.h"
 
 enum
 {
@@ -35,6 +37,7 @@ enum
     MENUITEM_GENERAL_BUTTONMODE,
     MENUITEM_GENERAL_FRAMETYPE,
     MENUITEM_GENERAL_FOLLOWERS,
+    MENUITEM_GENERAL_AUTORUN,
     MENUITEM_GENERAL_MATCHCALL,
     MENUITEM_GENERAL_CANCEL,
     MENUITEM_GENERAL_COUNT,
@@ -191,6 +194,7 @@ static void InstantText_DrawChoices(int selection, int y);
 static void ButtonMode_DrawChoices(int selection, int y);
 static void FrameType_DrawChoices(int selection, int y);
 static void Followers_DrawChoices(int selection, int y);
+static void AutoRun_DrawChoices(int selection, int y);
 static void MatchCall_DrawChoices(int selection, int y);
 static void BattleScene_DrawChoices(int selection, int y);
 static void BattleStyle_DrawChoices(int selection, int y);
@@ -250,6 +254,7 @@ static const MenuItemFunctions sItemFunctionsGeneral[MENUITEM_GENERAL_COUNT] =
     [MENUITEM_GENERAL_BUTTONMODE]   = {ButtonMode_DrawChoices,    ThreeOptions_ProcessInput},
     [MENUITEM_GENERAL_FRAMETYPE]    = {FrameType_DrawChoices,     FrameType_ProcessInput},
     [MENUITEM_GENERAL_FOLLOWERS]    = {Followers_DrawChoices,     TwoOptions_ProcessInput},
+    [MENUITEM_GENERAL_AUTORUN]      = {AutoRun_DrawChoices,       TwoOptions_ProcessInput},
     [MENUITEM_GENERAL_MATCHCALL]    = {MatchCall_DrawChoices,     TwoOptions_ProcessInput},
     [MENUITEM_GENERAL_CANCEL]       = {NULL, NULL},
 };
@@ -280,6 +285,7 @@ static const u8 *const sOptionMenuItemsNamesGeneral[MENUITEM_GENERAL_COUNT] =
     [MENUITEM_GENERAL_BUTTONMODE]   = gText_ButtonMode,
     [MENUITEM_GENERAL_FRAMETYPE]    = gText_Frame,
     [MENUITEM_GENERAL_FOLLOWERS]    = gText_Followers,
+    [MENUITEM_GENERAL_AUTORUN]      = gText_AutoRun,
     [MENUITEM_GENERAL_MATCHCALL]    = gText_MatchCalls,
     [MENUITEM_GENERAL_CANCEL]       = gText_OptionMenuSave,
 };
@@ -326,6 +332,8 @@ static bool8 CheckConditions(int selection)
     case MENU_GENERAL:
         switch(selection)
         {
+        case MENUITEM_GENERAL_AUTORUN:
+            return FlagGet(FLAG_SYS_B_DASH);
         case MENUITEM_GENERAL_INSTANTTEXT:
         case MENUITEM_GENERAL_BUTTONMODE:
         case MENUITEM_GENERAL_FRAMETYPE:
@@ -377,6 +385,8 @@ static const u8 sText_Desc_MatchCallOn[]        = _("TRAINERs will be able to ca
 static const u8 sText_Desc_MatchCallOff[]       = _("You will not receive calls.\nSpecial events will still occur.");
 static const u8 sText_Desc_FollowersOn[]        = _("Your first party POKéMON will\nfollow you in the overworld.");
 static const u8 sText_Desc_FollowersOff[]       = _("Following POKéMON will be disabled.\nYour POKéMON will not follow you.");
+static const u8 sText_Desc_AutoRunOn[]          = _("Enables auto running in the overworld.\nPress {B_BUTTON} to walk.");
+static const u8 sText_Desc_AutoRunOff[]         = _("Disabled auto running in the overworld.\nPress {B_BUTTON} to run.");
 
 static const u8 sText_Desc_BattleScene_On[]     = _("Show the POKéMON battle animations.");
 static const u8 sText_Desc_BattleScene_Off[]    = _("Skip the POKéMON battle animations.");
@@ -409,6 +419,7 @@ static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT
     [MENUITEM_GENERAL_BUTTONMODE]  = {sText_Desc_ButtonMode,           sText_Desc_ButtonMode_LR,        sText_Desc_ButtonMode_LA},
     [MENUITEM_GENERAL_FRAMETYPE]   = {sText_Desc_FrameType,            sText_Empty,                     sText_Empty},
     [MENUITEM_GENERAL_FOLLOWERS]   = {sText_Desc_FollowersOn,          sText_Desc_FollowersOff,         sText_Empty},
+    [MENUITEM_GENERAL_AUTORUN]     = {sText_Desc_AutoRunOn,            sText_Desc_AutoRunOff,           sText_Empty},
     [MENUITEM_GENERAL_MATCHCALL]   = {sText_Desc_MatchCallOn,          sText_Desc_MatchCallOff,         sText_Empty},
     [MENUITEM_GENERAL_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                     sText_Empty},
 };
@@ -435,12 +446,15 @@ static const u8 *const sOptionMenuItemDescriptionsSound[MENUITEM_SOUND_COUNT][3]
 
 // Disabled Descriptions
 static const u8 sText_Desc_Disabled_Textspeed[]     = _("Only active if xyz.");
+static const u8 sText_Desc_Disabled_AutoRun[]       = _("Only active if running shows are\nreceived.");
+
 static const u8 *const sOptionMenuItemDescriptionsDisabledGeneral[MENUITEM_GENERAL_COUNT] =
 {
     [MENUITEM_GENERAL_INSTANTTEXT] = sText_Desc_Disabled_Textspeed,
     [MENUITEM_GENERAL_BUTTONMODE]  = sText_Empty,
     [MENUITEM_GENERAL_FRAMETYPE]   = sText_Empty,
     [MENUITEM_GENERAL_FOLLOWERS]   = sText_Empty,
+    [MENUITEM_GENERAL_AUTORUN]     = sText_Desc_Disabled_AutoRun,
     [MENUITEM_GENERAL_MATCHCALL]   = sText_Empty,
     [MENUITEM_GENERAL_CANCEL]      = sText_Empty,
 };
@@ -593,7 +607,7 @@ static void DrawDescriptionText(void)
     color_gray[2] = TEXT_COLOR_OPTIONS_GRAY_SHADOW;
         
     FillWindowPixelBuffer(WIN_DESCRIPTION, PIXEL_FILL(1));
-    AddTextPrinterParameterized4(WIN_DESCRIPTION, FONT_NORMAL, 8, 1, 0, 0, color_gray, TEXT_SKIP_DRAW, OptionTextDescription());
+    AddTextPrinterParameterized4(WIN_DESCRIPTION, FONT_NORMAL, 5, 1, 0, 0, color_gray, TEXT_SKIP_DRAW, OptionTextDescription());
     CopyWindowToVram(WIN_DESCRIPTION, COPYWIN_FULL);
 }
 
@@ -788,6 +802,7 @@ void CB2_InitOptionPlusMenu(void)
         sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE]  = gSaveBlock2Ptr->optionsButtonMode;
         sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE]   = gSaveBlock2Ptr->optionsWindowFrameType;
         sOptions->sel_general[MENUITEM_GENERAL_FOLLOWERS]   = gSaveBlock2Ptr->optionsFollowersOff;
+        sOptions->sel_general[MENUITEM_GENERAL_AUTORUN]     = gSaveBlock2Ptr->optionsAutoRunOff;
         sOptions->sel_general[MENUITEM_GENERAL_MATCHCALL]   = gSaveBlock2Ptr->optionsDisableMatchCall;
 
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE]   = gSaveBlock2Ptr->optionsBattleSceneOff;
@@ -1024,6 +1039,7 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsButtonMode       = sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE];
     gSaveBlock2Ptr->optionsWindowFrameType  = sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE];
     gSaveBlock2Ptr->optionsFollowersOff     = sOptions->sel_general[MENUITEM_GENERAL_FOLLOWERS];
+    gSaveBlock2Ptr->optionsAutoRunOff       = sOptions->sel_general[MENUITEM_GENERAL_AUTORUN];
     gSaveBlock2Ptr->optionsDisableMatchCall = sOptions->sel_general[MENUITEM_GENERAL_MATCHCALL];
 
     gSaveBlock2Ptr->optionsBattleSceneOff   = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE];
@@ -1335,6 +1351,16 @@ static void FrameType_DrawChoices(int selection, int y)
 static void Followers_DrawChoices(int selection, int y)
 {
     bool8 active = CheckConditions(MENUITEM_GENERAL_FOLLOWERS);
+    u8 styles[2] = {0};
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[1], active);
+}
+
+static void AutoRun_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_GENERAL_AUTORUN);
     u8 styles[2] = {0};
     styles[selection] = 1;
 

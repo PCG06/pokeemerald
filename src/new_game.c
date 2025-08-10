@@ -96,6 +96,7 @@ static void InitPlayerTrainerId(void)
 static void SetDefaultOptions(void)
 {
     gSaveBlock2Ptr->optionsInstantTextOff = FALSE;
+    gSaveBlock2Ptr->optionsAutoRunOff = FALSE;
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
@@ -221,7 +222,6 @@ void NewGameInitData(void)
     ResetItemFlags();
     ResetDexNav();
     ClearFollowerNPCData();
-    gSaveBlock2Ptr->autoRun = FALSE;
 }
 
 static void ResetMiniGamesRecords(void)
