@@ -847,15 +847,22 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
         return;
     }
 
-    if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER) && (heldKeys & B_BUTTON) && FlagGet(FLAG_SYS_B_DASH)
+    if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER) && (heldKeys & B_BUTTON || gSaveBlock2Ptr->autoRun) && FlagGet(FLAG_SYS_B_DASH)
      && IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior) == 0 && !FollowerNPCComingThroughDoor())
     {
-        if (ObjectMovingOnRockStairs(&gObjectEvents[gPlayerAvatar.objectEventId], direction))
+        if (heldKeys & B_BUTTON && gSaveBlock2Ptr->autoRun == TRUE)
+        {
+            PlayerWalkNormal(direction);
+        }
+        else if (ObjectMovingOnRockStairs(&gObjectEvents[gPlayerAvatar.objectEventId], direction))
+        {
             PlayerRunSlow(direction);
+        }
         else
+        {
             PlayerRun(direction);
-
-        gPlayerAvatar.flags |= PLAYER_AVATAR_FLAG_DASH;
+            gPlayerAvatar.flags |= PLAYER_AVATAR_FLAG_DASH;
+        }
         return;
     }
     else if (FlagGet(DN_FLAG_SEARCHING) && (heldKeys & A_BUTTON))
