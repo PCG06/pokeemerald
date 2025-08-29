@@ -1557,12 +1557,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 else if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_SPDEF))
                     ADJUST_SCORE(-8);
             }
-            else if (!hasPartner)
-            {
-                ADJUST_SCORE(-10);    // our stats wont rise from this move
-            }
-
-            if (hasPartner)
+            else if (hasPartner)
             {
                 if (aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_PLUS || aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_MINUS)
                 {
@@ -1575,6 +1570,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 {
                     ADJUST_SCORE(-10);    // nor our or our partner's ability is plus/minus
                 }
+            }
+            else
+            {
+                ADJUST_SCORE(-10);    // our stats wont rise from this move
             }
             break;
     // stat lowering effects
@@ -4178,6 +4177,18 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(-2); // Should be either removed or turned into increasing score
     case EFFECT_ACUPRESSURE:
         break;
+    case EFFECT_MAGNETIC_FLUX:
+        if (aiData->abilities[battlerAtk] == ABILITY_PLUS || aiData->abilities[battlerAtk] == ABILITY_MINUS)
+        {
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF));
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF));
+        }
+        if (hasPartner && (aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_PLUS || aiData->abilities[BATTLE_PARTNER(battlerAtk)] == ABILITY_MINUS))
+        {
+            ADJUST_SCORE(IncreaseStatUpScore(BATTLE_PARTNER(battlerAtk), battlerDef, STAT_CHANGE_DEF));
+            ADJUST_SCORE(IncreaseStatUpScore(BATTLE_PARTNER(battlerAtk), battlerDef, STAT_CHANGE_SPDEF));
+        }
+        break;
     case EFFECT_ATTACK_ACCURACY_UP: // hone claws
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ATK));
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ACC));
@@ -4213,6 +4224,30 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                     ADJUST_SCORE(AWFUL_EFFECT);
             }
             break;
+    case EFFECT_FLOWER_SHIELD:
+        if (IS_BATTLER_OF_TYPE(battlerAtk, TYPE_GRASS))
+        {
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF));
+        }
+        if (hasPartner && IS_BATTLER_OF_TYPE(BATTLE_PARTNER(battlerAtk), TYPE_GRASS))
+        {
+            ADJUST_SCORE(IncreaseStatUpScore(BATTLE_PARTNER(battlerAtk), battlerDef, STAT_CHANGE_DEF));
+        }
+        if (IS_BATTLER_OF_TYPE(FOE(battlerAtk), TYPE_GRASS))
+        {
+            if (aiData->abilities[FOE(battlerAtk)] == ABILITY_CONTRARY)
+                ADJUST_SCORE(WEAK_EFFECT);
+            else
+                ADJUST_SCORE(AWFUL_EFFECT);
+        }
+        if (IS_BATTLER_OF_TYPE(BATTLE_PARTNER(FOE(battlerAtk)), TYPE_GRASS))
+        {
+            if (aiData->abilities[BATTLE_PARTNER(FOE(battlerAtk))] == ABILITY_CONTRARY)
+                ADJUST_SCORE(WEAK_EFFECT);
+            else
+                ADJUST_SCORE(AWFUL_EFFECT);
+        }
+        break;
     case EFFECT_HAZE:
         if (AnyStatIsRaised(BATTLE_PARTNER(battlerAtk))
           || DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))

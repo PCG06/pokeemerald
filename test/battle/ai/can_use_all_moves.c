@@ -456,7 +456,6 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 501-600")
         case EFFECT_ION_DELUGE:
         case EFFECT_AROMATIC_MIST:
         case EFFECT_POWDER:
-        case EFFECT_FLOWER_SHIELD:
         case EFFECT_ELECTRIFY:
 
         //TODO: AI TESTS
@@ -467,6 +466,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 501-600")
         case EFFECT_FAIRY_LOCK:
 
         // tests exist elsewhere
+        case EFFECT_FLOWER_SHIELD:
         case EFFECT_ROTOTILLER:
         case EFFECT_GRASSY_TERRAIN:
         case EFFECT_MISTY_TERRAIN:
@@ -522,7 +522,6 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 601-700")
         switch (effect)
         {
         //TODO: AI HANDLING
-        case EFFECT_MAGNETIC_FLUX:
         case EFFECT_GEAR_UP:
         case EFFECT_FAIL_IF_NOT_ARG_TYPE:
         case EFFECT_STUFF_CHEEKS:
@@ -541,6 +540,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 601-700")
         // tests exist elsewhere
         case EFFECT_ELECTRIC_TERRAIN:
         case EFFECT_PSYCHIC_TERRAIN:
+        case EFFECT_MAGNETIC_FLUX:
         case EFFECT_AURORA_VEIL:
  
         // Skipped on purpose.
