@@ -996,13 +996,6 @@ void HandleSpeciesGfxDataChange(u8 battlerAtk, u8 battlerDef, bool32 megaEvo, bo
         CpuCopy32(gPlttBufferFaded + paletteOffset, gPlttBufferUnfaded + paletteOffset, PLTT_SIZEOF(16));
     }
 
-    // Terastallization's tint
-    if (GetActiveGimmick(battlerAtk) == GIMMICK_TERA)
-    {
-        BlendPalette(paletteOffset, 16, 8, GetTeraTypeRGB(GetBattlerTeraType(battlerAtk)));
-        CpuCopy32(gPlttBufferFaded + paletteOffset, gPlttBufferUnfaded + paletteOffset, PLTT_SIZEOF(16));
-    }
-
     gSprites[gBattlerSpriteIds[battlerAtk]].y = GetBattlerSpriteDefault_Y(battlerAtk);
     StartSpriteAnim(&gSprites[gBattlerSpriteIds[battlerAtk]], 0);
 }
@@ -1265,8 +1258,8 @@ void SpriteCB_EnemyShadow(struct Sprite *shadowSprite)
     }
     else if (transformSpecies != SPECIES_NONE)
     {
-        xOffset = gSpeciesInfo[transformSpecies].enemyShadowXOffset;
-        yOffset = gSpeciesInfo[transformSpecies].enemyShadowYOffset;
+        xOffset = gSpeciesInfo[transformSpecies].enemyShadowXOffset + (shadowSprite->tSpriteSide == SPRITE_SIDE_LEFT ? -16 : 16);
+        yOffset = gSpeciesInfo[transformSpecies].enemyShadowYOffset + 16;
         size = gSpeciesInfo[transformSpecies].enemyShadowSize;
 
         invisible = (B_ENEMY_MON_SHADOW_STYLE >= GEN_4 && P_GBA_STYLE_SPECIES_GFX == FALSE)

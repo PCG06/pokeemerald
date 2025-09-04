@@ -32,6 +32,7 @@ static bool32 CheckPyramidBagHasItem(u16 itemId, u16 count);
 static bool32 CheckPyramidBagHasSpace(u16 itemId, u16 count);
 static const u8 *GetItemPluralName(u16);
 static bool32 DoesItemHavePluralName(u16);
+static void NONNULL BagPocket_CompactItems(struct BagPocket *pocket);
 
 EWRAM_DATA struct BagPocket gBagPockets[POCKETS_COUNT] = {0};
 
@@ -216,7 +217,7 @@ bool32 CheckBagHasItem(u16 itemId, u16 count)
 {
     if (GetItemPocket(itemId) >= POCKETS_COUNT)
         return FALSE;
-    if (InBattlePyramid() || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
+    if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
         return CheckPyramidBagHasItem(itemId, count);
 
     return BagPocket_CheckHasItem(&gBagPockets[GetItemPocket(itemId)], itemId, count);
@@ -247,7 +248,7 @@ bool32 CheckBagHasSpace(u16 itemId, u16 count)
     if (GetItemPocket(itemId) >= POCKETS_COUNT)
         return FALSE;
 
-    if (InBattlePyramid() || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
+    if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
         return CheckPyramidBagHasSpace(itemId, count);
 
     return GetFreeSpaceForItemInBag(itemId) >= count;
@@ -348,7 +349,7 @@ bool32 AddBagItem(u16 itemId, u16 count)
         return FALSE;
 
     // check Battle Pyramid Bag
-    if (InBattlePyramid() || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
+    if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
         return AddPyramidBagItem(itemId, count);
 
     return BagPocket_AddItem(&gBagPockets[GetItemPocket(itemId)], itemId, count);
@@ -391,6 +392,9 @@ static bool32 NONNULL BagPocket_RemoveItem(struct BagPocket *pocket, u16 itemId,
         }
     }
 
+    if (totalQuantity == count)
+        BagPocket_CompactItems(pocket);
+
     Free(tempPocketSlotQuantities);
     return totalQuantity >= count;
 }
@@ -401,7 +405,7 @@ bool32 RemoveBagItem(u16 itemId, u16 count)
         return FALSE;
 
     // check Battle Pyramid Bag
-    if (InBattlePyramid() || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
+    if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || FlagGet(FLAG_STORING_ITEMS_IN_PYRAMID_BAG) == TRUE)
         return RemovePyramidBagItem(itemId, count);
 
     return BagPocket_RemoveItem(&gBagPockets[GetItemPocket(itemId)], itemId, count);
@@ -776,7 +780,9 @@ static u16 SanitizeItemId(u16 itemId)
 
 const u8 *GetItemName(u16 itemId)
 {
-    return gItemsInfo[SanitizeItemId(itemId)].name;
+    const u8 *name = gItemsInfo[SanitizeItemId(itemId)].name;
+
+    return name == NULL ? gQuestionMarksItemName : name;
 }
 
 u32 GetItemPrice(u16 itemId)
@@ -786,7 +792,7 @@ u32 GetItemPrice(u16 itemId)
 
 static bool32 DoesItemHavePluralName(u16 itemId)
 {
-    return (gItemsInfo[SanitizeItemId(itemId)].pluralName[0] != '\0');
+    return gItemsInfo[SanitizeItemId(itemId)].pluralName != NULL;
 }
 
 static const u8 *GetItemPluralName(u16 itemId)
