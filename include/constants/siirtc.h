@@ -10,21 +10,20 @@
 #define HOURS_PER_DAY       24
 #define MINUTES_PER_HOUR    60
 #define SECONDS_PER_MINUTE  60
-#define DAYS_PER_WEEK       7
 
-enum
+enum Weekday
 {
-    DAY_SUNDAY,
-    DAY_MONDAY,
-    DAY_TUESDAY,
-    DAY_WEDNESDAY,
-    DAY_THURSDAY,
-    DAY_FRIDAY,
-    DAY_SATURDAY,
-    DAYS_COUNT,
+    WEEKDAY_SUN,
+    WEEKDAY_MON,
+    WEEKDAY_TUE,
+    WEEKDAY_WED,
+    WEEKDAY_THU,
+    WEEKDAY_FRI,
+    WEEKDAY_SAT,
+    WEEKDAY_COUNT,
 };
 
-enum
+enum Month
 {
     MONTH_JAN = 1,
     MONTH_FEB,
