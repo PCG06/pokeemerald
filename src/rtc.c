@@ -459,9 +459,11 @@ void FormatDecimalTimeWithoutSeconds(u8 *txtPtr, s8 hour, s8 minute, bool32 is24
 
 u8 GetDate(void)
 {
-    RtcGetInfo(&sRtc);
+    struct DateTime dateTime;
+    RtcCalcLocalTime();
+    ConvertTimeToDateTime(&dateTime, &gLocalTime);
 
-    return ConvertBcdToBinary(sRtc.day);
+    return dateTime.day;
 }
 
 u8 GetHour(void)

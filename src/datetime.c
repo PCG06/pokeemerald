@@ -30,11 +30,11 @@ void DateTime_AddDays(struct DateTime *dateTime, u32 days)
                 dateTime->year++;
             }
             days -= (remainingDaysInMonth + 1);
-            dateTime->dayOfWeek = (dateTime->dayOfWeek + remainingDaysInMonth + 1) % WEEKDAY_COUNT;
+            dateTime->dayOfWeek = (dateTime->dayOfWeek + remainingDaysInMonth) % WEEKDAY_COUNT;
         }
         else
         {
-            dateTime->day += days;
+            dateTime->day += (days - 1);
             dateTime->dayOfWeek = (dateTime->dayOfWeek + days) % WEEKDAY_COUNT;
             days = 0;
         }

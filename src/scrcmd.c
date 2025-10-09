@@ -901,18 +901,17 @@ bool8 ScrCmd_dotimebasedevents(struct ScriptContext *ctx)
 
 bool8 ScrCmd_gettime(struct ScriptContext *ctx)
 {
+    Script_RequestEffects(SCREFF_V1 | SCREFF_HARDWARE);
+
     RtcCalcLocalTime();
-
     gSpecialVar_0x8000 = GetTimeOfDay();
-    gSpecialVar_0x8001 = gLocalTime.month;
-    gSpecialVar_0x8002 = gLocalTime.dayOfWeek;
-    gSpecialVar_0x8003 = gLocalTime.hours;
-    gSpecialVar_0x8004 = gLocalTime.minutes;
-    gSpecialVar_0x8005 = gLocalTime.seconds;
-
-    StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
-    ConvertIntToDecimalStringN(gStringVar2, GetHour(), STR_CONV_MODE_RIGHT_ALIGN, 2);
-    ConvertIntToDecimalStringN(gStringVar3, GetMinute(), STR_CONV_MODE_RIGHT_ALIGN, 2);
+    gSpecialVar_0x8001 = GetDate();
+    gSpecialVar_0x8002 = GetMonth();
+    gSpecialVar_0x8003 = GetFullYear();
+    gSpecialVar_0x8004 = GetDayOfWeek();
+    gSpecialVar_0x8005 = GetHour();
+    gSpecialVar_0x8006 = GetMinute();
+    gSpecialVar_0x8007 = GetSecond();
 
     return FALSE;
 }

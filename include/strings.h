@@ -2453,6 +2453,14 @@ extern const u8 gText_October[];
 extern const u8 gText_November[];
 extern const u8 gText_December[];
 
+// Time of day strings
+extern const u8 *const gTimeOfDayNameStringsTable[];
+
+extern const u8 gText_TimeMorning[];
+extern const u8 gText_TimeDay[];
+extern const u8 gText_TimeEvening[];
+extern const u8 gText_TimeNight[];
+
 extern const u8 gText_CurrentTime[];
 extern const u8 gText_CurrentTimeOff[];
 extern const u8 gText_CurrentTimeAM[];

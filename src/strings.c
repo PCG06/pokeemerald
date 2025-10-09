@@ -1,4 +1,5 @@
 #include "global.h"
+#include "rtc.h"
 #include "siirtc.h"
 #include "strings.h"
 #include "battle_pyramid_bag.h"
@@ -1349,6 +1350,19 @@ const u8 gText_September[]  = _("Sep");
 const u8 gText_October[]    = _("Oct");
 const u8 gText_November[]   = _("Nov");
 const u8 gText_December[]   = _("Dec");
+
+const u8 *const gTimeOfDayNameStringsTable[] =
+{
+    [TIME_MORNING] = gText_TimeMorning,
+    [TIME_DAY] = gText_TimeDay,
+    [TIME_EVENING] = gText_TimeEvening,
+    [TIME_NIGHT] = gText_TimeNight,
+};
+
+const u8 gText_TimeMorning[]    = _("Morning");
+const u8 gText_TimeDay[]        = _("Day");
+const u8 gText_TimeEvening[]    = _("Evening");
+const u8 gText_TimeNight[]      = _("Night");
 
 const u8 gText_CurrentTime[] = _("Time: {STR_VAR_1}:{STR_VAR_2}");
 const u8 gText_CurrentTimeOff[] = _("Time: {STR_VAR_1} {STR_VAR_2}");

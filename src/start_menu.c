@@ -149,7 +149,7 @@ static bool8 FieldCB_ReturnToFieldStartMenu(void);
 static const struct WindowTemplate sWindowTemplate_SafariBalls = {
     .bg = 0,
     .tilemapLeft = 1,
-    .tilemapTop = 5,
+    .tilemapTop = OW_TIME_WINDOW ? 5 : 1,
     .width = 9,
     .height = 4,
     .paletteNum = 15,
@@ -171,7 +171,7 @@ static const u8 *const sPyramidFloorNames[FRONTIER_STAGES_PER_CHALLENGE + 1] =
 static const struct WindowTemplate sWindowTemplate_PyramidFloor = {
     .bg = 0,
     .tilemapLeft = 1,
-    .tilemapTop = 5,
+    .tilemapTop = OW_TIME_WINDOW ? 5 : 1,
     .width = 10,
     .height = 4,
     .paletteNum = 15,
@@ -181,7 +181,7 @@ static const struct WindowTemplate sWindowTemplate_PyramidFloor = {
 static const struct WindowTemplate sWindowTemplate_PyramidPeak = {
     .bg = 0,
     .tilemapLeft = 1,
-    .tilemapTop = 5,
+    .tilemapTop = OW_TIME_WINDOW ? 5 : 1,
     .width = 12,
     .height = 4,
     .paletteNum = 15,
@@ -191,7 +191,7 @@ static const struct WindowTemplate sWindowTemplate_PyramidPeak = {
 static const struct WindowTemplate sCurrentTimeWindowTemplate = {
     .bg = 0, 
     .tilemapLeft = 1, 
-    .tilemapTop = 1, 
+    .tilemapTop = 1,
     .width = 9,
     .height = 6,
     .paletteNum = 15,
@@ -291,7 +291,7 @@ static void RemoveSaveInfoWindow(void);
 static void HideStartMenuWindow(void);
 static void HideStartMenuDebug(void);
 static void ShowCurrentTimeWindow(void);
-static void UpdateClockDisplay(void);
+static void UpdateTimeWindow(void);
 
 void SetDexPokemonPokenavFlags(void) // unused
 {
@@ -490,7 +490,8 @@ static void RemoveExtraStartMenuWindows(void)
     ClearStdWindowAndFrameToTransparent(sCurrentTimeWindowId, FALSE);
     CopyWindowToVram(sCurrentTimeWindowId, 2);
     RemoveWindow(sCurrentTimeWindowId);
-    FlagClear(FLAG_TEMP_5);
+    if (OW_TIME_WINDOW)
+        FlagClear(FLAG_TEMP_5);
 }
 
 static bool32 PrintStartMenuActions(s8 *pIndex, u32 count)
@@ -640,7 +641,8 @@ void ShowStartMenu(void)
 
 static bool8 HandleStartMenuInput(void)
 {
-    UpdateClockDisplay();
+    UpdateTimeWindow();
+
     if (JOY_NEW(DPAD_UP))
     {
         PlaySE(SE_SELECT);
@@ -1528,32 +1530,41 @@ void Script_ForceSaveGame(struct ScriptContext *ctx)
 
 static void ShowCurrentTimeWindow(void)
 {
+    if (!OW_TIME_WINDOW)
+        return;
+
     u8 timeInHours;
 
-    RtcCalcLocalTime();
+    u8 minutes = GetMinute();
+    u8 hours = GetHour();
+    u8 days = GetDate();
+    enum Weekday dayOfWeek = GetDayOfWeek();
+    enum Month month = GetMonth();
+    u16 year = GetFullYear();
+
     sCurrentTimeWindowId = AddWindow(&sCurrentTimeWindowTemplate);
     PutWindowTilemap(sCurrentTimeWindowId);
     DrawStdWindowFrame(sCurrentTimeWindowId, FALSE);
     FlagSet(FLAG_TEMP_5);
 
-    if (gLocalTime.hours < 12)
+    if (hours < 12)
     {
-        if (gLocalTime.hours == 0)
+        if (hours == 0)
             timeInHours = 12;
         else
-            timeInHours = gLocalTime.hours;
+            timeInHours = hours;
     }
-    else if (gLocalTime.hours == 12)
+    else if (hours == 12)
     {
         timeInHours = 12;
     }
     else
     {
-        timeInHours = gLocalTime.hours - 12;
+        timeInHours = hours - 12;
     }
 
     ConvertIntToDecimalStringN(gStringVar1, timeInHours, STR_CONV_MODE_LEADING_ZEROS, 2);
-    ConvertIntToDecimalStringN(gStringVar2, gLocalTime.minutes, STR_CONV_MODE_LEADING_ZEROS, 2);
+    ConvertIntToDecimalStringN(gStringVar2, minutes, STR_CONV_MODE_LEADING_ZEROS, 2);
 
     if (gLocalTime.hours < 12)
         StringExpandPlaceholders(gStringVar4, gText_CurrentTimeAM);
@@ -1562,55 +1573,64 @@ static void ShowCurrentTimeWindow(void)
 
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 1, 0xFF, NULL);
 
-    StringCopy(gStringVar4, gDayOfWeekNameStringsTable[gLocalTime.dayOfWeek]);    
+    StringCopy(gStringVar4, gDayOfWeekNameStringsTable[dayOfWeek]);    
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 16, 0xFF, NULL);
-    StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
-    ConvertIntToDecimalStringN(gStringVar2, GetDate(), STR_CONV_MODE_RIGHT_ALIGN, 2);
-    ConvertIntToDecimalStringN(gStringVar3, GetFullYear(), STR_CONV_MODE_RIGHT_ALIGN, 4);
+    StringCopy(gStringVar1, gMonthNameStringsTable[month]);
+    ConvertIntToDecimalStringN(gStringVar2, days, STR_CONV_MODE_RIGHT_ALIGN, 2);
+    ConvertIntToDecimalStringN(gStringVar3, year, STR_CONV_MODE_RIGHT_ALIGN, 4);
     StringExpandPlaceholders(gStringVar4, gText_Date);
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 32, 0xFF, NULL);
 
     CopyWindowToVram(sCurrentTimeWindowId, 2);
 }
 
-void UpdateClockDisplay(void)
+void UpdateTimeWindow(void)
 {
+    if (!OW_TIME_WINDOW)
+        return;
+
     u8 timeInHours;
+
+    u8 seconds = GetSecond();
+    u8 minutes = GetMinute();
+    u8 hours = GetHour();
+    u8 days = GetDate();
+    enum Weekday dayOfWeek = GetDayOfWeek();
+    enum Month month = GetMonth();
+    u16 year = GetFullYear();
 
     if (!FlagGet(FLAG_TEMP_5))
         return;
 
-    RtcCalcLocalTime();
-
-    if (gLocalTime.hours < 12)
+    if (hours < 12)
     {
-        if (gLocalTime.hours == 0)
+        if (hours == 0)
             timeInHours = 12;
         else
-            timeInHours = gLocalTime.hours;
+            timeInHours = hours;
     }
-    else if (gLocalTime.hours == 12)
+    else if (hours == 12)
     {
         timeInHours = 12;
     }
     else
     {
-        timeInHours = gLocalTime.hours - 12;
+        timeInHours = hours - 12;
     }
 
     ConvertIntToDecimalStringN(gStringVar1, timeInHours, STR_CONV_MODE_LEADING_ZEROS, 2);
-    ConvertIntToDecimalStringN(gStringVar2, gLocalTime.minutes, STR_CONV_MODE_LEADING_ZEROS, 2);
+    ConvertIntToDecimalStringN(gStringVar2, minutes, STR_CONV_MODE_LEADING_ZEROS, 2);
 
-    if (gLocalTime.seconds % 2)
+    if (seconds % 2)
     {
-        if (gLocalTime.hours < 12)
+        if (hours < 12)
             StringExpandPlaceholders(gStringVar4, gText_CurrentTimeAM);
         else
             StringExpandPlaceholders(gStringVar4, gText_CurrentTimePM);
     }
     else
     {
-        if (gLocalTime.hours < 12)
+        if (hours < 12)
             StringExpandPlaceholders(gStringVar4, gText_CurrentTimeAMOff);
         else
             StringExpandPlaceholders(gStringVar4, gText_CurrentTimePMOff);
@@ -1618,11 +1638,11 @@ void UpdateClockDisplay(void)
 
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 1, 0xFF, NULL);
 
-    StringCopy(gStringVar4, gDayOfWeekNameStringsTable[gLocalTime.dayOfWeek]);    
+    StringCopy(gStringVar4, gDayOfWeekNameStringsTable[dayOfWeek]);    
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 16, 0xFF, NULL);
-    StringCopy(gStringVar1, gMonthNameStringsTable[gLocalTime.month]);
-    ConvertIntToDecimalStringN(gStringVar2, GetDate(), STR_CONV_MODE_RIGHT_ALIGN, 2);
-    ConvertIntToDecimalStringN(gStringVar3, GetFullYear(), STR_CONV_MODE_RIGHT_ALIGN, 4);
+    StringCopy(gStringVar1, gMonthNameStringsTable[month]);
+    ConvertIntToDecimalStringN(gStringVar2, days, STR_CONV_MODE_RIGHT_ALIGN, 2);
+    ConvertIntToDecimalStringN(gStringVar3, year, STR_CONV_MODE_RIGHT_ALIGN, 4);
     StringExpandPlaceholders(gStringVar4, gText_Date);
     AddTextPrinterParameterized(sCurrentTimeWindowId, 1, gStringVar4, 0, 32, 0xFF, NULL);
 
