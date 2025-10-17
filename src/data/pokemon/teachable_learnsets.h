@@ -29070,6 +29070,7 @@ static const u16 sDipplinTeachableLearnset[] = {
 static const u16 sHydrappleTeachableLearnset[] = {
     MOVE_BODY_SLAM,
     MOVE_BULLET_SEED,
+    MOVE_DEFENSE_CURL,
     MOVE_EARTHQUAKE,
     MOVE_ENDURE,
     MOVE_FACADE,

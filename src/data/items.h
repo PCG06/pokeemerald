@@ -5033,6 +5033,7 @@ const struct Item gItemsInfo[] =
             "Techno Blast to\n"
             "Water-type."),
         .pocket = POCKET_ITEMS,
+        .sortType = ITEM_TYPE_DRIVE,
         .type = ITEM_USE_BAG_MENU,
         .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
         .secondaryId = TYPE_WATER,
@@ -8488,7 +8489,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Electric Seed"),
         .price = (I_PRICE >= GEN_9) ? 20000 : 4000,
-        .holdEffect = HOLD_EFFECT_SEEDS,
+        .holdEffect = HOLD_EFFECT_TERRAIN_SEED,
         .holdEffectParam = HOLD_EFFECT_PARAM_ELECTRIC_TERRAIN,
         .description = COMPOUND_STRING(
             "Boosts Defense on\n"
@@ -8507,7 +8508,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Psychic Seed"),
         .price = (I_PRICE >= GEN_9) ? 20000 : 4000,
-        .holdEffect = HOLD_EFFECT_SEEDS,
+        .holdEffect = HOLD_EFFECT_TERRAIN_SEED,
         .holdEffectParam = HOLD_EFFECT_PARAM_PSYCHIC_TERRAIN,
         .description = COMPOUND_STRING(
             "Boosts Sp. Def. on\n"
@@ -8526,7 +8527,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Misty Seed"),
         .price = (I_PRICE >= GEN_9) ? 20000 : 4000,
-        .holdEffect = HOLD_EFFECT_SEEDS,
+        .holdEffect = HOLD_EFFECT_TERRAIN_SEED,
         .holdEffectParam = HOLD_EFFECT_PARAM_MISTY_TERRAIN,
         .description = COMPOUND_STRING(
             "Boosts Sp. Def. on\n"
@@ -8545,7 +8546,7 @@ const struct Item gItemsInfo[] =
     {
         .name = ITEM_NAME("Grassy Seed"),
         .price = (I_PRICE >= GEN_9) ? 20000 : 4000,
-        .holdEffect = HOLD_EFFECT_SEEDS,
+        .holdEffect = HOLD_EFFECT_TERRAIN_SEED,
         .holdEffectParam = HOLD_EFFECT_PARAM_GRASSY_TERRAIN,
         .description = COMPOUND_STRING(
             "Boosts Defense on\n"

@@ -62,7 +62,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 1-100")
 {
     u32 moveStart = 0;
     u32 moveCap = 100;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -92,7 +92,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 1-100")
         case EFFECT_DISABLE:
 
         // tests exist elsewhere
- 
+
         // Skipped on purpose.
         case EFFECT_PROTECT:
         case EFFECT_NON_VOLATILE_STATUS:
@@ -124,7 +124,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 101-200")
 {
     u32 moveStart = 100;
     u32 moveCap = 200;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -200,7 +200,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 201-300")
 {
     u32 moveStart = 200;
     u32 moveCap = 300;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -249,7 +249,11 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 201-300")
         case EFFECT_HEAL_BELL:
         case EFFECT_SUNNY_DAY:
         case EFFECT_RAIN_DANCE:
+    #if B_PREFERRED_ICE_WEATHER == B_ICE_WEATHER_SNOW
+        case EFFECT_SNOWSCAPE:
+    #else
         case EFFECT_HAIL:
+    #endif
         case EFFECT_ROLE_PLAY:
         case EFFECT_REFRESH:
 
@@ -285,7 +289,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 301-400")
 {
     u32 moveStart = 300;
     u32 moveCap = 400;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -313,7 +317,6 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 301-400")
         case EFFECT_COPYCAT:
         case EFFECT_LAST_RESORT:
         case EFFECT_AQUA_RING:
-        case EFFECT_GRAVITY:
         case EFFECT_HEALING_WISH:
 
         //TODO: AI TESTS
@@ -327,9 +330,10 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 301-400")
         case EFFECT_MAGNET_RISE:
 
         // tests exist elsewhere
+        case EFFECT_GRAVITY:
         case EFFECT_HEAL_BELL:
         case EFFECT_ATTACK_UP_USER_ALLY:
- 
+
         // Skipped on purpose.
         case EFFECT_PROTECT:
         case EFFECT_NON_VOLATILE_STATUS:
@@ -361,7 +365,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 401-500")
 {
     u32 moveStart = 400;
     u32 moveCap = 500;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -390,12 +394,13 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 401-500")
         //TODO: AI TESTS
         case EFFECT_RESTORE_HP:
         case EFFECT_CAPTIVATE:
+        case EFFECT_DARK_VOID: // Gen 4-6's case is not being handled
 
         // tests exist elsewhere
         case EFFECT_TRICK_ROOM:
         case EFFECT_GUARD_SPLIT:
         case EFFECT_POWER_SPLIT:
- 
+
         // Skipped on purpose.
         case EFFECT_PROTECT:
         case EFFECT_NON_VOLATILE_STATUS:
@@ -427,7 +432,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 501-600")
 {
     u32 moveStart = 515;
     u32 moveCap = 600;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -502,7 +507,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 601-700")
 {
     u32 moveStart = 600;
     u32 moveCap = 700;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -522,7 +527,6 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 601-700")
         switch (effect)
         {
         //TODO: AI HANDLING
-        case EFFECT_GEAR_UP:
         case EFFECT_FAIL_IF_NOT_ARG_TYPE:
         case EFFECT_STUFF_CHEEKS:
         case EFFECT_NO_RETREAT:
@@ -540,8 +544,9 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 601-700")
         // tests exist elsewhere
         case EFFECT_ELECTRIC_TERRAIN:
         case EFFECT_PSYCHIC_TERRAIN:
-        case EFFECT_MAGNETIC_FLUX:
         case EFFECT_AURORA_VEIL:
+        case EFFECT_GEAR_UP:
+        case EFFECT_MAGNETIC_FLUX:
  
         // Skipped on purpose.
         case EFFECT_PROTECT:
@@ -574,7 +579,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 701-800")
 {
     u32 moveStart = 700;
     u32 moveCap = 800;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
@@ -595,7 +600,6 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 701-800")
         {
         //TODO: AI HANDLING
         case EFFECT_CLANGOROUS_SOUL:
-        case EFFECT_LIFE_DEW:
         case EFFECT_POLTERGEIST:
         case EFFECT_COACHING:
         case EFFECT_REVIVAL_BLESSING:
@@ -611,6 +615,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 701-800")
         // tests exist elsewhere
         case EFFECT_COURT_CHANGE:
         case EFFECT_DOODLE:
+        case EFFECT_LIFE_DEW:
 
         // Skipped on purpose.
         case EFFECT_PROTECT:
@@ -643,7 +648,7 @@ AI_DOUBLE_BATTLE_TEST("AI can use all moves, 801-900")
 {
     u32 moveStart = 800;
     u32 moveCap = 900;
-    
+
     if (moveCap > MOVES_COUNT)
         moveCap = MOVES_COUNT - 1;
 
