@@ -2126,11 +2126,10 @@ static void InitDomeTrainers(void)
     Free(statValues);
 }
 
-#define CALC_STAT(base, statIndex)                                                          \
+#define CALC_STAT(baseStat, statIndex)                                                      \
 {                                                                                           \
-    u8 baseStat = gSpeciesInfo[fmon->species].base;                                                 \
     stats[statIndex] = (((2 * baseStat + ivs + evs[statIndex] / 4) * level) / 100) + 5;     \
-    stats[statIndex] = (u8) ModifyStatByNature(fmon->nature, stats[statIndex], statIndex);        \
+    stats[statIndex] = (u8) ModifyStatByNature(fmon->nature, stats[statIndex], statIndex);  \
 }
 
 static void CalcDomeMonStats(const struct TrainerMon *fmon, int level, u8 ivs, int *stats)
@@ -2156,11 +2155,11 @@ static void CalcDomeMonStats(const struct TrainerMon *fmon, int level, u8 ivs, i
         stats[STAT_HP] = (((n + ivs + evs[STAT_HP] / 4) * level) / 100) + level + 10;
     }
 
-    CALC_STAT(baseAttack, STAT_ATK);
-    CALC_STAT(baseDefense, STAT_DEF);
-    CALC_STAT(baseSpeed, STAT_SPEED);
-    CALC_STAT(baseSpAttack, STAT_SPATK);
-    CALC_STAT(baseSpDefense, STAT_SPDEF);
+    CALC_STAT(GetSpeciesBaseAttack(fmon->species), STAT_ATK);
+    CALC_STAT(GetSpeciesBaseDefense(fmon->species), STAT_DEF);
+    CALC_STAT(GetSpeciesBaseSpeed(fmon->species), STAT_SPEED);
+    CALC_STAT(GetSpeciesBaseSpAttack(fmon->species), STAT_SPATK);
+    CALC_STAT(GetSpeciesBaseSpDefense(fmon->species), STAT_SPDEF);
 }
 
 static void SwapDomeTrainers(int id1, int id2, u16 *statsArray)

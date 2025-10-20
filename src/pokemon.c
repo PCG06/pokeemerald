@@ -1691,9 +1691,8 @@ static u16 CalculateBoxMonChecksumReencrypt(struct BoxPokemon *boxMon)
     return checksum;
 }
 
-#define CALC_STAT(base, iv, ev, statIndex, field)               \
+#define CALC_STAT(baseStat, iv, ev, statIndex, field)           \
 {                                                               \
-    u8 baseStat = gSpeciesInfo[species].base;                   \
     s32 n = (((2 * baseStat + iv + ev / 4) * level) / 100) + 5; \
     n = ModifyStatByNature(nature, n, statIndex);               \
     if (B_FRIENDSHIP_BOOST == TRUE)                             \
@@ -1742,11 +1741,11 @@ void CalculateMonStats(struct Pokemon *mon)
 
     SetMonData(mon, MON_DATA_MAX_HP, &newMaxHP);
 
-    CALC_STAT(baseAttack, attackIV, attackEV, STAT_ATK, MON_DATA_ATK)
-    CALC_STAT(baseDefense, defenseIV, defenseEV, STAT_DEF, MON_DATA_DEF)
-    CALC_STAT(baseSpeed, speedIV, speedEV, STAT_SPEED, MON_DATA_SPEED)
-    CALC_STAT(baseSpAttack, spAttackIV, spAttackEV, STAT_SPATK, MON_DATA_SPATK)
-    CALC_STAT(baseSpDefense, spDefenseIV, spDefenseEV, STAT_SPDEF, MON_DATA_SPDEF)
+    CALC_STAT(GetSpeciesBaseAttack(species), attackIV, attackEV, STAT_ATK, MON_DATA_ATK)
+    CALC_STAT(GetSpeciesBaseDefense(species), defenseIV, defenseEV, STAT_DEF, MON_DATA_DEF)
+    CALC_STAT(GetSpeciesBaseSpeed(species), speedIV, speedEV, STAT_SPEED, MON_DATA_SPEED)
+    CALC_STAT(GetSpeciesBaseSpAttack(species), spAttackIV, spAttackEV, STAT_SPATK, MON_DATA_SPATK)
+    CALC_STAT(GetSpeciesBaseSpDefense(species), spDefenseIV, spDefenseEV, STAT_SPDEF, MON_DATA_SPDEF)
 
     // Since a pokemon's maxHP data could either not have
     // been initialized at this point or this pokemon is
@@ -3537,6 +3536,27 @@ u32 GetSpeciesAbility(u16 species, u8 slot)
     return gSpeciesInfo[SanitizeSpeciesId(species)].abilities[slot];
 }
 
+u32 GetSpeciesBaseStatTotal(u16 species)
+{
+    return (gSpeciesInfo[species].baseHP
+    + gSpeciesInfo[species].baseAttack
+    + gSpeciesInfo[species].baseDefense
+    + gSpeciesInfo[species].baseSpAttack
+    + gSpeciesInfo[species].baseSpDefense
+    + gSpeciesInfo[species].baseSpeed);
+}
+
+u32 GetSpeciesScaledBaseStat(u16 species, u8 stat)
+{
+    u8 baseHP = GetSpeciesBaseHP(species);
+    u16 bst = GetSpeciesBaseStatTotal(species);
+
+    if (FlagGet(P_FLAG_SCALEMONS))
+        return (stat * (P_SCALED_STATS_TOTAL - baseHP) / (bst - baseHP));
+    else
+        return stat;
+}
+
 u32 GetSpeciesBaseHP(u16 species)
 {
     return gSpeciesInfo[SanitizeSpeciesId(species)].baseHP;
@@ -3544,27 +3564,27 @@ u32 GetSpeciesBaseHP(u16 species)
 
 u32 GetSpeciesBaseAttack(u16 species)
 {
-    return gSpeciesInfo[SanitizeSpeciesId(species)].baseAttack;
+    return GetSpeciesScaledBaseStat(species, gSpeciesInfo[SanitizeSpeciesId(species)].baseAttack);
 }
 
 u32 GetSpeciesBaseDefense(u16 species)
 {
-    return gSpeciesInfo[SanitizeSpeciesId(species)].baseDefense;
+    return GetSpeciesScaledBaseStat(species, gSpeciesInfo[SanitizeSpeciesId(species)].baseDefense);
 }
 
 u32 GetSpeciesBaseSpAttack(u16 species)
 {
-    return gSpeciesInfo[SanitizeSpeciesId(species)].baseSpAttack;
+    return GetSpeciesScaledBaseStat(species, gSpeciesInfo[SanitizeSpeciesId(species)].baseSpAttack);
 }
 
 u32 GetSpeciesBaseSpDefense(u16 species)
 {
-    return gSpeciesInfo[SanitizeSpeciesId(species)].baseSpDefense;
+    return GetSpeciesScaledBaseStat(species, gSpeciesInfo[SanitizeSpeciesId(species)].baseSpDefense);
 }
 
 u32 GetSpeciesBaseSpeed(u16 species)
 {
-    return gSpeciesInfo[SanitizeSpeciesId(species)].baseSpeed;
+    return GetSpeciesScaledBaseStat(species, gSpeciesInfo[SanitizeSpeciesId(species)].baseSpeed);
 }
 
 const struct LevelUpMove *GetSpeciesLevelUpLearnset(u16 species)

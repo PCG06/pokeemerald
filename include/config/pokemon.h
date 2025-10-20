@@ -72,6 +72,10 @@
 #define P_FLAG_FORCE_SHINY               0  // If this flag is set, all wild and gift Pokémon will forced into being Shiny.
 #define P_FLAG_FORCE_NO_SHINY            0  // If this flag is set, all wild and gift Pokémon will forced into NOT being Shiny.
 
+// Scalemons
+#define P_SCALED_STATS_TOTAL             600 // Scaled limit for stats
+#define P_FLAG_SCALEMONS                 0  // If this flag is set, all base stats except for HP of all Pokémon (except Shedinja) will be scaled to P_SCALED_STATS_TOTAL.
+
 // Go here if you want to disable specific families of Pokémon.
 #include "config/species_enabled.h"
 
