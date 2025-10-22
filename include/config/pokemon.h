@@ -74,7 +74,7 @@
 
 // Scalemons
 #define P_SCALED_STATS_TOTAL             600 // Scaled limit for stats
-#define P_FLAG_SCALEMONS                 0  // If this flag is set, all base stats except for HP of all Pokémon (except Shedinja) will be scaled to P_SCALED_STATS_TOTAL.
+#define P_FLAG_SCALEMONS                 0  // If this flag is set, all base stats except for HP of all Pokémon will be scaled to P_SCALED_STATS_TOTAL.
 
 // Go here if you want to disable specific families of Pokémon.
 #include "config/species_enabled.h"
