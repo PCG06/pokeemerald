@@ -3383,9 +3383,7 @@ const u8* FaintClearSetData(u32 battler)
         gBattleStruct->lastTakenMoveFrom[i][battler] = 0;
     }
 
-    gBattleMons[battler].types[0] = GetSpeciesType(gBattleMons[battler].species, 0);
-    gBattleMons[battler].types[1] = GetSpeciesType(gBattleMons[battler].species, 1);
-    gBattleMons[battler].types[2] = TYPE_MYSTERY;
+    SetBattlerTypes(battler);
 
     Ai_UpdateFaintData(battler);
     TryBattleFormChange(battler, FORM_CHANGE_FAINT);
@@ -3479,9 +3477,7 @@ static void DoBattleIntro(void)
             else
             {
                 memcpy(&gBattleMons[battler], &gBattleResources->bufferB[battler][4], sizeof(struct BattlePokemon));
-                gBattleMons[battler].types[0] = GetSpeciesType(gBattleMons[battler].species, 0);
-                gBattleMons[battler].types[1] = GetSpeciesType(gBattleMons[battler].species, 1);
-                gBattleMons[battler].types[2] = TYPE_MYSTERY;
+                SetBattlerTypes(battler);
                 gBattleMons[battler].ability = GetAbilityBySpecies(gBattleMons[battler].species, gBattleMons[battler].abilityNum);
                 gBattleStruct->hpOnSwitchout[GetBattlerSide(battler)] = gBattleMons[battler].hp;
                 memset(&gBattleMons[battler].volatiles, 0, sizeof(struct Volatiles));
@@ -6191,4 +6187,23 @@ void BattleDebug_WonBattle(void)
 {
     gBattleOutcome |= B_OUTCOME_WON;
     gBattleMainFunc = sEndTurnFuncsTable[gBattleOutcome & 0x7F];
+}
+
+void SetBattlerTypes(u32 battler)
+{
+    if (!P_FLAG_CAMOMONS)
+    {
+        gBattleMons[battler].types[0] = GetSpeciesType(gBattleMons[battler].species, 0);
+        gBattleMons[battler].types[1] = GetSpeciesType(gBattleMons[battler].species, 1);
+        gBattleMons[battler].types[2] = TYPE_MYSTERY;
+    }
+    else
+    {
+	    gBattleMons[battler].types[0] = GetMoveType(gBattleMons[battler].moves[0]);
+	    if (gBattleMons[battler].moves[1] != MOVE_NONE)
+	    	gBattleMons[battler].types[1] = GetMoveType(gBattleMons[battler].moves[1]);
+	    else
+	    	gBattleMons[battler].types[1] = gBattleMons[battler].types[0];
+        gBattleMons[battler].types[2] = TYPE_MYSTERY;
+    }
 }

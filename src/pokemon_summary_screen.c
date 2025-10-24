@@ -4266,8 +4266,30 @@ void SetTypeSpritePosAndPal(u8 typeId, u8 x, u8 y, u8 spriteArrayId)
     SetSpriteInvisibility(spriteArrayId, FALSE);
 }
 
+void GetTypesForSummary(u8 types[])
+{    
+    struct PokeSummary *summary = &sMonSummaryScreen->summary;
+
+    if (!P_FLAG_CAMOMONS)
+    {
+        types[0] = GetSpeciesType(summary->species, 0);
+        types[1] = GetSpeciesType(summary->species, 1);
+    }
+    else
+    {
+	    types[0] = GetMoveType(summary->moves[0]);
+	    if (summary->moves[1] != MOVE_NONE)
+	    	types[1] = GetMoveType(summary->moves[1]);
+	    else
+	    	types[1] = types[0];
+    }
+}
+
 static void SetMonTypeIcons(void)
 {
+    u8 types[2];
+    GetTypesForSummary(types);
+
     struct PokeSummary *summary = &sMonSummaryScreen->summary;
     if (summary->isEgg)
     {
@@ -4276,10 +4298,10 @@ static void SetMonTypeIcons(void)
     }
     else
     {
-        SetTypeSpritePosAndPal(GetSpeciesType(summary->species, 0), 120, 48, SPRITE_ARR_ID_TYPE);
-        if (GetSpeciesType(summary->species, 0) != GetSpeciesType(summary->species, 1))
+        SetTypeSpritePosAndPal(types[0], 120, 48, SPRITE_ARR_ID_TYPE);
+        if (types[0] != types[1])
         {
-            SetTypeSpritePosAndPal(GetSpeciesType(summary->species, 1), 160, 48, SPRITE_ARR_ID_TYPE + 1);
+            SetTypeSpritePosAndPal(types[1], 160, 48, SPRITE_ARR_ID_TYPE + 1);
             SetSpriteInvisibility(SPRITE_ARR_ID_TYPE + 1, FALSE);
         }
         else
