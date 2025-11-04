@@ -509,18 +509,6 @@ static bool32 ShouldDoNearbyMessage(void)
                 return TRUE;
         }
     }
-    else
-    {
-        if (state->matchCallEntries[selection].headerId == MC_HEADER_WATTSON)
-        {
-            if (GetMatchCallMapSec(selection) == gMapHeader.regionMapSectionId
-             && FlagGet(FLAG_BADGE05_GET) == TRUE)
-            {
-                if (!FlagGet(FLAG_WATTSON_REMATCH_AVAILABLE))
-                    return TRUE;
-            }
-        }
-    }
 #endif //FREE_MATCH_CALL
     return FALSE;
 }

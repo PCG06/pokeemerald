@@ -11,9 +11,7 @@ Debug_ShowFieldMessageStringVar4::
 Debug_CheatStart::
 	setflag FLAG_SYS_POKEMON_GET
 	setflag FLAG_RESCUED_BIRCH
-	setflag FLAG_HIDE_ROUTE_101_BIRCH_ZIGZAGOON_BATTLE
 	setflag FLAG_ADVENTURE_STARTED
-	clearflag FLAG_HIDE_LITTLEROOT_TOWN_BIRCHS_LAB_BIRCH
 	setflag FLAG_HIDE_ROUTE_101_BIRCH_STARTERS_BAG
 	setvar VAR_BIRCH_LAB_STATE, 2
 	setvar VAR_ROUTE101_STATE, 3
@@ -26,7 +24,6 @@ Debug_CheatStart::
 	setvar VAR_CABLE_CLUB_TUTORIAL_STATE, 2
 	setflag FLAG_SYS_NATIONAL_DEX
 	special EnableNationalPokedex
-	setflag FLAG_RECEIVED_RUNNING_SHOES
 	setflag FLAG_SYS_B_DASH
 	setvar VAR_LITTLEROOT_TOWN_STATE, 4 @ 4: Received Running Shoes
 	setvar VAR_LITTLEROOT_INTRO_STATE, 7 @ 7: Told to go meet rival
@@ -37,7 +34,6 @@ Debug_CheatStart::
 	additem ITEM_ACRO_BIKE
 	setvar VAR_BRINEY_HOUSE_STATE, 1
 	setvar VAR_ROUTE116_STATE, 2
-	setflag FLAG_HIDE_ROUTE_116_MR_BRINEY
 	setflag FLAG_BADGE01_GET
 	setflag FLAG_BADGE02_GET
 	setflag FLAG_BADGE03_GET
@@ -64,8 +60,6 @@ Debug_CheatStart::
 	setflag FLAG_VISITED_EVER_GRANDE_CITY
 	setflag FLAG_LANDMARK_POKEMON_LEAGUE
 	setflag FLAG_LANDMARK_BATTLE_FRONTIER
-	clearflag FLAG_HIDE_BRINEYS_HOUSE_MR_BRINEY
-	clearflag FLAG_HIDE_BRINEYS_HOUSE_PEEKO
 	release
 	end
 
@@ -298,7 +292,7 @@ Debug_Follower_NPC_Test_Message:
 	.string "This is a Follower NPC test.$"
 
 Debug_EventScript_Steven_Multi::
-	call MossdeepCity_SpaceCenter_2F_EventScript_ChoosePartyForMultiBattle
+	@call MossdeepCity_SpaceCenter_2F_EventScript_ChoosePartyForMultiBattle
 	release
 	end
 

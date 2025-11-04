@@ -569,35 +569,6 @@ static const struct MenuAction MultichoiceList_FrontierGamblerBet[] =
     {gText_Exit},
 };
 
-static const struct MenuAction MultichoiceList_UnusedSSTidal1[] =
-{
-    {gText_SouthernIsland},
-    {gText_BirthIsland},
-    {gText_Exit},
-};
-
-static const struct MenuAction MultichoiceList_UnusedSSTidal2[] =
-{
-    {gText_SouthernIsland},
-    {gText_FarawayIsland},
-    {gText_Exit},
-};
-
-static const struct MenuAction MultichoiceList_UnusedSSTidal3[] =
-{
-    {gText_BirthIsland},
-    {gText_FarawayIsland},
-    {gText_Exit},
-};
-
-static const struct MenuAction MultichoiceList_UnusedSSTidal4[] =
-{
-    {gText_SouthernIsland},
-    {gText_BirthIsland},
-    {gText_FarawayIsland},
-    {gText_Exit},
-};
-
 static const struct MenuAction MultichoiceList_Fossil[] =
 {
     {COMPOUND_STRING("CLAW FOSSIL")},
@@ -799,7 +770,7 @@ static const struct MultichoiceListStruct sMultichoiceLists[] =
     [MULTI_BASE_PC_NO_REGISTRY]        = MULTICHOICE(MultichoiceList_BasePCNoRegistry),
     [MULTI_BASE_PC_WITH_REGISTRY]      = MULTICHOICE(MultichoiceList_BasePCWithRegistry),
     [MULTI_REGISTER_MENU]              = MULTICHOICE(MultichoiceList_RegisterMenu),
-    [MULTI_SSTIDAL_LILYCOVE]           = MULTICHOICE(MultichoiceList_Exit),
+    [MULTI_UNUSED_8]                   = MULTICHOICE(MultichoiceList_Exit),
     [MULTI_UNUSED_9]                   = MULTICHOICE(MultichoiceList_Exit),
     [MULTI_UNUSED_10]                  = MULTICHOICE(MultichoiceList_Exit),
     [MULTI_FRONTIER_PASS_INFO]         = MULTICHOICE(MultichoiceList_FrontierPassInfo),
@@ -880,10 +851,10 @@ static const struct MultichoiceListStruct sMultichoiceLists[] =
     [MULTI_FORCED_START_MENU]          = MULTICHOICE(MultichoiceList_ForcedStartMenu),
     [MULTI_FRONTIER_GAMBLER_BET]       = MULTICHOICE(MultichoiceList_FrontierGamblerBet),
     [MULTI_TENT]                       = MULTICHOICE(MultichoiceList_Tent),
-    [MULTI_UNUSED_SSTIDAL_1]           = MULTICHOICE(MultichoiceList_UnusedSSTidal1),
-    [MULTI_UNUSED_SSTIDAL_2]           = MULTICHOICE(MultichoiceList_UnusedSSTidal2),
-    [MULTI_UNUSED_SSTIDAL_3]           = MULTICHOICE(MultichoiceList_UnusedSSTidal3),
-    [MULTI_UNUSED_SSTIDAL_4]           = MULTICHOICE(MultichoiceList_UnusedSSTidal4),
+    [MULTI_UNUSED_89]                  = MULTICHOICE(MultichoiceList_Exit),
+    [MULTI_UNUSED_90]                  = MULTICHOICE(MultichoiceList_Exit),
+    [MULTI_UNUSED_91]                  = MULTICHOICE(MultichoiceList_Exit),
+    [MULTI_UNUSED_92]                  = MULTICHOICE(MultichoiceList_Exit),
     [MULTI_FOSSIL]                     = MULTICHOICE(MultichoiceList_Fossil),
     [MULTI_YESNO]                      = MULTICHOICE(MultichoiceList_YesNo),
     [MULTI_FRONTIER_RULES]             = MULTICHOICE(MultichoiceList_FrontierRules),

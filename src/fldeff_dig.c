@@ -43,8 +43,7 @@ bool8 FldEff_UseDig(void)
 
     gTasks[taskId].data[8] = (u32)StartDigFieldEffect >> 16;
     gTasks[taskId].data[9] = (u32)StartDigFieldEffect;
-    if (!ShouldDoBrailleDigEffect())
-        SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ON_FOOT);
+    SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ON_FOOT);
     return FALSE;
 }
 
@@ -53,14 +52,6 @@ static void StartDigFieldEffect(void)
     u8 taskId;
 
     FieldEffectActiveListRemove(FLDEFF_USE_DIG);
-    if (ShouldDoBrailleDigEffect())
-    {
-        // EventScript_DigSealedChamber handles DoBrailleDigEffect call
-        ScriptContext_Enable();
-    }
-    else
-    {
-        taskId = CreateTask(Task_UseDigEscapeRopeOnField, 8);
-        gTasks[taskId].data[0] = 0;
-    }
+    taskId = CreateTask(Task_UseDigEscapeRopeOnField, 8);
+    gTasks[taskId].data[0] = 0;
 }

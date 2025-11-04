@@ -160,18 +160,18 @@ static void MatchCall_GetNameAndDescByRematchIdx(u32, const u8 **, const u8 **);
 // .rodata
 
 static const match_call_text_data_t sMrStoneTextScripts[] = {
-    { MatchCall_Text_MrStone1,  0xFFFF,                              FLAG_ENABLE_MR_STONE_POKENAV },
-    { MatchCall_Text_MrStone2,  FLAG_ENABLE_MR_STONE_POKENAV,        0xFFFF },
-    { MatchCall_Text_MrStone3,  FLAG_DELIVERED_STEVEN_LETTER,        0xFFFF },
-    { MatchCall_Text_MrStone4,  FLAG_RECEIVED_EXP_SHARE,             0xFFFF },
-    { MatchCall_Text_MrStone5,  FLAG_RECEIVED_HM_STRENGTH,           0xFFFF },
-    { MatchCall_Text_MrStone6,  FLAG_DEFEATED_PETALBURG_GYM,         0xFFFF },
-    { MatchCall_Text_MrStone7,  FLAG_RECEIVED_CASTFORM,              0xFFFF },
-    { MatchCall_Text_MrStone8,  FLAG_GROUDON_AWAKENED_MAGMA_HIDEOUT, 0xFFFF },
-    { MatchCall_Text_MrStone9,  FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE, 0xFFFF },
-    { MatchCall_Text_MrStone10, FLAG_DEFEATED_SOOTOPOLIS_GYM,        0xFFFF },
-    { MatchCall_Text_MrStone11, FLAG_SYS_GAME_CLEAR,                 0xFFFF },
-    { NULL,                     0xFFFF,                              0xFFFF }
+    { MatchCall_Text_MrStone1,  0xFFFF, FLAG_ENABLE_MR_STONE_POKENAV },
+    { MatchCall_Text_MrStone2,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone3,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone4,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone5,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone6,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone7,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone8,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone9,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone10, 0xFFFF, 0xFFFF },
+    { MatchCall_Text_MrStone11, 0xFFFF, 0xFFFF },
+    { NULL,                     0xFFFF, 0xFFFF }
 };
 
 static const struct MatchCallStructNPC sMrStoneMatchCallHeader =
@@ -185,23 +185,23 @@ static const struct MatchCallStructNPC sMrStoneMatchCallHeader =
 };
 
 static const match_call_text_data_t sNormanTextScripts[] = {
-    { MatchCall_Text_Norman1, FLAG_ENABLE_NORMAN_MATCH_CALL, 0xFFFF },
-    { MatchCall_Text_Norman2, FLAG_DEFEATED_DEWFORD_GYM,     0xFFFF },
-    { MatchCall_Text_Norman3, FLAG_DEFEATED_LAVARIDGE_GYM,   0xFFFF },
-    { MatchCall_Text_Norman4, FLAG_DEFEATED_PETALBURG_GYM,   0xFFFF },
-    { MatchCall_Text_Norman5, FLAG_RECEIVED_RED_OR_BLUE_ORB, 0xFFFF },
-    { MatchCall_Text_Norman6, 0xFFFE,                        0xFFFF },
-    { MatchCall_Text_Norman7, FLAG_SYS_GAME_CLEAR,           0xFFFF },
-    { MatchCall_Text_Norman8, FLAG_SYS_GAME_CLEAR,           0xFFFF },
-    { MatchCall_Text_Norman9, FLAG_SYS_GAME_CLEAR,           0xFFFF },
-    { NULL,                   0xFFFF,                        0xFFFF }
+    { MatchCall_Text_Norman1, 0xFFFF,              0xFFFF },
+    { MatchCall_Text_Norman2, 0xFFFF,              0xFFFF },
+    { MatchCall_Text_Norman3, 0xFFFF,              0xFFFF },
+    { MatchCall_Text_Norman4, 0xFFFF,              0xFFFF },
+    { MatchCall_Text_Norman5, 0xFFFF,              0xFFFF },
+    { MatchCall_Text_Norman6, 0xFFFE,              0xFFFF },
+    { MatchCall_Text_Norman7, FLAG_SYS_GAME_CLEAR, 0xFFFF },
+    { MatchCall_Text_Norman8, FLAG_SYS_GAME_CLEAR, 0xFFFF },
+    { MatchCall_Text_Norman9, FLAG_SYS_GAME_CLEAR, 0xFFFF },
+    { NULL,                   0xFFFF,              0xFFFF }
 };
 
 static const struct MatchCallStructTrainer sNormanMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_PETALBURG_CITY,
-    .flag = FLAG_ENABLE_NORMAN_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_NORMAN,
     .desc = COMPOUND_STRING("RELIABLE ONE"),
     .name = COMPOUND_STRING("DAD"),
@@ -212,7 +212,7 @@ static const struct MatchCallBirch sProfBirchMatchCallHeader =
 {
     .type = MC_TYPE_BIRCH,
     .mapSec = 0,
-    .flag = FLAG_ENABLE_PROF_BIRCH_MATCH_CALL,
+    .flag = 0xFFFF,
     .desc = COMPOUND_STRING("{PKMN} PROF."),
     .name = COMPOUND_STRING("PROF. BIRCH")
 };
@@ -249,7 +249,7 @@ static const struct MatchCallStructNPC sStevenMatchCallHeader =
 {
     .type = MC_TYPE_NPC,
     .mapSec = MAPSEC_NONE,
-    .flag = FLAG_REGISTERED_STEVEN_POKENAV,
+    .flag = 0xFFFF,
     .desc = COMPOUND_STRING("HARD AS ROCK"),
     .name = COMPOUND_STRING("STEVEN"),
     .textData = sStevenTextScripts
@@ -259,20 +259,20 @@ static const u8 gText_MayBrendanMatchCallDesc[] = _("RAD NEIGHBOR");
 
 static const match_call_text_data_t sMayTextScripts[] = {
     { MatchCall_Text_May1,  0xFFFF,                              0xFFFF },
-    { MatchCall_Text_May2,  FLAG_DEFEATED_DEWFORD_GYM,           0xFFFF },
-    { MatchCall_Text_May3,  FLAG_DELIVERED_DEVON_GOODS,          0xFFFF },
-    { MatchCall_Text_May4,  FLAG_HIDE_MAUVILLE_CITY_WALLY,       0xFFFF },
-    { MatchCall_Text_May5,  FLAG_RECEIVED_HM_STRENGTH,           0xFFFF },
-    { MatchCall_Text_May6,  FLAG_DEFEATED_LAVARIDGE_GYM,         0xFFFF },
-    { MatchCall_Text_May7,  FLAG_DEFEATED_PETALBURG_GYM,         0xFFFF },
-    { MatchCall_Text_May8,  FLAG_RECEIVED_CASTFORM,              0xFFFF },
-    { MatchCall_Text_May9,  FLAG_RECEIVED_RED_OR_BLUE_ORB,       0xFFFF },
-    { MatchCall_Text_May10, FLAG_GROUDON_AWAKENED_MAGMA_HIDEOUT, 0xFFFF },
-    { MatchCall_Text_May11, FLAG_MET_TEAM_AQUA_HARBOR,           0xFFFF },
-    { MatchCall_Text_May12, FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE, 0xFFFF },
-    { MatchCall_Text_May13, FLAG_KYOGRE_ESCAPED_SEAFLOOR_CAVERN, 0xFFFF },
-    { MatchCall_Text_May14, FLAG_DEFEATED_SOOTOPOLIS_GYM,        0xFFFF },
-    { MatchCall_Text_May15, FLAG_SYS_GAME_CLEAR,                 0xFFFF },
+    { MatchCall_Text_May2,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May3,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May4,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May5,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May6,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May7,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May8,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May9,  0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May10, 0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May11, 0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May12, 0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May13, 0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May14, 0xFFFF,                              0xFFFF },
+    { MatchCall_Text_May15, 0xFFFF,                              0xFFFF },
     { NULL,                 0xFFFF,                              0xFFFF }
 };
 
@@ -280,36 +280,36 @@ static const struct MatchCallRival sMayMatchCallHeader =
 {
     .type = MC_TYPE_RIVAL,
     .playerGender = MALE,
-    .flag = FLAG_ENABLE_RIVAL_MATCH_CALL,
+    .flag = 0xFFFF,
     .desc = gText_MayBrendanMatchCallDesc,
     .name = gText_ExpandedPlaceholder_May,
     .textData = sMayTextScripts
 };
 
 static const match_call_text_data_t sBrendanTextScripts[] = {
-    { MatchCall_Text_Brendan1,  0xFFFF,                              0xFFFF },
-    { MatchCall_Text_Brendan2,  FLAG_DEFEATED_DEWFORD_GYM,           0xFFFF },
-    { MatchCall_Text_Brendan3,  FLAG_DELIVERED_DEVON_GOODS,          0xFFFF },
-    { MatchCall_Text_Brendan4,  FLAG_HIDE_MAUVILLE_CITY_WALLY,       0xFFFF },
-    { MatchCall_Text_Brendan5,  FLAG_RECEIVED_HM_STRENGTH,           0xFFFF },
-    { MatchCall_Text_Brendan6,  FLAG_DEFEATED_LAVARIDGE_GYM,         0xFFFF },
-    { MatchCall_Text_Brendan7,  FLAG_DEFEATED_PETALBURG_GYM,         0xFFFF },
-    { MatchCall_Text_Brendan8,  FLAG_RECEIVED_CASTFORM,              0xFFFF },
-    { MatchCall_Text_Brendan9,  FLAG_RECEIVED_RED_OR_BLUE_ORB,       0xFFFF },
-    { MatchCall_Text_Brendan10, FLAG_GROUDON_AWAKENED_MAGMA_HIDEOUT, 0xFFFF },
-    { MatchCall_Text_Brendan11, FLAG_MET_TEAM_AQUA_HARBOR,           0xFFFF },
-    { MatchCall_Text_Brendan12, FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE, 0xFFFF },
-    { MatchCall_Text_Brendan13, FLAG_KYOGRE_ESCAPED_SEAFLOOR_CAVERN, 0xFFFF },
-    { MatchCall_Text_Brendan14, FLAG_DEFEATED_SOOTOPOLIS_GYM,        0xFFFF },
-    { MatchCall_Text_Brendan15, FLAG_SYS_GAME_CLEAR,                 0xFFFF },
-    { NULL,                     0xFFFF,                              0xFFFF }
+    { MatchCall_Text_Brendan1,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan2,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan3,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan4,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan5,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan6,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan7,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan8,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan9,  0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan10, 0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan11, 0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan12, 0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan13, 0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan14, 0xFFFF, 0xFFFF },
+    { MatchCall_Text_Brendan15, 0xFFFF, 0xFFFF },
+    { NULL,                     0xFFFF, 0xFFFF }
 };
 
 static const struct MatchCallRival sBrendanMatchCallHeader =
 {
     .type = MC_TYPE_RIVAL,
     .playerGender = FEMALE,
-    .flag = FLAG_ENABLE_RIVAL_MATCH_CALL,
+    .flag = 0xFFFF,
     .desc = gText_MayBrendanMatchCallDesc,
     .name = gText_ExpandedPlaceholder_Brendan,
     .textData = sBrendanTextScripts
@@ -327,10 +327,10 @@ static const match_call_text_data_t sWallyTextScripts[] = {
 };
 
 static const struct MatchCallLocationOverride sWallyLocationData[] = {
-    { FLAG_HIDE_MAUVILLE_CITY_WALLY,          MAPSEC_VERDANTURF_TOWN },
-    { FLAG_GROUDON_AWAKENED_MAGMA_HIDEOUT,    MAPSEC_NONE },
-    { FLAG_HIDE_VICTORY_ROAD_ENTRANCE_WALLY,  MAPSEC_VICTORY_ROAD },
-    { 0xFFFF,                                 MAPSEC_NONE }
+    { 0xFFFF, MAPSEC_VERDANTURF_TOWN },
+    { 0xFFFF, MAPSEC_NONE },
+    { 0xFFFF, MAPSEC_VICTORY_ROAD },
+    { 0xFFFF, MAPSEC_NONE }
 };
 
 static const struct MatchCallWally sWallyMatchCallHeader =
@@ -378,7 +378,7 @@ static const struct MatchCallStructTrainer sRoxanneMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_RUSTBORO_CITY,
-    .flag = FLAG_ENABLE_ROXANNE_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_ROXANNE,
     .desc = COMPOUND_STRING("ROCKIN' WHIZ"),
     .name = NULL,
@@ -397,7 +397,7 @@ static const struct MatchCallStructTrainer sBrawlyMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_DEWFORD_TOWN,
-    .flag = FLAG_ENABLE_BRAWLY_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_BRAWLY,
     .desc = COMPOUND_STRING("THE BIG HIT"),
     .name = NULL,
@@ -416,7 +416,7 @@ static const struct MatchCallStructTrainer sWattsonMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_MAUVILLE_CITY,
-    .flag = FLAG_ENABLE_WATTSON_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_WATTSON,
     .desc = COMPOUND_STRING("SWELL SHOCK"),
     .name = NULL,
@@ -435,7 +435,7 @@ static const struct MatchCallStructTrainer sFlanneryMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_LAVARIDGE_TOWN,
-    .flag = FLAG_ENABLE_FLANNERY_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_FLANNERY,
     .desc = COMPOUND_STRING("PASSION BURN"),
     .name = NULL,
@@ -454,7 +454,7 @@ static const struct MatchCallStructTrainer sWinonaMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_FORTREE_CITY,
-    .flag = FLAG_ENABLE_WINONA_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_WINONA,
     .desc = COMPOUND_STRING("SKY TAMER"),
     .name = NULL,
@@ -473,7 +473,7 @@ static const struct MatchCallStructTrainer sTateLizaMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_MOSSDEEP_CITY,
-    .flag = FLAG_ENABLE_TATE_AND_LIZA_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_TATE_AND_LIZA,
     .desc = COMPOUND_STRING("MYSTIC DUO"),
     .name = NULL,
@@ -492,7 +492,7 @@ static const struct MatchCallStructTrainer sJuanMatchCallHeader =
 {
     .type = MC_TYPE_LEADER,
     .mapSec = MAPSEC_SOOTOPOLIS_CITY,
-    .flag = FLAG_ENABLE_JUAN_MATCH_CALL,
+    .flag = 0xFFFF,
     .rematchTableIdx = REMATCH_JUAN,
     .desc = COMPOUND_STRING("DANDY CHARM"),
     .name = NULL,

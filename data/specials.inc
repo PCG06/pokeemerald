@@ -169,7 +169,6 @@ gSpecials::
 	def_special GetPlayerBigGuyGirlString
 	def_special GetRivalSonDaughterString
 	def_special SetHiddenItemFlag
-	def_special CableCarWarp
 	def_special CableCar
 	def_special Overworld_PlaySpecialMapMusic
 	def_special StartWallClock
@@ -197,7 +196,6 @@ gSpecials::
 	def_special IsGabbyAndTyShowOnTheAir
 	def_special GabbyAndTyGetLastQuote
 	def_special GabbyAndTyGetLastBattleTrivia
-	def_special GetGabbyAndTyLocalIds
 	def_special GetBattleOutcome
 	def_special GetDaycareMonNicknames
 	def_special GetDaycareState
@@ -278,8 +276,6 @@ gSpecials::
 	def_special RetrieveLotteryNumber
 	def_special PickLotteryCornerTicket
 	def_special ShowBerryBlenderRecordWindow
-	def_special ResetTrickHouseNuggetFlag
-	def_special SetTrickHouseNuggetFlag
 	def_special ScriptMenu_CreatePCMultichoice
 	def_special AccessHallOfFamePC
 	def_special Special_ShowDiploma
@@ -288,7 +284,6 @@ gSpecials::
 	def_special CheckLeadMonCute
 	def_special CheckLeadMonSmart
 	def_special CheckLeadMonTough
-	def_special LookThroughPorthole
 	def_special DoSoftReset
 	def_special GameClear
 	def_special MoveElevator
@@ -298,24 +293,18 @@ gSpecials::
 	def_special GetPokeblockNameByMonNature
 	def_special GetSecretBaseNearbyMapName
 	def_special CheckRelicanthWailord
-	def_special ShouldDoBrailleRegirockEffectOld
 	def_special DoOrbEffect
 	def_special FadeOutOrbEffect
 	def_special WaitWeather
 	def_special BufferEReaderTrainerName
 	def_special GetSlotMachineId
 	def_special GetPlayerFacingDirection, requests_effects=TRUE
-	def_special FoundAbandonedShipRoom1Key
-	def_special FoundAbandonedShipRoom2Key
-	def_special FoundAbandonedShipRoom4Key
-	def_special FoundAbandonedShipRoom6Key
 	def_special LeadMonHasEffortRibbon
 	def_special GiveLeadMonEffortRibbon
 	def_special Special_AreLeadMonEVsMaxedOut
 	def_special Script_FacePlayer
 	def_special Script_ClearHeldMovement
 	def_special InitRoamer
-	def_special TryUpdateRusturfTunnelState
 	def_special IsGrassTypeInParty
 	def_special DoContestHallWarp
 	def_special LoadWallyZigzagoon
@@ -333,7 +322,6 @@ gSpecials::
 	def_special StartRegiBattle
 	def_special SetTrainerFacingDirection
 	def_special DoSealedChamberShakingEffect_Short
-	def_special FoundBlackGlasses
 	def_special StartDroughtWeatherBlend
 	def_special DoDiveWarp
 	def_special DoFallWarp
@@ -428,7 +416,6 @@ gSpecials::
 	def_special ShowMapNamePopup
 	def_special DoMirageTowerCeilingCrumble
 	def_special SetMirageTowerVisibility
-	def_special StartPlayerDescendMirageTower
 	def_special BufferTMHMMoveName
 	def_special IsWirelessAdapterConnected
 	def_special TryBecomeLinkLeader
@@ -448,7 +435,6 @@ gSpecials::
 	def_special IsDodrioInParty
 	def_special ShowDodrioBerryPickingRecords
 	def_special OffsetCameraForBattle
-	def_special GetDeptStoreDefaultFloorChoice
 	def_special BufferVarsForIVRater
 	def_special LinkContestWaitForConnection
 	def_special GetWirelessCommType
@@ -506,25 +492,20 @@ gSpecials::
 	def_special SetMatchCallRegisteredFlag
 	def_special DoDomeConfetti
 	def_special CreateAbnormalWeatherEvent
-	def_special GetAbnormalWeatherMapNameAndType
 	def_special GetMartEmployeeObjectEventId
 	def_special SaveForBattleTowerLink
 	def_special Unused_SetWeatherSunny
 	def_special SetUnlockedPokedexFlags
 	def_special IsTrainerRegistered
-	def_special ShouldDoBrailleRegicePuzzle
 	def_special EnableNationalPokedex
-	def_special ScriptMenu_CreateLilycoveSSTidalMultichoice
 	def_special GetLilycoveSSTidalSelection
 	def_special TurnOnTVScreen
-	def_special SetMewAboveGrass
 	def_special ShouldDistributeEonTicket
 	def_special LinkRetireStatusWithBattleTowerPartner
 	def_special BattleTowerReconnectLink
 	def_special CallTrainerHillFunction
 	def_special Script_DoRayquazaScene @ Listed twice
 	def_special LoopWingFlapSE
-	def_special DestroyMewEmergingGrassSprite
 	def_special ShowBerryCrushRankings
 	def_special TryBufferWaldaPhrase
 	def_special DoWaldaNamingScreen
@@ -534,7 +515,6 @@ gSpecials::
 	def_special LoadLinkContestPlayerPalettes
 	def_special ShowTrainerHillRecords
 	def_special PlayerFaceTrainerAfterBattle
-	def_special ResetHealLocationFromDewford
 	def_special IsLastMonThatKnowsSurf
 	def_special CountPartyAliveNonEggMons
 	def_special TryPrepareSecondApproachingTrainer

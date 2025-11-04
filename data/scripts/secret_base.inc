@@ -662,8 +662,6 @@ SecretBase_EventScript_LostSecretBaseBattle::
 	special LostSecretBaseBattle
 	return
 
-	.include "data/scripts/secret_power_tm.inc"
-
 SecretBase_EventScript_DollInteract::
 	special CheckInteractedWithFriendsDollDecor
 	end

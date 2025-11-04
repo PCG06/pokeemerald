@@ -16,7 +16,7 @@
 #define MULTI_BASE_PC_NO_REGISTRY          5
 #define MULTI_BASE_PC_WITH_REGISTRY        6
 #define MULTI_REGISTER_MENU                7
-#define MULTI_SSTIDAL_LILYCOVE             8 // Exit only, populated by CreateLilycoveSSTidalMultichoice
+#define MULTI_UNUSED_8                     8
 #define MULTI_UNUSED_9                     9
 #define MULTI_UNUSED_10                    10
 #define MULTI_FRONTIER_PASS_INFO           11
@@ -97,10 +97,10 @@
 #define MULTI_FORCED_START_MENU            86
 #define MULTI_FRONTIER_GAMBLER_BET         87
 #define MULTI_TENT                         88
-#define MULTI_UNUSED_SSTIDAL_1             89 // These 4 were replaced by CreateLilycoveSSTidalMultichoice
-#define MULTI_UNUSED_SSTIDAL_2             90 //
-#define MULTI_UNUSED_SSTIDAL_3             91 //
-#define MULTI_UNUSED_SSTIDAL_4             92 //
+#define MULTI_UNUSED_89                    89
+#define MULTI_UNUSED_90                    90
+#define MULTI_UNUSED_91                    91
+#define MULTI_UNUSED_92                    92
 #define MULTI_FOSSIL                       93
 #define MULTI_YESNO                        94
 #define MULTI_FRONTIER_RULES               95
