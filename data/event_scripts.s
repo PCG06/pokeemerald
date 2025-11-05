@@ -353,7 +353,7 @@ EventScript_UnusedBoardFerry::
 	delay 30
 	applymovement LOCALID_PLAYER, Common_Movement_WalkInPlaceFasterUp
 	waitmovement 0
-	showobjectat LOCALID_PLAYER, 0
+	showplayer
 	delay 30
 	applymovement LOCALID_PLAYER, Movement_UnusedBoardFerry
 	waitmovement 0
@@ -366,7 +366,7 @@ Movement_UnusedBoardFerry:
 
 Common_EventScript_FerryDepartIsland::
 	delay 30
-	hideobjectat LOCALID_PLAYER, 0
+	hideplayer
 	call Common_EventScript_FerryDepart
 	return
 
@@ -674,6 +674,7 @@ EventScript_VsSeekerChargingDone::
 	.include "data/scripts/move_reminder.inc"
 	.include "data/scripts/wall_clock.inc"
 	.include "data/maps/DemoTown/scripts.inc"
+	.include "data/scripts/battle_frontier.inc"
 
 	.include "data/maps/DemoTown_Library/scripts.inc"
 	.include "data/maps/TwinleafTown/scripts.inc"
