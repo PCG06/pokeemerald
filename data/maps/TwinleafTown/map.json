@@ -1,0 +1,66 @@
+{
+  "id": "MAP_TWINLEAF_TOWN",
+  "name": "TwinleafTown",
+  "layout": "LAYOUT_TWINLEAF_TOWN",
+  "music": "MUS_LITTLEROOT_TEST",
+  "region_map_section": "MAPSEC_TWINLEAF_TOWN",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_TOWN",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_ROUTE201",
+      "offset": -4,
+      "direction": "up"
+    },
+    {
+      "map": "MAP_ROUTE220",
+      "offset": 0,
+      "direction": "down"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 16,
+      "y": 18,
+      "elevation": 0,
+      "dest_map": "MAP_TWINLEAF_TOWN_MAIN_HOUSE_1F",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 5,
+      "y": 9,
+      "elevation": 0,
+      "dest_map": "MAP_TWINLEAF_TOWN_RIVALS_HOUSE_F1",
+      "dest_warp_id": "1"
+    },
+    {
+      "x": 6,
+      "y": 18,
+      "elevation": 0,
+      "dest_map": "MAP_TWINLEAF_TOWN_HAOUSE1",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 16,
+      "y": 9,
+      "elevation": 0,
+      "dest_map": "MAP_TWINLEAF_TOWN_HOUSE2",
+      "dest_warp_id": "0"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

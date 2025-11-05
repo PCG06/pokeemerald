@@ -1,0 +1,59 @@
+{
+  "id": "MAP_ROUTE213",
+  "name": "Route213",
+  "layout": "LAYOUT_ROUTE213",
+  "music": "MUS_RG_ROUTE3",
+  "region_map_section": "MAPSEC_ROUTE_213",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_PASTORIA_CITY",
+      "offset": -2,
+      "direction": "left"
+    },
+    {
+      "map": "MAP_VALOR_LAKEFRONT",
+      "offset": 40,
+      "direction": "up"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 4,
+      "y": 9,
+      "elevation": 0,
+      "dest_map": "MAP_ROUTE213_ACCESS",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 68,
+      "y": 16,
+      "elevation": 0,
+      "dest_map": "MAP_HOTEL_GRAND_LAKE",
+      "dest_warp_id": "1"
+    },
+    {
+      "x": 68,
+      "y": 11,
+      "elevation": 0,
+      "dest_map": "MAP_HOTEL_GRAND_LAKE",
+      "dest_warp_id": "0"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

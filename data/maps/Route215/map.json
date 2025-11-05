@@ -1,0 +1,45 @@
+{
+  "id": "MAP_ROUTE215",
+  "name": "Route215",
+  "layout": "LAYOUT_ROUTE215",
+  "music": "MUS_RG_ROUTE24",
+  "region_map_section": "MAPSEC_ROUTE_215",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_ROUTE210_SOUTH",
+      "offset": -26,
+      "direction": "left"
+    },
+    {
+      "map": "MAP_VEILSTONE_CITY",
+      "offset": 1,
+      "direction": "right"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 95,
+      "y": 27,
+      "elevation": 0,
+      "dest_map": "MAP_ROUTE215_ACCESS",
+      "dest_warp_id": "1"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

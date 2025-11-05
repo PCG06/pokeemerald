@@ -136,15 +136,15 @@ static const struct DoorAnimFrame sDoorOpenAnimFrames[] =
 {
     {4, -1},
     {4, 0},
+    {4, 0x80},
     {4, 0x100},
-    {4, 0x200},
     {0, 0},
 };
 
 static const struct DoorAnimFrame sDoorCloseAnimFrames[] =
 {
-    {4, 0x200},
     {4, 0x100},
+    {4, 0x80},
     {4, 0},
     {4, -1},
     {0, 0},
@@ -338,24 +338,18 @@ static void DrawCurrentDoorAnimFrame(const struct DoorGraphics *gfx, u32 x, u32 
     }
     else
     {
-        // Top metatile
-        BuildDoorTiles(&tiles[0], DOOR_TILE_START_SIZE1 + 0, &paletteNums[0]);
-        DrawDoorMetatileAt(x, y - 1, &tiles[0]);
-
         // Bottom metatile
-        BuildDoorTiles(&tiles[0], DOOR_TILE_START_SIZE1 + 4, &paletteNums[4]);
+        BuildDoorTiles(&tiles[0], DOOR_TILE_START_SIZE1 + 4, &paletteNums[0]);
         DrawDoorMetatileAt(x, y, &tiles[0]);
     }
 }
 
 static void DrawClosedDoorTiles(const struct DoorGraphics *gfx, u32 x, u32 y)
 {
-    CurrentMapDrawMetatileAt(x, y - 1);
     CurrentMapDrawMetatileAt(x, y);
 
     if (gfx->size == 2)
     {
-        CurrentMapDrawMetatileAt(x + 1, y - 1);
         CurrentMapDrawMetatileAt(x + 1, y);
     }
 }

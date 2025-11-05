@@ -1,0 +1,118 @@
+{
+  "id": "MAP_JUBILIFE_CITY",
+  "name": "JubilifeCity",
+  "layout": "LAYOUT_JUBILIFE_CITY",
+  "music": "MUS_RUSTBORO",
+  "region_map_section": "MAPSEC_JUBILIFE_CITY",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_CITY",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_ROUTE202",
+      "offset": 38,
+      "direction": "down"
+    },
+    {
+      "map": "MAP_ROUTE218",
+      "offset": -4,
+      "direction": "left"
+    },
+    {
+      "map": "MAP_ROUTE203",
+      "offset": 0,
+      "direction": "right"
+    },
+    {
+      "map": "MAP_ROUTE204",
+      "offset": 36,
+      "direction": "up"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 4,
+      "y": 20,
+      "elevation": 0,
+      "dest_map": "MAP_ROUTE218_EAST",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 55,
+      "y": 36,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_POKEMON_CENTER_1F",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 54,
+      "y": 26,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_MART",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 55,
+      "y": 16,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_FLAT3_F1",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 43,
+      "y": 36,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_POKEMON_SCHOOL",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 40,
+      "y": 13,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_JUBILIFE_TV_F1",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 20,
+      "y": 13,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_POKETCH_COMPANY_F1",
+      "dest_warp_id": "2"
+    },
+    {
+      "x": 17,
+      "y": 13,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_POKETCH_COMPANY_F1",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 42,
+      "y": 49,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_FLAT2_F1",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 16,
+      "y": 49,
+      "elevation": 0,
+      "dest_map": "MAP_JUBILIFE_CITY_FLAT1_F1",
+      "dest_warp_id": "0"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

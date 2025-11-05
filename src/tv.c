@@ -4041,12 +4041,12 @@ void SanitizeTVShowLocationsForRuby(TVShow *shows)
         switch (shows[i].common.kind)
         {
         case TVSHOW_WORLD_OF_MASTERS:
-            if (shows[i].worldOfMasters.location > KANTO_MAPSEC_START)
-                memset(&shows[i], 0, sizeof(TVShow));
+            //if (shows[i].worldOfMasters.location > KANTO_MAPSEC_START)
+              //  memset(&shows[i], 0, sizeof(TVShow));
             break;
         case TVSHOW_POKEMON_TODAY_FAILED:
-            if (shows[i].pokemonTodayFailed.location > KANTO_MAPSEC_START)
-                memset(&shows[i], 0, sizeof(TVShow));
+           // if (shows[i].pokemonTodayFailed.location > KANTO_MAPSEC_START)
+            //    memset(&shows[i], 0, sizeof(TVShow));
             break;
         }
     }

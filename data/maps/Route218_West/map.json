@@ -1,0 +1,41 @@
+{
+  "id": "MAP_ROUTE218_WEST",
+  "name": "Route218_West",
+  "layout": "LAYOUT_ROUTE218_WEST",
+  "music": "MUS_POKE_CENTER",
+  "region_map_section": "MAPSEC_ROUTE_218",
+  "requires_flash": false,
+  "weather": "WEATHER_NONE",
+  "map_type": "MAP_TYPE_INDOOR",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": false,
+  "show_map_name": false,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": 0,
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 11,
+      "y": 5,
+      "elevation": 0,
+      "dest_map": "MAP_ROUTE218",
+      "dest_warp_id": "1"
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "elevation": 0,
+      "dest_map": "MAP_CANALAVE_CITY",
+      "dest_warp_id": "0"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "MAP_ROUTE210_SOUTH",
+  "name": "Route210_South",
+  "layout": "LAYOUT_ROUTE210_SOUTH",
+  "music": "MUS_RG_ROUTE11",
+  "region_map_section": "MAPSEC_ROUTE_210",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_SOLACEON_TOWN",
+      "offset": 6,
+      "direction": "down"
+    },
+    {
+      "map": "MAP_ROUTE210_NORTH",
+      "offset": -57,
+      "direction": "up"
+    },
+    {
+      "map": "MAP_ROUTE215",
+      "offset": 26,
+      "direction": "right"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

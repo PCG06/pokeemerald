@@ -1,0 +1,47 @@
+{
+  "id": "MAP_ROUTE208",
+  "name": "Route208",
+  "layout": "LAYOUT_ROUTE208",
+  "music": "MUS_RG_ROUTE24",
+  "region_map_section": "MAPSEC_ROUTE_208",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_HEARTHOME_CITY",
+      "offset": -21,
+      "direction": "right"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 8,
+      "y": 19,
+      "elevation": 0,
+      "dest_map": "MAP_MT_CORONET_1F_SOUTH",
+      "dest_warp_id": "1"
+    },
+    {
+      "x": 63,
+      "y": 24,
+      "elevation": 0,
+      "dest_map": "MAP_ROUTE208_ACCESS",
+      "dest_warp_id": "0"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

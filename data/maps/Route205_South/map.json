@@ -1,0 +1,62 @@
+{
+  "id": "MAP_ROUTE205_SOUTH",
+  "name": "Route205_South",
+  "layout": "LAYOUT_ROUTE205_SOUTH",
+  "music": "MUS_RG_ROUTE3",
+  "region_map_section": "MAPSEC_ROUTE_205",
+  "requires_flash": false,
+  "weather": "WEATHER_SUNNY",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": true,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_FLOAROMA_TOWN",
+      "offset": 64,
+      "direction": "left"
+    },
+    {
+      "map": "MAP_ROUTE205_NORTH",
+      "offset": 20,
+      "direction": "up"
+    },
+    {
+      "map": "MAP_VALLEY_WINDWORKS",
+      "offset": 65,
+      "direction": "right"
+    },
+    {
+      "map": "MAP_VALLEY_WINDWORKS",
+      "offset": 0,
+      "direction": "right"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+    {
+      "x": 14,
+      "y": 12,
+      "elevation": 0,
+      "dest_map": "MAP_ETERNA_FOREST",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 15,
+      "y": 12,
+      "elevation": 0,
+      "dest_map": "MAP_ETERNA_FOREST",
+      "dest_warp_id": "1"
+    }
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}
