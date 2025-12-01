@@ -2236,7 +2236,7 @@ static bool8 ExtractMonDataToSummaryStruct(struct Pokemon *mon)
         sum->ribbonCount = GetMonData(mon, MON_DATA_RIBBON_COUNT);        
         sum->teraType = GetMonData(mon, MON_DATA_TERA_TYPE);
         sum->isShiny = GetMonData(mon, MON_DATA_IS_SHINY);
-        sMonSummaryScreen->relearnableMovesNum = P_SUMMARY_SCREEN_MOVE_RELEARNER ? GetNumberOfRelearnableMoves(mon) : 0;
+        sMonSummaryScreen->relearnableMovesNum = P_SUMMARY_SCREEN_MOVE_RELEARNER ? GetNumberOfLevelUpMoves(mon) : 0;
         return TRUE;
     }
     sMonSummaryScreen->switchCounter++;
@@ -2414,7 +2414,7 @@ static void Task_HandleInput(u8 taskId)
             {
                 sMonSummaryScreen->callback = CB2_InitLearnMove;
                 gSpecialVar_0x8004 = sMonSummaryScreen->curMonIndex;
-                gOriginSummaryScreenPage = sMonSummaryScreen->currPageIndex;
+                gRelearnMode = RELEARN_MODE_PSS_PAGE_BATTLE_MOVES;
                 StopPokemonAnimations();
                 PlaySE(SE_SELECT);
                 BeginCloseSummaryScreen(taskId);
