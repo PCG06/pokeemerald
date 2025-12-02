@@ -246,3 +246,34 @@ AI_SINGLE_BATTLE_TEST("MoveEffectInPlus - AI prefers stat drop to neutral move i
         }
     }
 }
+
+AI_SINGLE_BATTLE_TEST("HasMoveToStopSetup - AI should not see self-targeted speed drops as preventing setup moves in 2hko cases"){
+    u16 move;
+    PARAMETRIZE { move = MOVE_EARTHQUAKE; }
+    PARAMETRIZE { move = MOVE_BULLDOZE; }
+
+    GIVEN{
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_RHYDON){
+            Level(100);
+            Nature(NATURE_ADAMANT);
+            Item(ITEM_EVIOLITE);
+            Speed(1);
+            Ability(ABILITY_LIGHTNING_ROD);
+            Moves(MOVE_HAMMER_ARM, move);
+        }
+        OPPONENT(SPECIES_GRIMMSNARL){
+            Level(100);
+            Nature(NATURE_JOLLY);
+            Ability(ABILITY_INFILTRATOR);
+            Speed(2);
+            HP(331);
+            Moves(MOVE_NASTY_PLOT, MOVE_AURA_SPHERE);
+        }
+    } WHEN {
+        TURN{
+            MOVE(player, MOVE_HAMMER_ARM);
+            EXPECT_MOVE(opponent, move == MOVE_EARTHQUAKE ? MOVE_NASTY_PLOT : MOVE_AURA_SPHERE);
+        }
+    }
+}

@@ -2331,7 +2331,7 @@ bool32 HasBattlerSideUsedMoveWithAdditionalEffect(u32 battler, u32 moveEffect)
 
 bool32 HasMoveToStopSetup(u32 battlerId, u32 noOfHitsToFaint, u32 aiIsFaster)
 {
-    s32 i;
+    s32 i, j;
     u16 *moves = GetMovesArray(battlerId);
 
     for (i = 0; i < MAX_MON_MOVES; i++)
@@ -2343,12 +2343,15 @@ bool32 HasMoveToStopSetup(u32 battlerId, u32 noOfHitsToFaint, u32 aiIsFaster)
                 if (GetMovePriority(battlerId, moves[i]) > 0)
                     return TRUE;
 
-                switch (gMovesInfo[moves[i]].additionalEffects[i].moveEffect)
+                for (j = 0; j < gMovesInfo[moves[i]].numAdditionalEffects; j++)
                 {
-                    case MOVE_EFFECT_SPD_MINUS_1:
-                    case MOVE_EFFECT_SPD_MINUS_2:
-                        if(aiIsFaster)
-                            return TRUE;
+                    switch (gMovesInfo[moves[i]].additionalEffects[j].moveEffect)
+                    {
+                        case MOVE_EFFECT_SPD_MINUS_1:
+                        case MOVE_EFFECT_SPD_MINUS_2:
+                            if (aiIsFaster && !gMovesInfo[moves[i]].additionalEffects[j].self)
+                                return TRUE;
+                    }
                 }
             }
         }
