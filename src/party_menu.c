@@ -3088,7 +3088,10 @@ static void CB2_ShowPokemonSummaryScreen(void)
     }
     else if (gPartyMenu.menuType == PARTY_MENU_TYPE_CHOOSE_HALF)
     {
-        ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        if (SWSH_SUMMARY_SCREEN)
+            ShowPokemonSummaryScreen_SwSh(SUMMARY_MODE_LOCK_MOVES, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
+        else
+            ShowPokemonSummaryScreen(SUMMARY_MODE_LOCK_MOVES, gPlayerParty, gPartyMenu.slotId, gPlayerPartyCount - 1, CB2_ReturnToPartyMenuFromSummaryScreen);
     }
     else
     {
