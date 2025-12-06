@@ -277,3 +277,17 @@ AI_SINGLE_BATTLE_TEST("HasMoveToStopSetup - AI should not see self-targeted spee
         }
     }
 }
+
+AI_SINGLE_BATTLE_TEST("Rapid Spin should prevent secondary hazard effect moves from getting a setup score boost")
+{
+    ASSUME(MoveHasAdditionalEffectSelf(MOVE_STONE_AXE, MOVE_EFFECT_STEALTH_ROCK));
+    ASSUME(MoveHasAdditionalEffectSelf(MOVE_RAPID_SPIN, MOVE_EFFECT_RAPID_SPIN));
+    ASSUME(GetMovePower(MOVE_X_SCISSOR) == 80);
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_BLASTOISE){ Level(56); Nature(NATURE_ADAMANT); Ability(ABILITY_TORRENT); Item(ITEM_MYSTIC_WATER); Speed(109); Moves(MOVE_FAKE_OUT, MOVE_FLIP_TURN, MOVE_SCALD, MOVE_RAPID_SPIN); }
+        OPPONENT(SPECIES_KLEAVOR){ Level(54); Nature(NATURE_JOLLY); Ability(ABILITY_SHARPNESS); Item(ITEM_FOCUS_SASH); Speed(124); Moves(MOVE_STONE_AXE, MOVE_X_SCISSOR, MOVE_ACCELEROCK, MOVE_NIGHT_SLASH); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_FLIP_TURN); EXPECT_MOVE(opponent, MOVE_X_SCISSOR); }
+    }
+}

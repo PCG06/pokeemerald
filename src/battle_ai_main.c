@@ -4918,7 +4918,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                     break;
                 case MOVE_EFFECT_STEALTH_ROCK:
                 case MOVE_EFFECT_SPIKES:
-                    if (AI_ShouldSetUpHazards(battlerAtk, battlerDef, aiData));
+                    if (AI_ShouldSetUpHazards(battlerAtk, battlerDef, aiData))
                     {
                         if (gDisableStructs[battlerAtk].isFirstTurn)
                             ADJUST_SCORE(BEST_EFFECT);
