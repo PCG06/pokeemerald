@@ -251,7 +251,6 @@ SINGLE_BATTLE_TEST("Rage Fist base power is not increased if move had no affect"
 
 SINGLE_BATTLE_TEST("Rage Fist base power is increased if Disguise breaks (Gen7)")
 {
-    KNOWN_FAILING;
     s16 timesGotHit[2];
     u16 species = SPECIES_NONE;
 
@@ -259,7 +258,7 @@ SINGLE_BATTLE_TEST("Rage Fist base power is increased if Disguise breaks (Gen7)"
     PARAMETRIZE { species = SPECIES_MIMIKYU_TOTEM_DISGUISED; }
 
     GIVEN {
-        WITH_CONFIG(GEN_CONFIG_DISGUISE_HP_LOSS, GEN_7);
+        WITH_CONFIG(CONFIG_DISGUISE_HP_LOSS, GEN_7);
         PLAYER(species) { Ability(ABILITY_DISGUISE); }
         OPPONENT(SPECIES_REGIROCK);
     } WHEN {
@@ -286,7 +285,7 @@ SINGLE_BATTLE_TEST("Rage Fist base power is increased if Disguise breaks (Gen8+)
     PARAMETRIZE { species = SPECIES_MIMIKYU_TOTEM_DISGUISED; }
 
     GIVEN {
-        WITH_CONFIG(GEN_CONFIG_DISGUISE_HP_LOSS, GEN_8);
+        WITH_CONFIG(CONFIG_DISGUISE_HP_LOSS, GEN_8);
         PLAYER(species) { Ability(ABILITY_DISGUISE); }
         OPPONENT(SPECIES_REGIROCK);
     } WHEN {
