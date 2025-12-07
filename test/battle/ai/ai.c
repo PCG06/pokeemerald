@@ -1232,3 +1232,9 @@ AI_SINGLE_BATTLE_TEST("AI score for Mean Look will be decreased if target can es
         TURN { SCORE_EQ_VAL(opponent, MOVE_MEAN_LOOK, 90); }
     }
 }
+
+TEST("AI hits to KO damage rounding works correctly")
+{
+    EXPECT_EQ(GetNoOfHitsToKO(4, 12), 3);
+    EXPECT_EQ(GetNoOfHitsToKO(16, 50), 4);
+}
