@@ -4226,6 +4226,10 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
         || HasBattlerSideMoveWithAdditionalEffect(battlerDef, MOVE_EFFECT_HAZE)))
         return NO_INCREASE;
 
+    // Don't increase stats if Yawn'd
+    if (gStatuses3[battlerAtk] & STATUS3_YAWN && CanBeSlept(battlerAtk, AI_DATA->abilities[battlerAtk], TRUE))
+        return FALSE;
+
     switch (statChange)
     {
     case STAT_CHANGE_ATK:
