@@ -3221,6 +3221,10 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
                     noOfHits[i] = -1;
                     tempMoveScores[i] = 0;
                 }
+                else if (AI_THINKING_STRUCT->score[i] < 100){
+                    noOfHits[i] = -1;
+                    tempMoveScores[i] = 0;
+                }
                 else if (noOfHits[i] < leastHits && noOfHits[i] != 0)
                 {
                     leastHits = noOfHits[i];
