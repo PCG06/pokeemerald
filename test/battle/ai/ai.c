@@ -1221,3 +1221,14 @@ AI_DOUBLE_BATTLE_TEST("AI won't be confused by player's one-shot-priority moves 
         TURN { MOVE(playerLeft, MOVE_DETECT); MOVE(playerRight, MOVE_INCINERATE, target:opponentLeft); EXPECT_MOVE(opponentRight, MOVE_AQUA_JET, target:playerLeft); }
     }
 }
+
+AI_SINGLE_BATTLE_TEST("AI score for Mean Look will be decreased if target can escape")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_BULBASAUR) { Item(ITEM_SHED_SHELL); }
+        OPPONENT(SPECIES_BULBASAUR) { Moves(MOVE_TACKLE, MOVE_MEAN_LOOK); }
+    } WHEN {
+        TURN { SCORE_EQ_VAL(opponent, MOVE_MEAN_LOOK, 90); }
+    }
+}
