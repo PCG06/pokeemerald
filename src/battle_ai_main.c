@@ -942,7 +942,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         }
     } // end check MOVE_TARGET_USER
 
-// the following checks apply to any target (including user)
+    // the following checks apply to any target (including user)
 
     // throat chop check
     if (gDisableStructs[battlerAtk].throatChopTimer && gMovesInfo[move].soundMove)
@@ -1646,6 +1646,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-2); // mainly to prevent looping between hail and snow
             break;
         case EFFECT_BELLY_DRUM:
+        case EFFECT_CLANGOROUS_SOUL:
         case EFFECT_FILLET_AWAY:
             if (HasBattlerSideAbility(battlerDef, ABILITY_UNAWARE, aiData))
                 ADJUST_SCORE(-10);
@@ -2553,10 +2554,6 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             break;
         case EFFECT_EXTREME_EVOBOOST:
             if (MainStatsMaxed(battlerAtk))
-                ADJUST_SCORE(-10);
-            break;
-        case EFFECT_CLANGOROUS_SOUL:
-            if (gBattleMons[battlerAtk].hp <= gBattleMons[battlerAtk].maxHP / 3)
                 ADJUST_SCORE(-10);
             break;*/
         case EFFECT_REVIVAL_BLESSING:
@@ -4052,7 +4049,13 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(BEST_EFFECT);
         break;
     case EFFECT_BELLY_DRUM:
-        if (!CanTargetFaintAi(battlerDef, battlerAtk)
+        if (
+        (
+            (GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_SETUP) < ((50 * gBattleMons[battlerAtk].maxHP) / 100))
+            || (gMovesInfo[GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING_SETUP)].category == DAMAGE_CATEGORY_PHYSICAL 
+                && aiData->abilities[battlerAtk] == ABILITY_ICE_FACE 
+                && gBattleMons[battlerAtk].species != SPECIES_EISCUE_NOICE)
+        )
         && gBattleMons[battlerAtk].statStages[STAT_ATK] < MAX_STAT_STAGE - 2
         && HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)
         && aiData->abilities[battlerAtk] != ABILITY_CONTRARY)
@@ -4687,8 +4690,11 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         break;
     //case EFFECT_EXTREME_EVOBOOST: // TODO
         //break;
-    //case EFFECT_CLANGOROUS_SOUL:  // TODO
-        //break;
+    case EFFECT_CLANGOROUS_SOUL:
+        if ((GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_SETUP) < ((67 * gBattleMons[battlerAtk].maxHP) / 100))
+             && aiData->abilities[battlerAtk] != ABILITY_CONTRARY)
+            ADJUST_SCORE(BEST_EFFECT);
+        break;
     //case EFFECT_NO_RETREAT:       // TODO
         //break;
     //case EFFECT_SKY_DROP
@@ -5150,6 +5156,7 @@ static s32 AI_Risky(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             ADJUST_SCORE(AVERAGE_RISKY_EFFECT);
         break;
     case EFFECT_BELLY_DRUM:
+    case EFFECT_CLANGOROUS_SOUL:
         if (aiData->hpPercents[battlerAtk] >= 90)
             ADJUST_SCORE(AVERAGE_RISKY_EFFECT);
         break;
@@ -5323,6 +5330,7 @@ static s32 AI_HPAware(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             case EFFECT_CONVERSION_2:
             case EFFECT_SAFEGUARD:
             case EFFECT_BELLY_DRUM:
+            case EFFECT_CLANGOROUS_SOUL:
             case EFFECT_FILLET_AWAY:
                 ADJUST_SCORE(-2);
                 break;
@@ -5350,6 +5358,7 @@ static s32 AI_HPAware(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             case EFFECT_LOCK_ON:
             case EFFECT_SAFEGUARD:
             case EFFECT_BELLY_DRUM:
+            case EFFECT_CLANGOROUS_SOUL:
             case EFFECT_PSYCH_UP:
             case EFFECT_MIRROR_COAT:
             case EFFECT_TICKLE:
