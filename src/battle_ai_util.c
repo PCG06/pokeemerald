@@ -322,25 +322,34 @@ bool32 AtMaxHp(u32 battlerId)
     return FALSE;
 }
 
-bool32 IsBattlerTrapped(u32 battler, bool32 checkSwitch)
+bool32 AI_CanBattlerEscape(u32 battler)
 {
     u32 holdEffect = AI_DATA->holdEffects[battler];
 
     if (B_GHOSTS_ESCAPE >= GEN_6 && IS_BATTLER_OF_TYPE(battler, TYPE_GHOST))
-        return FALSE;
-    if (checkSwitch && holdEffect == HOLD_EFFECT_SHED_SHELL)
-        return FALSE;
-    else if (!checkSwitch && AI_DATA->abilities[battler] == ABILITY_RUN_AWAY)
-        return FALSE;
-    else if (!checkSwitch && holdEffect == HOLD_EFFECT_CAN_ALWAYS_RUN)
-        return FALSE;
-    else if (gBattleMons[battler].status2 & (STATUS2_ESCAPE_PREVENTION | STATUS2_WRAPPED))
         return TRUE;
-    else if (gStatuses3[battler] & (STATUS3_ROOTED | STATUS3_SKY_DROPPED))
+    if (holdEffect == HOLD_EFFECT_SHED_SHELL)
         return TRUE;
-    else if (gFieldStatuses & STATUS_FIELD_FAIRY_LOCK)
+
+    return FALSE;
+}
+
+bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
+{
+    if (gBattleMons[battlerDef].status2 & (STATUS2_ESCAPE_PREVENTION | STATUS2_WRAPPED))
         return TRUE;
-    else if (IsAbilityPreventingEscape(battler))
+    if (gStatuses3[battlerDef] & (STATUS3_ROOTED | STATUS3_SKY_DROPPED))
+        return TRUE;
+    if (gFieldStatuses & STATUS_FIELD_FAIRY_LOCK)
+        return TRUE;
+    if (AI_IsAbilityOnSide(battlerAtk, ABILITY_SHADOW_TAG)
+        && (B_SHADOW_TAG_ESCAPE >= GEN_4 && AI_DATA->abilities[battlerDef] != ABILITY_SHADOW_TAG))
+        return TRUE;
+    if (AI_IsAbilityOnSide(battlerAtk, ABILITY_ARENA_TRAP)
+        && IsBattlerGrounded(battlerAtk))
+        return TRUE;
+    if (AI_IsAbilityOnSide(battlerAtk, ABILITY_MAGNET_PULL)
+        && IS_BATTLER_OF_TYPE(battlerAtk, TYPE_STEEL))
         return TRUE;
 
     return FALSE;
@@ -1155,7 +1164,7 @@ u32 GetNoOfHitsToKO(u32 dmg, s32 hp)
 {
     if (dmg == 0)
         return 0;
-    return hp / (dmg + 1) + 1;
+    return (hp + dmg - 1) / dmg;
 }
 
 u32 GetNoOfHitsToKOBattlerDmg(u32 dmg, u32 battlerDef)
@@ -3468,7 +3477,10 @@ u32 ShouldTryToFlinch(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbi
 
 bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move)
 {
-    if (IsBattlerTrapped(battlerDef, TRUE))
+    if (AI_CanBattlerEscape(battlerDef))
+        return FALSE;
+
+    if (IsBattlerTrapped(battlerAtk, battlerDef))
         return FALSE;
 
     if (BattlerWillFaintFromSecondaryDamage(battlerDef, AI_DATA->abilities[battlerDef]))
@@ -4225,6 +4237,10 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
         || HasBattlerSideMoveWithAdditionalEffect(battlerDef, MOVE_EFFECT_CLEAR_SMOG)
         || HasBattlerSideMoveWithAdditionalEffect(battlerDef, MOVE_EFFECT_HAZE)))
         return NO_INCREASE;
+
+    // Don't increase stats if Yawn'd
+    if (gStatuses3[battlerAtk] & STATUS3_YAWN && CanBeSlept(battlerAtk, AI_DATA->abilities[battlerAtk], TRUE))
+        return FALSE;
 
     switch (statChange)
     {
