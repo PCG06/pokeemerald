@@ -4,7 +4,7 @@
 // Max number of moves shown by the move relearner.
 // Increased from 25 to 60 so Mew can display all TMs/HMs.
 // If you plan on adding more TMs, increase this number too.
-#define MAX_RELEARNER_MOVES 60
+#define MAX_RELEARNER_MOVES 230
 
 // Move Relearner menu change constants
 enum MoveRelearnerStates
