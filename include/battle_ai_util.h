@@ -1,6 +1,8 @@
 #ifndef GUARD_BATTLE_AI_UTIL_H
 #define GUARD_BATTLE_AI_UTIL_H
 
+#include "battle_ai_main.h"
+
 #define FOE(battler) ((BATTLE_OPPOSITE(battler)) & BIT_SIDE)
 
 // Roll boundaries used by AI when scoring. Doesn't affect actual damage dealt.
@@ -256,14 +258,15 @@ bool32 PartyHasMoveCategory(u32 battlerId, u32 category);
 bool32 SideHasMoveCategory(u32 battlerId, u32 category);
 
 // score increases
-u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statChange);
-u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, u32 statChange);
+u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, enum StatChange statChange);
+u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange statChange);
 void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
+bool32 HasHPForDamagingSetup(u32 battlerAtk, u32 battlerDef, u32 hpThreshold);
 //u32 IncreaseIndexMoveScoreBasedOnRolls(u32 battlerAtk, u32 battlerDef, u32 moveIndex);
 
 s32 AI_CalcPartyMonDamage(u32 move, u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, enum DamageCalcContext calcContext);

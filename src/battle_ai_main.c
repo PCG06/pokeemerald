@@ -1646,13 +1646,18 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-2); // mainly to prevent looping between hail and snow
             break;
         case EFFECT_BELLY_DRUM:
-        case EFFECT_CLANGOROUS_SOUL:
         case EFFECT_FILLET_AWAY:
             if (HasBattlerSideAbility(battlerDef, ABILITY_UNAWARE, aiData))
                 ADJUST_SCORE(-10);
             if (aiData->abilities[battlerAtk] == ABILITY_CONTRARY)
                 ADJUST_SCORE(-10);
             else if (aiData->hpPercents[battlerAtk] <= 60)
+                ADJUST_SCORE(-10);
+            break;
+        case EFFECT_CLANGOROUS_SOUL:
+            if (gBattleMons[battlerAtk].hp <= gBattleMons[battlerAtk].maxHP / 3)
+                ADJUST_SCORE(-10);
+            else if (HasBattlerSideAbility(battlerDef, ABILITY_UNAWARE, aiData))
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_FUTURE_SIGHT:
@@ -4049,17 +4054,18 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(BEST_EFFECT);
         break;
     case EFFECT_BELLY_DRUM:
-        if (
-        (
-            (GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_SETUP) < ((50 * gBattleMons[battlerAtk].maxHP) / 100))
-            || (gMovesInfo[GetBestDmgMoveFromBattler(battlerDef, battlerAtk, AI_DEFENDING_SETUP)].category == DAMAGE_CATEGORY_PHYSICAL 
-                && aiData->abilities[battlerAtk] == ABILITY_ICE_FACE 
-                && gBattleMons[battlerAtk].species != SPECIES_EISCUE_NOICE)
-        )
-        && gBattleMons[battlerAtk].statStages[STAT_ATK] < MAX_STAT_STAGE - 2
-        && HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL)
-        && aiData->abilities[battlerAtk] != ABILITY_CONTRARY)
-            ADJUST_SCORE(BEST_EFFECT);
+        if (HasHPForDamagingSetup(battlerAtk, battlerDef, 50))
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ATK_MAX));
+        break;
+    case EFFECT_FILLET_AWAY:
+        if (HasHPForDamagingSetup(battlerAtk, battlerDef, 50))
+        {
+            u32 scoreIncrease = IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ATK) + IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPATK) + IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED);
+            if (scoreIncrease > BEST_EFFECT)
+                scoreIncrease = BEST_EFFECT;
+
+            ADJUST_SCORE(scoreIncrease);
+        }
         break;
     case EFFECT_PSYCH_UP:
         score += AI_ShouldCopyStatChanges(battlerAtk, battlerDef);
@@ -4691,9 +4697,14 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     //case EFFECT_EXTREME_EVOBOOST: // TODO
         //break;
     case EFFECT_CLANGOROUS_SOUL:
-        if ((GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_SETUP) < ((67 * gBattleMons[battlerAtk].maxHP) / 100))
-             && aiData->abilities[battlerAtk] != ABILITY_CONTRARY)
-            ADJUST_SCORE(BEST_EFFECT);
+        if (HasHPForDamagingSetup(battlerAtk, battlerDef, 67))
+            {
+                u32 scoreIncrease = IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_ATK) + IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF) + IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPATK) + IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPDEF) + IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED);
+                if (scoreIncrease > BEST_EFFECT)
+                    scoreIncrease = BEST_EFFECT;
+
+                ADJUST_SCORE(scoreIncrease);
+            }
         break;
     //case EFFECT_NO_RETREAT:       // TODO
         //break;
@@ -4718,7 +4729,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         // Consider move effects that target self
         if (gMovesInfo[move].additionalEffects[i].self)
         {
-            u32 StageStatId;
+            enum StatChange StageStatId;
 
             if (aiData->abilities[battlerAtk] != ABILITY_CONTRARY)
             {
