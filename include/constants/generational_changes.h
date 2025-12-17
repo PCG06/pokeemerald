@@ -10,9 +10,9 @@
     F(CONFUSION_SELF_DMG_CHANCE, confusionSelfDmgChance,  (u32, GEN_COUNT - 1)) \
     F(MULTI_HIT_CHANCE,          multiHitChance,          (u32, GEN_COUNT - 1)) \
     F(WHITEOUT_MONEY,            whiteoutMoney,           (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
-    F(LIGHT_BALL_ATTACK_BOOST,   lightBallAttackBoost,    (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
+    F(LIGHT_BALL_ATTACK_BOOST,   lightBallAttackBoost,    (u32, GEN_COUNT - 1)) \
     /* Experience settings */ \
-    F(EXP_CATCH,                 expCatch,                (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
+    F(EXP_CATCH,                 expCatch,                (u32, GEN_COUNT - 1)) \
     F(TRAINER_EXP_MULTIPLIER,    trainerExpMultiplier,    (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(SPLIT_EXP,                 splitExp,                (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(SCALED_EXP,                scaledExp,               (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
@@ -81,7 +81,7 @@
     F(KINGS_SHIELD_LOWER_ATK,    kingsShieldLowerAtk,     (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(SPEED_BUFFING_RAPID_SPIN,  speedBuffingRapidSpin,   (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(CHARGE_SPDEF_RAISE,        chargeSpDefRaise,        (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
-    F(MINIMIZE_EVASION,          minimizeEvasion,         (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
+    F(MINIMIZE_EVASION,          minimizeEvasion,         (u32, GEN_COUNT - 1)) \
     F(GROWTH_STAT_RAISE,         growthStatRaise,         (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(FOCUS_ENERGY_CRIT_RATIO,   focusEnergyCritRatio,    (u32, GEN_COUNT - 1)) \
     /* Other move settings */ \
@@ -92,7 +92,7 @@
     F(GLARE_GHOST,               glareGhost,              (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(SKILL_SWAP,                skillSwap,               (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(BRICK_BREAK,               brickBreak,              (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
-    F(WISH_HP_SOURCE,            wishHpSource,            (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
+    F(WISH_HP_SOURCE,            wishHpSource,            (u32, GEN_COUNT - 1)) \
     F(RAMPAGE_CANCELLING,        rampageCancelling,       (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(HEAL_BLOCKING,             healBlocking,            (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(ROOTED_GROUNDING,          rootedGrounding,         (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
@@ -135,7 +135,7 @@
     F(STURDY,                    sturdy,                  (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(PLUS_MINUS_INTERACTION,    plusMinusInteraction,    (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(WEATHER_FORMS,             weatherForms,            (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
-    F(SYMBIOSIS_GEMS,            symbiosisGems,           (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
+    F(SYMBIOSIS_GEMS,            symbiosisGems,           (u32, GEN_COUNT - 1)) \
     F(ABSORBING_ABILITY_STRING,  absorbingAbilityString,  (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(REDIRECT_ABILITY_IMMUNITY, redirectAbilityImmunity, (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(REDIRECT_ABILITY_ALLIES,   redirectAbilityAllies,   (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
@@ -179,7 +179,7 @@
     F(IRON_BALL,                 ironBall,                (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     /* Weather settings */ \
     F(ABILITY_WEATHER,           abilityWeather,          (u32, GEN_COUNT - 1)) \
-    F(SANDSTORM_SPDEF_BOOST,     sandstormSpDefBoost,     (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
+    F(SANDSTORM_SPDEF_BOOST,     sandstormSpDefBoost,     (u32, GEN_COUNT - 1)) \
     F(OVERWORLD_FOG,             overworldFog,            (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(OVERWORLD_SNOW,            overworldSnow,           (u32, GEN_COUNT - 1)) /* TODO: use in tests */ \
     F(SNOW_WARNING,              snowWarning,             (u32, GEN_COUNT - 1)) \
