@@ -146,6 +146,8 @@ enum SwShSummarySprites
     SPRITE_ARR_ID_SPD_GRADE,
     SPRITE_ARR_ID_SPE_GRADE,
     SPRITE_ARR_ID_RELEARN_PROMPT,
+    SPRITE_ARR_ID_RELEARN_PROMPT_SWITCH,
+    SPRITE_ARR_ID_LR_BUTTON,
     SPRITE_ARR_ID_INFO_PROMPT,
     SPRITE_ARR_ID_TERA_TYPE,
     SPRITE_ARR_ID_TYPE, // 2 for mon types, 5 for move types(4 moves and 1 to learn), used interchangeably, because mon types and move types aren't shown on the same screen
@@ -228,7 +230,7 @@ static EWRAM_DATA struct PokemonSummaryScreenData
     u8 secondMoveIndex;
     bool8 lockMovesFlag; // This is used to prevent the player from changing position of moves in a battle or when trading.
     u8 bgDisplayOrder; // unused
-    u8 relearnableMovesNum;
+    u8 hasRelearnableMoves;
     u8 windowIds[8];
     u8 spriteIds[SPRITE_ARR_ID_COUNT];
     bool8 handleDeoxys;
@@ -383,6 +385,7 @@ static bool32 ShouldShowRename(void);
 static void ShowCancelOrRenamePrompt(void);
 static void CB2_ReturnToSummaryScreenFromNamingScreen(void);
 static void CB2_PssChangePokemonNickname(void);
+static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta);
 
 // const rom data
 
@@ -456,6 +459,8 @@ static const u32 sFriendshipIcon_Gfx[]              = INCBIN_U32("graphics/summa
 // rave note: yeah I know doing this with a sprite is mad jank, but I promise I have my reasons
 // mont note: it is maaad jank, but it works, we promise
 static const u32 sRelearnPrompt_Gfx[]               = INCBIN_U32("graphics/summary_screen/swsh/relearn_prompt.4bpp.lz");
+static const u32 sRelearnPromptSwitch_Gfx[]               = INCBIN_U32("graphics/summary_screen/swsh/relearn_prompt_switch.4bpp.lz");
+static const u32 sLRButton_Gfx[]               = INCBIN_U32("graphics/summary_screen/swsh/lr_button.4bpp.lz");
 static const u32 sInfoPrompt_Gfx[]                  = INCBIN_U32("graphics/summary_screen/swsh/info_prompt.4bpp.lz");
 static const u32 sGigantamaxIcon_Gfx[]              = INCBIN_U32("graphics/summary_screen/swsh/gigantamax.4bpp.lz");
 
@@ -759,10 +764,12 @@ static void (*const sTextPrinterTasks[])(u8 taskId) =
 #define TAG_TERA_TYPE 30010
 #define TAG_MON_SHADOW 30011
 #define TAG_RELEARN_PROMPT 30012
-#define TAG_INFO_PROMPT 30013
-#define TAG_GENDER_ICON 30014
-#define TAG_HELD_ITEM_BOX 30015
-#define TAG_HELD_ITEM_ICON 30016
+#define TAG_RELEARN_PROMPT_SWITCH 30013
+#define TAG_INFO_PROMPT 30014
+#define TAG_GENDER_ICON 30015
+#define TAG_HELD_ITEM_BOX 30016
+#define TAG_HELD_ITEM_ICON 30017
+#define TAG_LR_BUTTON 30018
 
 enum SwShCategoryIcon
 {
@@ -846,6 +853,88 @@ static const struct SpriteTemplate sSpriteTemplate_RelearnPrompt =
     .tileTag = TAG_RELEARN_PROMPT,
     .paletteTag = TAG_MON_MARKINGS,
     .oam = &sOamData_RelearnPrompt,
+    .anims = gDummySpriteAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCallbackDummy
+};
+
+static const struct OamData sOamData_RelearnPromptSwitch =
+{
+    .size = SPRITE_SIZE(32x16),
+    .shape = SPRITE_SHAPE(32x16),
+    .priority = 0,
+};
+
+static const struct CompressedSpriteSheet sSpriteSheet_RelearnPromptSwitch =
+{
+    .data = sRelearnPromptSwitch_Gfx,
+    .size = 32*16*4/2,
+    .tag = TAG_RELEARN_PROMPT_SWITCH,
+};
+
+static const union AnimCmd sSpriteAnim_RelearnPromptSwitchLevel[] =
+{
+    ANIMCMD_FRAME(0, 0),
+    ANIMCMD_END
+};
+
+static const union AnimCmd sSpriteAnim_RelearnPromptSwitchEgg[] =
+{
+    ANIMCMD_FRAME(8, 0),
+    ANIMCMD_END
+};
+
+static const union AnimCmd sSpriteAnim_RelearnPromptSwitchTM[] =
+{
+    ANIMCMD_FRAME(16, 0),
+    ANIMCMD_END
+};
+
+static const union AnimCmd sSpriteAnim_RelearnPromptSwitchTutor[] =
+{
+    ANIMCMD_FRAME(24, 0),
+    ANIMCMD_END
+};
+
+static const union AnimCmd *const sSpriteAnimTable_RelearnPromptSwitch[] =
+{
+    sSpriteAnim_RelearnPromptSwitchLevel,
+    sSpriteAnim_RelearnPromptSwitchEgg,
+    sSpriteAnim_RelearnPromptSwitchTM,
+    sSpriteAnim_RelearnPromptSwitchTutor,
+};
+
+static const struct SpriteTemplate sSpriteTemplate_RelearnPromptSwitch =
+{
+    .tileTag = TAG_RELEARN_PROMPT_SWITCH,
+    .paletteTag = TAG_MON_MARKINGS,
+    .oam = &sOamData_RelearnPromptSwitch,
+    .anims = sSpriteAnimTable_RelearnPromptSwitch,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCallbackDummy
+};
+
+static const struct OamData sOamData_LRButton =
+{
+    .size = SPRITE_SIZE(16x8),
+    .shape = SPRITE_SHAPE(16x8),
+    .priority = 0,
+};
+
+static const struct CompressedSpriteSheet sSpriteSheet_LRButton =
+{
+    .data = sLRButton_Gfx,  // Index 3 is lr_button from sButtons_Gfx array
+    .size = 16*8/2,
+    .tag = TAG_LR_BUTTON,
+};
+
+static const struct SpriteTemplate sSpriteTemplate_LRButton =
+{
+    .tileTag = TAG_LR_BUTTON,
+    .paletteTag = TAG_MON_MARKINGS,
+    .oam = &sOamData_LRButton,
     .anims = gDummySpriteAnimTable,
     .images = NULL,
     .affineAnims = gDummySpriteAffineAnimTable,
@@ -1735,6 +1824,9 @@ void ShowPokemonSummaryScreen_SwSh(u8 mode, void *mons, u8 monIndex, u8 maxMonIn
     if (gMonSpritesGfxPtr == NULL)
         CreateMonSpritesGfxManager(MON_SPR_GFX_MANAGER_A, MON_SPR_GFX_MODE_NORMAL);
 
+    if (ShouldShowMoveRelearner())
+        TryUpdateRelearnType(TRY_SET_UPDATE);
+
     SetMainCallback2(CB2_InitSummaryScreen);
 }
 
@@ -2119,7 +2211,11 @@ static bool8 DecompressGraphics(void)
         break;
     case 22:
         if (P_SUMMARY_SCREEN_MOVE_RELEARNER)
+        {
             LoadCompressedSpriteSheet(&sSpriteSheet_RelearnPrompt);
+            LoadCompressedSpriteSheet(&sSpriteSheet_RelearnPromptSwitch);
+            LoadCompressedSpriteSheet(&sSpriteSheet_LRButton);
+        }
         sMonSummaryScreen->switchCounter++;
         break;
     case 23:
@@ -2236,7 +2332,6 @@ static bool8 ExtractMonDataToSummaryStruct(struct Pokemon *mon)
         sum->ribbonCount = GetMonData(mon, MON_DATA_RIBBON_COUNT);        
         sum->teraType = GetMonData(mon, MON_DATA_TERA_TYPE);
         sum->isShiny = GetMonData(mon, MON_DATA_IS_SHINY);
-        sMonSummaryScreen->relearnableMovesNum = P_SUMMARY_SCREEN_MOVE_RELEARNER ? GetNumberOfLevelUpMoves(mon) : 0;
         return TRUE;
     }
     sMonSummaryScreen->switchCounter++;
@@ -2360,12 +2455,12 @@ static void Task_HandleInput(u8 taskId)
             tSkillsState = defaultSkillsState;
             ChangeSummaryPokemon(taskId, 1);
         }
-        else if ((JOY_NEW(DPAD_LEFT)) || GetLRKeysPressed() == MENU_L_PRESSED)
+        else if ((JOY_NEW(DPAD_LEFT)))
         {
             tSkillsState = defaultSkillsState;
             ChangePage(taskId, -1);
         }
-        else if ((JOY_NEW(DPAD_RIGHT)) || GetLRKeysPressed() == MENU_R_PRESSED)
+        else if ((JOY_NEW(DPAD_RIGHT)))
         {
             tSkillsState = defaultSkillsState;
             ChangePage(taskId, 1);
@@ -2427,12 +2522,125 @@ static void Task_HandleInput(u8 taskId)
             PlaySE(SE_SELECT);
             CloseSummaryScreen(taskId);
         }
+        else if (JOY_NEW(R_BUTTON)) // R means increase. Level -> Egg -> TM -> Tutor
+        {
+            if (P_SUMMARY_SCREEN_MOVE_RELEARNER && (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES || sMonSummaryScreen->currPageIndex == PSS_PAGE_CONTEST_MOVES) && !gMain.inBattle)
+            {
+                TryUpdateRelearnType(TRY_INCREMENT);
+                if (ShouldShowMoveRelearner())
+                {
+                    PlaySE(SE_SELECT);
+                    ShowMoveRelearner();
+                }
+            }
+        }
+        else if (JOY_NEW(L_BUTTON)) // L means decrease. Level <- Egg <- TM <- Tutor
+        {
+            if (P_SUMMARY_SCREEN_MOVE_RELEARNER && (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES || sMonSummaryScreen->currPageIndex == PSS_PAGE_CONTEST_MOVES) && !gMain.inBattle)
+            {
+                TryUpdateRelearnType(TRY_DECREMENT);
+                if (ShouldShowMoveRelearner())
+                {
+                    PlaySE(SE_SELECT);
+                    ShowMoveRelearner();
+                }
+            }
+        }
     }
 }
 
 #undef tSkillsState
 
 #define tSummaryState data[0]
+
+static bool32 HasAnyRelearnableMoves(enum MoveRelearnerStates state)
+{
+    struct Pokemon *mon = &sMonSummaryScreen->currentMon;
+
+    switch (state)
+    {
+        case MOVE_RELEARNER_EGG_MOVES:
+            return HasRelearnerEggMoves(mon);
+        case MOVE_RELEARNER_TM_MOVES:
+            return HasRelearnerTMMoves(mon);
+        case MOVE_RELEARNER_TUTOR_MOVES:
+            return HasRelearnerTutorMoves(mon);
+        case MOVE_RELEARNER_LEVEL_UP_MOVES:
+            return HasRelearnerLevelUpMoves(mon);
+        default:
+            return FALSE;
+    }
+}
+
+static bool32 NoMovesAvailableToRelearn(void)
+{
+    u32 zeroCounter = 0;
+    for (enum MoveRelearnerStates state = MOVE_RELEARNER_LEVEL_UP_MOVES; state < MOVE_RELEARNER_COUNT; state++)
+    {
+        if (!HasAnyRelearnableMoves(state))
+            zeroCounter++;
+    }
+
+    return zeroCounter == MOVE_RELEARNER_COUNT;
+}
+
+static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
+{
+    u32 hasRelearnableMoves = 0;
+    u32 zeroCounter = 0;
+    enum MoveRelearnerStates state = gMoveRelearnerState;
+
+    // just in case everything is off, default to level up moves
+    if ((!P_ENABLE_MOVE_RELEARNERS
+        && !P_TM_MOVES_RELEARNER
+        && !FlagGet(P_FLAG_EGG_MOVES)
+        && !FlagGet(P_FLAG_TUTOR_MOVES)))
+    {
+        sMonSummaryScreen->hasRelearnableMoves = HasAnyRelearnableMoves(MOVE_RELEARNER_LEVEL_UP_MOVES);
+        return;
+    }
+
+    do
+    {
+        switch (delta)
+        {
+        default:
+        case TRY_SET_UPDATE:
+            hasRelearnableMoves = HasAnyRelearnableMoves(gMoveRelearnerState);
+            if (hasRelearnableMoves == 0)
+            {
+                delta = TRY_INCREMENT;
+                continue;
+            }
+            else
+            {
+                sMonSummaryScreen->hasRelearnableMoves = hasRelearnableMoves;
+                return;
+            }
+            // should never reach this, but just in case
+            break;
+        case TRY_INCREMENT:
+            state = state >= MOVE_RELEARNER_TUTOR_MOVES ? MOVE_RELEARNER_LEVEL_UP_MOVES : state + 1;
+            break;
+        case TRY_DECREMENT:
+            state = state == MOVE_RELEARNER_LEVEL_UP_MOVES ? MOVE_RELEARNER_TUTOR_MOVES : state - 1;
+            break;
+        }
+
+        if (!CheckRelearnerStateFlag(state))
+            continue;
+
+        hasRelearnableMoves = HasAnyRelearnableMoves(state);
+        if (hasRelearnableMoves != 0)
+        {
+            gMoveRelearnerState = state;
+            sMonSummaryScreen->hasRelearnableMoves = hasRelearnableMoves;
+            return;
+        }
+        zeroCounter++;
+        
+    } while (zeroCounter <= MOVE_RELEARNER_COUNT && hasRelearnableMoves == 0);
+}
 
 static void ChangeSummaryPokemon(u8 taskId, s8 delta)
 {
@@ -2520,6 +2728,8 @@ static void Task_ChangeSummaryMon(u8 taskId)
             else if (P_SUMMARY_SCREEN_MOVE_RELEARNER
                 && (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES))
             {
+                gMoveRelearnerState = MOVE_RELEARNER_LEVEL_UP_MOVES;
+                TryUpdateRelearnType(TRY_SET_UPDATE);
                 if (ShouldShowMoveRelearner())
                     ShowMoveRelearner();
                 else
@@ -2671,6 +2881,7 @@ static void ChangePage(u8 taskId, s8 delta)
 {
     struct PokeSummary *summary = &sMonSummaryScreen->summary;
     s16 *data = gTasks[taskId].data;
+    u32 currPageIndex;
 
     if (summary->isEgg)
         return;
@@ -2681,11 +2892,30 @@ static void ChangePage(u8 taskId, s8 delta)
 
     PlaySE(SE_SELECT);
     ClearPageWindowTilemaps(sMonSummaryScreen->currPageIndex);
-    sMonSummaryScreen->currPageIndex += delta;
+    currPageIndex = sMonSummaryScreen->currPageIndex += delta;
     tScrollState = 0;
     SetTaskFuncWithFollowupFunc(taskId, PssScroll, gTasks[taskId].func);
     CreateTextPrinterTask(sMonSummaryScreen->currPageIndex);
     HidePageSpecificSprites();
+
+    // acts like a quick reset
+    if (currPageIndex == PSS_PAGE_SKILLS)
+    {
+        gMoveRelearnerState = MOVE_RELEARNER_LEVEL_UP_MOVES;
+        TryUpdateRelearnType(TRY_SET_UPDATE);
+    }
+
+    // to prevent nothing showing 
+    if (currPageIndex >= PSS_PAGE_BATTLE_MOVES && sMonSummaryScreen->hasRelearnableMoves == 0)
+    {
+        TryUpdateRelearnType(TRY_SET_UPDATE);
+        if (ShouldShowMoveRelearner())
+            ShowMoveRelearner();
+    }
+    else
+    {
+        HideMoveRelearner();  
+    }
 }
 
 static void PssScroll(u8 taskId)
@@ -3048,11 +3278,11 @@ static void Task_HandleReplaceMoveInput(u8 taskId)
                 data[0] = 4;
                 ChangeSelectedMove(data, 1, &sMonSummaryScreen->firstMoveIndex);
             }
-            else if (JOY_NEW(DPAD_LEFT) || GetLRKeysPressed() == MENU_L_PRESSED)
+            else if (JOY_NEW(DPAD_LEFT))
             {
                 ChangePage(taskId, -1);
             }
-            else if (JOY_NEW(DPAD_RIGHT) || GetLRKeysPressed() == MENU_R_PRESSED)
+            else if (JOY_NEW(DPAD_RIGHT))
             {
                 ChangePage(taskId, 1);
             }
@@ -3123,7 +3353,7 @@ static void Task_HandleInputCantForgetHMsMoves(u8 taskId)
             data[1] = 0;
             gTasks[taskId].func = Task_HandleReplaceMoveInput;
         }
-        else if (JOY_NEW(DPAD_LEFT) || GetLRKeysPressed() == MENU_L_PRESSED)
+        else if (JOY_NEW(DPAD_LEFT))
         {
             if (sMonSummaryScreen->currPageIndex != PSS_PAGE_BATTLE_MOVES)
             {
@@ -3132,7 +3362,7 @@ static void Task_HandleInputCantForgetHMsMoves(u8 taskId)
                 ChangePage(taskId, -1);
             }
         }
-        else if (JOY_NEW(DPAD_RIGHT) || GetLRKeysPressed() == MENU_R_PRESSED)
+        else if (JOY_NEW(DPAD_RIGHT))
         {
             if (sMonSummaryScreen->currPageIndex != PSS_PAGE_BATTLE_MOVES)
             {
@@ -3531,6 +3761,12 @@ static void PrintPageNamesAndStats(void)
         PrintButtonIcon(PSS_LABEL_WINDOW_PROMPT_STATS, BUTTON_A, iconXPos, 4);
         PrintTextOnWindowWithFont(PSS_LABEL_WINDOW_PROMPT_STATS, sText_ViewStats, stringXPos, 0, 0, 1, FONT_SMALL);
     }
+
+    if (sMonSummaryScreen->currPageIndex == PSS_PAGE_BATTLE_MOVES)
+    {
+        TryUpdateRelearnType(TRY_SET_UPDATE);
+        ShowMoveRelearner();
+    }
 }
 
 static void PutPageWindowTilemaps(u8 page)
@@ -3560,6 +3796,7 @@ static void PutPageWindowTilemaps(u8 page)
         }
         else
         {
+            TryUpdateRelearnType(TRY_SET_UPDATE);
             if (ShouldShowMoveRelearner())
                 ShowMoveRelearner();
             ShowInfoPrompt();
@@ -5283,23 +5520,35 @@ static inline bool32 ShouldShowMoveRelearner(void)
          && !sMonSummaryScreen->lockMovesFlag
          && sMonSummaryScreen->mode != SUMMARY_MODE_BOX
          && sMonSummaryScreen->mode != SUMMARY_MODE_BOX_CURSOR
-         && sMonSummaryScreen->relearnableMovesNum > 0
+         && sMonSummaryScreen->hasRelearnableMoves > 0
          && !InBattleFactory() 
-         && !InSlateportBattleTent());
+         && !InSlateportBattleTent()
+         && !NoMovesAvailableToRelearn());
 }
 
 static void ShowMoveRelearner(void)
 {
     if (sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT] == SPRITE_NONE)
-        sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT] = CreateSprite(&sSpriteTemplate_RelearnPrompt, 169, 164, 0);
+    {
+        sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT] = CreateSprite(&sSpriteTemplate_RelearnPrompt, 144, 164, 0);
+        sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT_SWITCH] = CreateSprite(&sSpriteTemplate_RelearnPromptSwitch, 192, 156, 0);
+        sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_LR_BUTTON] = CreateSprite(&sSpriteTemplate_LRButton, 102, 152, 0);
+    }
     
     gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT]].invisible = FALSE;
+    gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT_SWITCH]].invisible = FALSE;
+    gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_LR_BUTTON]].invisible = FALSE;
+    StartSpriteAnim(&gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT_SWITCH]], gMoveRelearnerState);
 }
 
 static void HideMoveRelearner(void)
 {
     if (sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT] != SPRITE_NONE)
+    {
         gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT]].invisible = TRUE;
+        gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_RELEARN_PROMPT_SWITCH]].invisible = TRUE;
+        gSprites[sMonSummaryScreen->spriteIds[SPRITE_ARR_ID_LR_BUTTON]].invisible = TRUE;
+    }
 }
 
 static void ShowInfoPrompt(void)
