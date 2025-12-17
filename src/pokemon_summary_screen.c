@@ -335,6 +335,8 @@ static u8 AddWindowFromTemplateList(const struct WindowTemplate *template, u8 te
 static u8 IncrementSkillsStatsMode(u8 mode);
 static void ClearStatLabel(u32 length, u32 statsCoordX, u32 statsCoordY);
 u32 GetAdjustedIvData(struct Pokemon *mon, u32 stat);
+static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta);
+static void ShowRelearnPrompt(void);
 
 static const struct BgTemplate sBgTemplates[] =
 {
@@ -1903,7 +1905,7 @@ void ExtractMonSkillEvData(struct Pokemon *mon, struct PokeSummary *sum)
     sum->speed = GetMonData(mon, MON_DATA_SPEED_EV);
 }
 
-bool32 HasAnyRelearnableMoves(enum MoveRelearnerStates state)
+static bool32 HasAnyRelearnableMoves(enum MoveRelearnerStates state)
 {
     struct Pokemon *mon = &sMonSummaryScreen->currentMon;
 
@@ -1922,7 +1924,7 @@ bool32 HasAnyRelearnableMoves(enum MoveRelearnerStates state)
     }
 }
 
-bool32 NoMovesAvailableToRelearn(void)
+static bool32 NoMovesAvailableToRelearn(void)
 {
     u32 zeroCounter = 0;
     for (enum MoveRelearnerStates state = MOVE_RELEARNER_LEVEL_UP_MOVES; state < MOVE_RELEARNER_COUNT; state++)
@@ -1954,7 +1956,7 @@ bool32 CheckRelearnerStateFlag(enum MoveRelearnerStates state)
     }
 }
 
-void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
+static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
 {
     bool32 hasRelearnableMoves = FALSE;
     u32 zeroCounter = 0;
@@ -4910,7 +4912,7 @@ static inline void ShowUtilityPrompt(s16 mode)
     PrintTextOnWindow(PSS_LABEL_WINDOW_PROMPT_UTILITY, promptText, stringXPos, 1, 0, 0);
 }
 
-void ShowRelearnPrompt(void)
+static void ShowRelearnPrompt(void)
 {
     u32 currPage = sMonSummaryScreen->currPageIndex;
 
