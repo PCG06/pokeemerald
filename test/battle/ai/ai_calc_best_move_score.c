@@ -1,5 +1,6 @@
 #include "global.h"
 #include "test/battle.h"
+#include "battle_ai_main.h"
 #include "battle_ai_util.h"
 
 AI_SINGLE_BATTLE_TEST("AI will not further increase Attack / Sp. Atk stat if it knows it faints to target: AI faster")
@@ -291,3 +292,20 @@ AI_SINGLE_BATTLE_TEST("Rapid Spin should prevent secondary hazard effect moves f
         TURN { MOVE(player, MOVE_FLIP_TURN); EXPECT_MOVE(opponent, MOVE_X_SCISSOR); }
     }
 }
+
+AI_SINGLE_BATTLE_TEST("CompareMoveSpeeds should ignore fake out and status moves for AI_CompareDamagingMoves BEST_DAMAGE_MOVE scoring")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_BLAZIKEN){ Level(44); Nature(NATURE_ADAMANT); Ability(ABILITY_STRIKER); Speed(89); HP(20); Moves(MOVE_DETECT, MOVE_TRIPLE_ARROWS); }
+        OPPONENT(SPECIES_KLEAVOR){ Level(43); Nature(NATURE_ADAMANT); Ability(ABILITY_SOLID_ROCK); Speed(80); Moves(MOVE_ICE_PUNCH, MOVE_ACCELEROCK); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DETECT); EXPECT_MOVE(opponent, MOVE_ACCELEROCK); }
+        TURN { 
+            MOVE(player, MOVE_TRIPLE_ARROWS);
+            SCORE_EQ_VAL(opponent, MOVE_ACCELEROCK, (AI_SCORE_DEFAULT + BEST_DAMAGE_MOVE + FAST_KILL)); 
+            SCORE_EQ_VAL(opponent, MOVE_ICE_PUNCH, (AI_SCORE_DEFAULT + SLOW_KILL)); 
+        }
+    }
+}
+
