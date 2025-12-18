@@ -904,6 +904,10 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
         break;
     }
 
+    if (TestIfSheerForceAffected(battlerAtk, move)){
+        return FALSE;
+    }
+
     // check ADDITIONAL_EFFECTS
     for (i = 0; i < gMovesInfo[move].numAdditionalEffects; i++)
     {
