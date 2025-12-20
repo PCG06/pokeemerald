@@ -218,7 +218,7 @@ static EWRAM_DATA struct PokemonSummaryScreenData
     u8 secondMoveIndex;
     bool8 lockMovesFlag; // This is used to prevent the player from changing position of moves in a battle or when trading.
     u8 bgDisplayOrder; // unused
-    u8 hasRelearnableMoves;
+    bool8 hasRelearnableMoves;
     u8 windowIds[8];
     u8 spriteIds[SPRITE_ARR_ID_COUNT];
     bool8 handleDeoxys;
@@ -2601,7 +2601,7 @@ static bool32 NoMovesAvailableToRelearn(void)
 
 static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
 {
-    u32 hasRelearnableMoves = 0;
+    bool32 hasRelearnableMoves = FALSE;
     u32 zeroCounter = 0;
     enum MoveRelearnerStates state = gMoveRelearnerState;
 
@@ -2622,7 +2622,7 @@ static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
         default:
         case TRY_SET_UPDATE:
             hasRelearnableMoves = HasAnyRelearnableMoves(gMoveRelearnerState);
-            if (hasRelearnableMoves == 0)
+            if (!hasRelearnableMoves)
             {
                 delta = TRY_INCREMENT;
                 continue;
@@ -2646,7 +2646,7 @@ static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
             continue;
 
         hasRelearnableMoves = HasAnyRelearnableMoves(state);
-        if (hasRelearnableMoves != 0)
+        if (hasRelearnableMoves)
         {
             gMoveRelearnerState = state;
             sMonSummaryScreen->hasRelearnableMoves = hasRelearnableMoves;
@@ -2654,7 +2654,7 @@ static void TryUpdateRelearnType(enum IncrDecrUpdateValues delta)
         }
         zeroCounter++;
         
-    } while (zeroCounter <= MOVE_RELEARNER_COUNT && hasRelearnableMoves == 0);
+    } while (zeroCounter <= MOVE_RELEARNER_COUNT && !hasRelearnableMoves);
 }
 
 static void ChangeSummaryPokemon(u8 taskId, s8 delta)
@@ -2922,7 +2922,7 @@ static void ChangePage(u8 taskId, s8 delta)
     }
 
     // to prevent nothing showing 
-    if (currPageIndex >= PSS_PAGE_BATTLE_MOVES && sMonSummaryScreen->hasRelearnableMoves == 0)
+    if (currPageIndex >= PSS_PAGE_BATTLE_MOVES && !sMonSummaryScreen->hasRelearnableMoves)
     {
         TryUpdateRelearnType(TRY_SET_UPDATE);
         if (ShouldShowMoveRelearner())
@@ -5642,7 +5642,7 @@ static inline bool32 ShouldShowMoveRelearner(void)
          && !sMonSummaryScreen->lockMovesFlag
          && sMonSummaryScreen->mode != SUMMARY_MODE_BOX
          && sMonSummaryScreen->mode != SUMMARY_MODE_BOX_CURSOR
-         && sMonSummaryScreen->hasRelearnableMoves > 0
+         && sMonSummaryScreen->hasRelearnableMoves
          && !InBattleFactory() 
          && !InSlateportBattleTent()
          && !NoMovesAvailableToRelearn());
