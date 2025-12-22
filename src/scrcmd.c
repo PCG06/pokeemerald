@@ -906,7 +906,7 @@ bool8 ScrCmd_gettime(struct ScriptContext *ctx)
 
     RtcCalcLocalTime();
     gSpecialVar_0x8000 = GetTimeOfDay();
-    gSpecialVar_0x8001 = GetDate();
+    gSpecialVar_0x8001 = GetDay();
     gSpecialVar_0x8002 = GetMonth();
     gSpecialVar_0x8003 = GetFullYear();
     gSpecialVar_0x8004 = GetDayOfWeek();

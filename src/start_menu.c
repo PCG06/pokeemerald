@@ -1537,7 +1537,7 @@ static void ShowCurrentTimeWindow(void)
 
     u8 minutes = GetMinute();
     u8 hours = GetHour();
-    u8 days = GetDate();
+    u8 days = GetDay();
     enum Weekday dayOfWeek = GetDayOfWeek();
     enum Month month = GetMonth();
     u16 year = GetFullYear();
@@ -1594,7 +1594,7 @@ void UpdateTimeWindow(void)
     u8 seconds = GetSecond();
     u8 minutes = GetMinute();
     u8 hours = GetHour();
-    u8 days = GetDate();
+    u8 days = GetDay();
     enum Weekday dayOfWeek = GetDayOfWeek();
     enum Month month = GetMonth();
     u16 year = GetFullYear();
