@@ -30,11 +30,11 @@ void DateTime_AddDays(struct DateTime *dateTime, u32 days)
                 dateTime->year++;
             }
             days -= (remainingDaysInMonth + 1);
-            dateTime->dayOfWeek = (dateTime->dayOfWeek + remainingDaysInMonth) % WEEKDAY_COUNT;
+            dateTime->dayOfWeek = (dateTime->dayOfWeek + remainingDaysInMonth + 1) % WEEKDAY_COUNT;
         }
         else
         {
-            dateTime->day += (days - 1);
+            dateTime->day += days;
             dateTime->dayOfWeek = (dateTime->dayOfWeek + days) % WEEKDAY_COUNT;
             days = 0;
         }
@@ -105,11 +105,14 @@ void ConvertRtcToDateTime(struct DateTime *result, struct SiiRtcInfo *rtc)
     result->year = gGen3Epoch.year + rtc->year;
 }
 
+// The date in DateTime is off by 1
+#define DT_DAY_OFFSET 1 
+
 void ConvertTimeToDateTime(struct DateTime *result, struct Time *timeSinceEpoch)
 {
     result = memcpy(result, &gGen3Epoch, sizeof(struct DateTime));
     DateTime_AddSeconds(result, timeSinceEpoch->seconds);
     DateTime_AddMinutes(result, timeSinceEpoch->minutes);
     DateTime_AddHours(result, timeSinceEpoch->hours);
-    DateTime_AddDays(result, timeSinceEpoch->days);
+    DateTime_AddDays(result, timeSinceEpoch->days - DT_DAY_OFFSET);
 }
