@@ -892,6 +892,9 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
     u32 abilityDef = AI_DATA->abilities[battlerDef];
     u32 abilityAtk = AI_DATA->abilities[battlerAtk];
 
+    if (TestIfSheerForceAffected(battlerAtk, move))
+        return FALSE;
+    
     switch (gMovesInfo[move].effect)
     {
     case EFFECT_FELL_STINGER:
