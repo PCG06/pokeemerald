@@ -309,3 +309,18 @@ AI_SINGLE_BATTLE_TEST("CompareMoveSpeeds should ignore fake out and status moves
     }
 }
 
+AI_SINGLE_BATTLE_TEST("sheer force moveeffectinplus")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_VOLCANION){ Level(85); Nature(NATURE_TIMID); Ability(ABILITY_WATER_ABSORB); Speed(165); Moves(MOVE_FLAMETHROWER); }
+        OPPONENT(SPECIES_GRIMMSNARL_MEGA){ Level(85); Nature(NATURE_QUIET); Ability(ABILITY_SHEER_FORCE); Item(ITEM_GRIMMITE); Speed(96); Moves(MOVE_ACID_SPRAY, MOVE_MOONBLAST, MOVE_AURA_SPHERE); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_FLAMETHROWER);
+            SCORE_EQ_VAL(opponent, MOVE_ACID_SPRAY, 100);
+            SCORE_EQ_VAL(opponent, MOVE_MOONBLAST, 101);
+            SCORE_EQ_VAL(opponent, MOVE_AURA_SPHERE, 101);
+        }
+    }
+}
