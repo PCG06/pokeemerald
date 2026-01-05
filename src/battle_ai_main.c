@@ -3100,6 +3100,9 @@ static enum MoveComparisonResult CompareMoveAccuracies(u32 battlerAtk, u32 battl
 static enum MoveComparisonResult CompareMoveSpeeds(u32 battlerAtk, u32 battlerDef, u16 move1, u16 move2)
 {
     u32 predictedMove = AI_DATA->lastUsedMove[battlerDef];
+    if (gMovesInfo[predictedMove].effect == EFFECT_FIRST_TURN_ONLY || gMovesInfo[predictedMove].category == DAMAGE_CATEGORY_STATUS)
+        predictedMove = MOVE_NONE;
+
     u32 speed1 = AI_WhoStrikesFirst(battlerAtk, battlerDef, move1, predictedMove, CONSIDER_PRIORITY);
     u32 speed2 = AI_WhoStrikesFirst(battlerAtk, battlerDef, move2, predictedMove, CONSIDER_PRIORITY);
 
@@ -4799,7 +4802,8 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         }
         else // consider move effects that hinder the target
         {
-            if (IsAdditionalEffectBlocked(battlerAtk, aiData->abilities[battlerAtk], battlerDef, aiData->abilities[battlerDef]))
+            if (IsAdditionalEffectBlocked(battlerAtk, aiData->abilities[battlerAtk], battlerDef, aiData->abilities[battlerDef])
+                || TestIfSheerForceAffected(battlerAtk, move))
                 continue;
 
             switch (gMovesInfo[move].additionalEffects[i].moveEffect)
