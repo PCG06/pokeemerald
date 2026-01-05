@@ -1,5 +1,6 @@
 #include "global.h"
 #include "test/battle.h"
+#include "battle_ai_main.h"
 #include "battle_ai_util.h"
 
 AI_SINGLE_BATTLE_TEST("AI will not further increase Attack / Sp. Atk stat if it knows it faints to target: AI faster")
@@ -373,5 +374,48 @@ AI_SINGLE_BATTLE_TEST("Fillet Away AI handling")
         OPPONENT(SPECIES_VELUZA){ Level(100); Nature(NATURE_ADAMANT); Ability(ABILITY_SHARPNESS); Speed(176); Moves(MOVE_FILLET_AWAY, MOVE_AQUA_CUTTER); }
     } WHEN {
         TURN { MOVE(player, move); EXPECT_MOVE(opponent, move == MOVE_SCALD ? MOVE_FILLET_AWAY : MOVE_AQUA_CUTTER); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Solar beam should get ignored at AI_CompareDamagingMoves and correctly select least hits to KO otherwise instead of randomly between all moves")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_PINCURCHIN){ Level(85); Nature(NATURE_SASSY); Ability(ABILITY_LIGHTNING_ROD); Item(ITEM_ASSAULT_VEST); Speed(50); Moves(MOVE_VOLT_SWITCH, MOVE_THUNDERBOLT); }
+        OPPONENT(SPECIES_CHARIZARD){ Level(85); Nature(NATURE_TIMID); Ability(ABILITY_BLAZE); Item(ITEM_CHARIZARDITE_Y); Speed(221); Moves(MOVE_FLAMETHROWER, MOVE_AIR_SLASH, MOVE_SOLAR_BEAM, MOVE_DRAGON_PULSE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_THUNDERBOLT); EXPECT_MOVE(opponent, MOVE_DRAGON_PULSE); }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("CompareMoveSpeeds should ignore fake out and status moves for AI_CompareDamagingMoves BEST_DAMAGE_MOVE scoring")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_BLAZIKEN){ Level(44); Nature(NATURE_ADAMANT); Ability(ABILITY_STRIKER); Speed(89); HP(20); Moves(MOVE_DETECT, MOVE_TRIPLE_ARROWS); }
+        OPPONENT(SPECIES_KLEAVOR){ Level(43); Nature(NATURE_ADAMANT); Ability(ABILITY_SOLID_ROCK); Speed(80); Moves(MOVE_ICE_PUNCH, MOVE_ACCELEROCK); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_DETECT); EXPECT_MOVE(opponent, MOVE_ACCELEROCK); }
+        TURN { 
+            MOVE(player, MOVE_TRIPLE_ARROWS);
+            SCORE_EQ_VAL(opponent, MOVE_ACCELEROCK, (AI_SCORE_DEFAULT + BEST_DAMAGE_MOVE + FAST_KILL)); 
+            SCORE_EQ_VAL(opponent, MOVE_ICE_PUNCH, (AI_SCORE_DEFAULT + SLOW_KILL)); 
+        }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("sheer force moveeffectinplus")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_VOLCANION){ Level(85); Nature(NATURE_TIMID); Ability(ABILITY_WATER_ABSORB); Speed(165); Moves(MOVE_FLAMETHROWER); }
+        OPPONENT(SPECIES_GRIMMSNARL_MEGA){ Level(85); Nature(NATURE_QUIET); Ability(ABILITY_SHEER_FORCE); Item(ITEM_GRIMMITE); Speed(96); Moves(MOVE_ACID_SPRAY, MOVE_MOONBLAST, MOVE_AURA_SPHERE); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_FLAMETHROWER);
+            SCORE_EQ_VAL(opponent, MOVE_ACID_SPRAY, 100);
+            SCORE_EQ_VAL(opponent, MOVE_MOONBLAST, 101);
+            SCORE_EQ_VAL(opponent, MOVE_AURA_SPHERE, 101);
+        }
     }
 }
