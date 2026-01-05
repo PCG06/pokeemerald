@@ -1175,9 +1175,15 @@ u32 GetNoOfHitsToKOBattlerDmg(u32 dmg, u32 battlerDef)
     return GetNoOfHitsToKO(dmg, gBattleMons[battlerDef].hp);
 }
 
-u32 GetNoOfHitsToKOBattler(u32 battlerAtk, u32 battlerDef, u32 moveIndex, enum DamageCalcContext calcContext)
+u32 GetNoOfHitsToKOBattler(u32 battlerAtk, u32 battlerDef, u32 moveIndex, enum DamageCalcContext calcContext, enum AiConsiderEndure considerEndure)
 {
-    return GetNoOfHitsToKOBattlerDmg(AI_GetDamage(battlerAtk, battlerDef, moveIndex, calcContext, AI_DATA), battlerDef);
+    u32 hitsToKO = GetNoOfHitsToKOBattlerDmg(AI_GetDamage(battlerAtk, battlerDef, moveIndex, calcContext, AI_DATA), battlerDef);
+    u16 *moves = GetMovesArray(battlerAtk);
+
+    if (CanEndureHit(battlerAtk, battlerDef, moves[moveIndex]) && hitsToKO == 1 && considerEndure == CONSIDER_ENDURE)
+        hitsToKO += 1;
+
+    return hitsToKO;
 }
 
 u32 GetCurrDamageHpPercent(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext)
@@ -1286,6 +1292,9 @@ bool32 CanEndureHit(u32 battler, u32 battlerTarget, u32 move)
             return TRUE;
         if (gBattleMons[battlerTarget].species == SPECIES_MIMIKYU_DISGUISED)
             return TRUE;
+        if (AI_DATA->abilities[battlerTarget] == ABILITY_ICE_FACE
+            && gBattleMons[battlerTarget].species == SPECIES_EISCUE_ICE && gMovesInfo[move].category == DAMAGE_CATEGORY_PHYSICAL)
+            return TRUE;
     }
 
     return FALSE;
@@ -1352,7 +1361,7 @@ bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
     return FALSE;
 }
 
-u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk)
+u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk, enum AiConsiderEndure considerEndure)
 {
     u32 i;
     u32 currNumberOfHits;
@@ -1362,7 +1371,7 @@ u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk)
     {
         // used to see how many hits player needs to KO AI when deciding if AI should use a setup move
         // this is the only place where AI calcs high roll dmg from the player
-        currNumberOfHits = GetNoOfHitsToKOBattler(battlerDef, battlerAtk, i, AI_DEFENDING_SETUP);
+        currNumberOfHits = GetNoOfHitsToKOBattler(battlerDef, battlerAtk, i, AI_DEFENDING_SETUP, CONSIDER_ENDURE);
         if (currNumberOfHits != 0)
         {
             if (currNumberOfHits < leastNumberOfHits)
@@ -1396,6 +1405,48 @@ u32 NoOfHitsForTargetToFaintBattlerWithMod(u32 battlerDef, u32 battlerAtk, s32 h
         }
     }
     return leastNumberOfHits;
+}
+
+void GetBestDmgMovesFromBattler(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext, u32 *bestMoves)
+{
+    struct AiLogicData *aiData = AI_DATA;
+    u32 moveIndex;
+    u32 bestDmg = 0;
+    u16 *moves = GetMovesArray(battlerAtk);
+    u32 moveLimitations = aiData->moveLimitations[battlerAtk];
+    u32 countBestMoves = 0;
+
+    if (CanAIFaintTarget(battlerAtk, battlerDef, 1))
+    {
+        for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
+        {
+            if (CanIndexMoveFaintTarget(battlerAtk, battlerDef, moveIndex, AI_ATTACKING_ON_FIELD))
+                bestMoves[countBestMoves++] = moves[moveIndex];
+        }
+    }
+    else
+    {
+        for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
+        {
+            if (IsMoveUnusable(moveIndex, moves[moveIndex], moveLimitations)
+            // || (GetMovePower(moves[moveIndex]) == 0)
+            || (gMovesInfo[moves[moveIndex]].power == 0)
+            || (AI_GetDamage(battlerAtk, battlerDef, moveIndex, calcContext, aiData) == 0))
+                continue;
+
+            if (bestDmg < AI_GetDamage(battlerAtk, battlerDef, moveIndex, calcContext, aiData))
+            {
+                countBestMoves = 0;
+                bestDmg = AI_GetDamage(battlerAtk, battlerDef, moveIndex, calcContext, aiData);
+                *bestMoves = 0;
+                bestMoves[countBestMoves++] = moves[moveIndex];
+            }
+            else if (bestDmg == AI_GetDamage(battlerAtk, battlerDef, moveIndex, calcContext, aiData))
+            {
+                bestMoves[countBestMoves++] = moves[moveIndex];
+            }
+        }
+    }
 }
 
 u32 GetBestDmgMoveFromBattler(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext)
@@ -2231,6 +2282,30 @@ u16 *GetMovesArray(u32 battler)
         return gBattleMons[battler].moves;
     else
         return gBattleResources->battleHistory->usedMoves[battler];
+}
+
+bool32 HasPhysicalBestMove(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext)
+{
+    u32 atkBestMoves[MAX_MON_MOVES] = {0};
+    u32 i;
+    GetBestDmgMovesFromBattler(battlerAtk, battlerDef, calcContext, atkBestMoves);
+    bool32 bestMoveIsPhysical = TRUE;
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        if (atkBestMoves[i] == MOVE_NONE)
+        {
+            break;
+        }
+        else
+        {
+        if (GetBattleMoveCategory(atkBestMoves[i]) == DAMAGE_CATEGORY_SPECIAL)
+            {
+                bestMoveIsPhysical = FALSE;
+                break;
+            }
+        }
+    }
+    return bestMoveIsPhysical;
 }
 
 bool32 HasOnlyMovesWithCategory(u32 battlerId, u32 category, bool32 onlyOffensive)
@@ -3657,7 +3732,7 @@ bool32 ShouldRecover(u32 battlerAtk, u32 battlerDef, u32 move, u32 healPercent)
     {
         if (!CanTargetFaintAi(battlerDef, battlerAtk)
           && GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_NORMAL) < healAmount
-          && NoOfHitsForTargetToFaintBattler(battlerDef, battlerAtk) < NoOfHitsForTargetToFaintBattlerWithMod(battlerDef, battlerAtk, healAmount))
+          && NoOfHitsForTargetToFaintBattler(battlerDef, battlerAtk, CONSIDER_ENDURE) < NoOfHitsForTargetToFaintBattlerWithMod(battlerDef, battlerAtk, healAmount))
             return TRUE;    // target can't faint attacker and is dealing less damage than we're healing
         else if (!CanTargetFaintAi(battlerDef, battlerAtk) && AI_DATA->hpPercents[battlerAtk] < ENABLE_RECOVERY_THRESHOLD && RandomPercentage(RNG_AI_SHOULD_RECOVER, SHOULD_RECOVER_CHANCE))
             return TRUE;    // target can't faint attacker at all, generally safe
@@ -4158,24 +4233,30 @@ bool32 IsRecycleEncouragedItem(u32 item)
     return FALSE;
 }
 
-static u32 GetStatBeingChanged(u32 statChange)
+static u32 GetStatBeingChanged(enum StatChange statChange)
 {
     switch(statChange)
     {
         case STAT_CHANGE_ATK:
         case STAT_CHANGE_ATK_2:
+        case STAT_CHANGE_ATK_3:
+        case STAT_CHANGE_ATK_MAX:
             return STAT_ATK;
         case STAT_CHANGE_DEF:
         case STAT_CHANGE_DEF_2:
+        case STAT_CHANGE_DEF_3:
             return STAT_DEF;
         case STAT_CHANGE_SPEED:
         case STAT_CHANGE_SPEED_2:
+        case STAT_CHANGE_SPEED_3:
             return STAT_SPEED;
         case STAT_CHANGE_SPATK:
         case STAT_CHANGE_SPATK_2:
+        case STAT_CHANGE_SPATK_3:
             return STAT_SPATK;
         case STAT_CHANGE_SPDEF:
         case STAT_CHANGE_SPDEF_2:
+        case STAT_CHANGE_SPDEF_3:
             return STAT_SPDEF;
         case STAT_CHANGE_ACC:
             return STAT_ACC;
@@ -4185,13 +4266,44 @@ static u32 GetStatBeingChanged(u32 statChange)
     return 0; // STAT_HP, should never be getting changed
 }
 
+static u32 GetStagesOfStatChange(enum StatChange statChange)
+{
+    switch(statChange)
+    {
+        case STAT_CHANGE_ATK:
+        case STAT_CHANGE_DEF:
+        case STAT_CHANGE_SPEED:
+        case STAT_CHANGE_SPATK:
+        case STAT_CHANGE_SPDEF:
+        case STAT_CHANGE_ACC:
+        case STAT_CHANGE_EVASION:
+            return 1;
+        case STAT_CHANGE_ATK_2:
+        case STAT_CHANGE_DEF_2:
+        case STAT_CHANGE_SPEED_2:
+        case STAT_CHANGE_SPATK_2:
+        case STAT_CHANGE_SPDEF_2:
+            return 2;
+        case STAT_CHANGE_ATK_3:
+        case STAT_CHANGE_DEF_3:
+        case STAT_CHANGE_SPEED_3:
+        case STAT_CHANGE_SPATK_3:
+        case STAT_CHANGE_SPDEF_3:
+            return 3;
+        case STAT_CHANGE_ATK_MAX:
+            return 6;
+    }
+    return 0; // STAT_HP, should never be getting changed
+}
+
 static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statChange, bool32 considerContrary)
 {
     u32 tempScore = NO_INCREASE;
-    u32 noOfHitsToFaint = NoOfHitsForTargetToFaintBattler(battlerDef, battlerAtk);
+    u32 noOfHitsToFaint = NoOfHitsForTargetToFaintBattler(battlerDef, battlerAtk, DONT_CONSIDER_ENDURE);
     u32 aiIsFaster = AI_IsFaster(battlerAtk, battlerDef, MOVE_NONE, MOVE_NONE, DONT_CONSIDER_PRIORITY); // Don't care about the priority of our setup move, care about outspeeding otherwise
     u32 shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
     u32 statId = GetStatBeingChanged(statChange);
+    u32 stages = GetStagesOfStatChange(statChange);
 
     if (considerContrary && AI_DATA->abilities[battlerAtk] == ABILITY_CONTRARY)
         return NO_INCREASE;
@@ -4245,54 +4357,57 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
     if (gStatuses3[battlerAtk] & STATUS3_YAWN && CanBeSlept(battlerAtk, AI_DATA->abilities[battlerAtk], TRUE))
         return FALSE;
 
-    switch (statChange)
+    // Stat stages are effectively doubled under Simple.
+    if (AI_DATA->abilities[battlerAtk] == ABILITY_SIMPLE)
+        stages *= 2;
+
+    switch (statId)
     {
     case STAT_CHANGE_ATK:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
-            tempScore += DECENT_EFFECT;
+        {
+            if (stages == 1)
+                tempScore += DECENT_EFFECT;
+            else if (stages == 6)
+                tempScore += BEST_EFFECT;
+            else
+                tempScore += GOOD_EFFECT;
+        }
         break;
     case STAT_CHANGE_DEF:
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
         {
-            tempScore += WEAK_EFFECT;
+            if (stages == 1)
+                tempScore += WEAK_EFFECT;
+            else
+                tempScore += DECENT_EFFECT;
         }
         break;
     case STAT_CHANGE_SPEED:
         if ((noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
-            tempScore += DECENT_EFFECT;
+        {
+            if (stages == 1)
+                tempScore += DECENT_EFFECT;
+            else
+                tempScore += GOOD_EFFECT;
+        }
         break;
     case STAT_CHANGE_SPATK:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
-            tempScore += DECENT_EFFECT;
+        {
+            if (stages == 1)
+                tempScore += DECENT_EFFECT;
+            else
+                tempScore += GOOD_EFFECT;
+        }
         break;
     case STAT_CHANGE_SPDEF:
         if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
         {
-            tempScore += WEAK_EFFECT;
-        }
-        break;
-    case STAT_CHANGE_ATK_2:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
-            tempScore += GOOD_EFFECT;
-        break;
-    case STAT_CHANGE_DEF_2:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
-        {
-            tempScore += DECENT_EFFECT;
-        }
-        break;
-    case STAT_CHANGE_SPEED_2:
-        if ((noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS)
-            tempScore += GOOD_EFFECT;
-        break;
-    case STAT_CHANGE_SPATK_2:
-        if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
-            tempScore += GOOD_EFFECT;
-        break;
-    case STAT_CHANGE_SPDEF_2:
-        if (HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL) && shouldSetUp)
-        {
-            tempScore += DECENT_EFFECT;
+            if (stages == 1)
+                tempScore += WEAK_EFFECT;
+            else
+                tempScore += DECENT_EFFECT;
         }
         break;
     case STAT_CHANGE_ACC:
@@ -4310,12 +4425,33 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
     return tempScore;
 }
 
-u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statChange)
+bool32 HasHPForDamagingSetup(u32 battlerAtk, u32 battlerDef, u32 hpThreshold)
+{
+    bool32 bestMoveIsPhysical = HasPhysicalBestMove(battlerDef, battlerAtk, AI_DEFENDING_SETUP);
+
+    if (GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_SETUP) < ((hpThreshold * gBattleMons[battlerAtk].maxHP) / 100))
+        return TRUE;
+
+    if (bestMoveIsPhysical
+     && AI_DATA->abilities[battlerAtk] == ABILITY_ICE_FACE 
+     && gBattleMons[battlerAtk].species == SPECIES_EISCUE_ICE
+     && !IsMoldBreakerTypeAbility(battlerDef, AI_DATA->abilities[battlerDef])) // ice face will absorb the hit, safe to use setup
+        return TRUE;
+    
+    if (AI_DATA->abilities[battlerAtk] == ABILITY_DISGUISE
+     && IsMimikyuDisguised(battlerAtk)
+     && !IsMoldBreakerTypeAbility(battlerDef, AI_DATA->abilities[battlerDef])) // disguise will absorb the hit, safe to use setup
+        return TRUE;
+    
+    return FALSE;
+}
+
+u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, enum StatChange statChange)
 {
     return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, TRUE);
 }
 
-u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, u32 statChange)
+u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange statChange)
 {
     return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, FALSE);
 }

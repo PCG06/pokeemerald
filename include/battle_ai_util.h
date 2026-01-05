@@ -1,6 +1,8 @@
 #ifndef GUARD_BATTLE_AI_UTIL_H
 #define GUARD_BATTLE_AI_UTIL_H
 
+#include "battle_ai_main.h"
+
 #define FOE(battler) ((BATTLE_OPPOSITE(battler)) & BIT_SIDE)
 
 // Roll boundaries used by AI when scoring. Doesn't affect actual damage dealt.
@@ -23,6 +25,12 @@ enum DamageCalcContext
     AI_ATTACKING_ON_FIELD,
     AI_ATTACKING_IN_SWITCHIN_CALC,
     AI_ATTACKING_PARTNER
+};
+
+enum AiConsiderEndure
+{
+    CONSIDER_ENDURE,
+    DONT_CONSIDER_ENDURE,
 };
 
 // Higher priority at the bottom; note that these are used in the formula MAX_MON_MOVES ^ AiCompareMovesPriority, which must fit within a u32.
@@ -95,7 +103,7 @@ bool32 AI_CanBattlerEscape(u32 battler);
 bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef);
 s32 AI_WhoStrikesFirst(u32 battlerAI, u32 battler2, u32 aiMoveConsidered, u32 playerMoveConsidered, enum ConsiderPriority considerPriority);
 bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk);
-u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk);
+u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk, enum AiConsiderEndure considerEndure);
 u32 GetBestDmgMoveFromBattler(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext);
 u32 GetBestDmgFromBattler(u32 battler, u32 battlerTarget, enum DamageCalcContext calcContext);
 bool32 CanTargetMoveFaintAi(u32 move, u32 battlerDef, u32 battlerAtk, u32 nHits);
@@ -155,7 +163,7 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
 bool32 AI_IsDamagedByRecoil(u32 battler, bool8 considerRockHead);
 u32 GetNoOfHitsToKO(u32 dmg, s32 hp);
 u32 GetNoOfHitsToKOBattlerDmg(u32 dmg, u32 battlerDef);
-u32 GetNoOfHitsToKOBattler(u32 battlerAtk, u32 battlerDef, u32 moveIndex, enum DamageCalcContext calcContext);
+u32 GetNoOfHitsToKOBattler(u32 battlerAtk, u32 battlerDef, u32 moveIndex, enum DamageCalcContext calcContext, enum AiConsiderEndure considerEndure);
 u32 GetCurrDamageHpPercent(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext);
 uq4_12_t AI_GetMoveEffectiveness(u32 move, u32 battlerAtk, u32 battlerDef);
 u16 *GetMovesArray(u32 battler);
@@ -256,14 +264,15 @@ bool32 PartyHasMoveCategory(u32 battlerId, u32 category);
 bool32 SideHasMoveCategory(u32 battlerId, u32 category);
 
 // score increases
-u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, u32 statChange);
-u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, u32 statChange);
+u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, enum StatChange statChange);
+u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange statChange);
 void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseBurnScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseSleepScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseConfusionScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
 void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score);
+bool32 HasHPForDamagingSetup(u32 battlerAtk, u32 battlerDef, u32 hpThreshold);
 //u32 IncreaseIndexMoveScoreBasedOnRolls(u32 battlerAtk, u32 battlerDef, u32 moveIndex);
 
 s32 AI_CalcPartyMonDamage(u32 move, u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, enum DamageCalcContext calcContext);

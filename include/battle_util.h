@@ -333,5 +333,6 @@ bool8 IsSleepClauseActiveForSide(u32 battlerSide);
 bool32 IsSleepClauseEnabled();
 u32 DoesDestinyBondFail(u32 battler);
 bool32 HasWeatherEffect(void);
+bool32 IsMimikyuDisguised(u32 battler);
 
 #endif // GUARD_BATTLE_UTIL_H
