@@ -293,6 +293,17 @@ AI_SINGLE_BATTLE_TEST("Rapid Spin should prevent secondary hazard effect moves f
     }
 }
 
+AI_SINGLE_BATTLE_TEST("Solar beam should get ignored at AI_CompareDamagingMoves and correctly select least hits to KO otherwise instead of randomly between all moves")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_PINCURCHIN){ Level(85); Nature(NATURE_SASSY); Ability(ABILITY_LIGHTNING_ROD); Item(ITEM_ASSAULT_VEST); Speed(50); Moves(MOVE_VOLT_SWITCH, MOVE_THUNDERBOLT); }
+        OPPONENT(SPECIES_CHARIZARD){ Level(85); Nature(NATURE_TIMID); Ability(ABILITY_BLAZE); Item(ITEM_CHARIZARDITE_Y); Speed(221); Moves(MOVE_FLAMETHROWER, MOVE_AIR_SLASH, MOVE_SOLAR_BEAM, MOVE_DRAGON_PULSE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_THUNDERBOLT); EXPECT_MOVE(opponent, MOVE_DRAGON_PULSE); }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("CompareMoveSpeeds should ignore fake out and status moves for AI_CompareDamagingMoves BEST_DAMAGE_MOVE scoring")
 {
     GIVEN {
