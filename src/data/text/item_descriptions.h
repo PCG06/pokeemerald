@@ -3199,7 +3199,7 @@ static const u8 sTM33Desc[] = _(
 static const u8 sTM34Desc[] = _(
     "A psychic move for\n"
     "fleeing from battle\n"
-    "instantly.");
+    "at the end of the turn.");
 
 static const u8 sTM35Desc[] = _(
     "Looses a stream of\n"
@@ -3214,7 +3214,7 @@ static const u8 sTM36Desc[] = _(
 static const u8 sTM37Desc[] = _(
     "Causes a sandstorm\n"
     "that hits the foe\n"
-    "over several turns.");
+    "for 5 turns.");
 
 static const u8 sTM38Desc[] = _(
     "A powerful fire\n"
@@ -3258,7 +3258,7 @@ static const u8 sTM45Desc[] = _(
 
 static const u8 sTM46Desc[] = _(
     "While attacking,\n"
-    "it may steal the\n"
+    "steal the\n"
     "foe's held item.");
 
 static const u8 sTM47Desc[] = _(
