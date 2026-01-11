@@ -894,7 +894,16 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
 
     if (TestIfSheerForceAffected(battlerAtk, move))
         return FALSE;
-    
+
+
+    switch (move)
+    {
+        case MOVE_SURF:
+        case MOVE_DIVE:
+            if (gBattleMons[battlerAtk].species == SPECIES_CRAMORANT)
+                return TRUE;
+    }        
+   
     switch (gMovesInfo[move].effect)
     {
     case EFFECT_FELL_STINGER:
@@ -994,27 +1003,27 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
             {
                 case MOVE_EFFECT_POISON:
                 case MOVE_EFFECT_TOXIC:
-                    if (AI_CanPoison(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE))
+                    if (AI_CanPoison(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE) && noOfHitsToKo > 1)
                         return TRUE;
                     break;
                 case MOVE_EFFECT_BURN:
-                    if (AI_CanBurn(battlerAtk, battlerDef, abilityDef, BATTLE_PARTNER(battlerAtk), move, MOVE_NONE))
+                    if (AI_CanBurn(battlerAtk, battlerDef, abilityDef, BATTLE_PARTNER(battlerAtk), move, MOVE_NONE) && noOfHitsToKo > 1)
                         return TRUE;
                     break;
                 case MOVE_EFFECT_FREEZE_OR_FROSTBITE:
-                    if (AI_CanGetFrostbite(battlerDef, abilityDef))
+                    if (AI_CanGetFrostbite(battlerDef, abilityDef) && noOfHitsToKo > 1)
                         return TRUE;
                     break;
                 case MOVE_EFFECT_PARALYSIS:
-                    if (AI_CanParalyze(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE))
+                    if (AI_CanParalyze(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE) && noOfHitsToKo > 1)
                         return TRUE;
                     break;
                 case MOVE_EFFECT_CONFUSION:
-                    if (AI_CanConfuse(battlerAtk, battlerDef, abilityDef, BATTLE_PARTNER(battlerAtk), move, MOVE_NONE))
+                    if (AI_CanConfuse(battlerAtk, battlerDef, abilityDef, BATTLE_PARTNER(battlerAtk), move, MOVE_NONE) && noOfHitsToKo > 1)
                         return TRUE;
                     break;
                 case MOVE_EFFECT_FLINCH:
-                    if (ShouldTryToFlinch(battlerAtk, battlerDef, abilityAtk, abilityDef, move))
+                    if (ShouldTryToFlinch(battlerAtk, battlerDef, abilityAtk, abilityDef, move) && noOfHitsToKo > 1)
                         return TRUE;
                     break;
                 case MOVE_EFFECT_ATK_MINUS_1:
@@ -4682,13 +4691,15 @@ bool32 AI_ShouldCopyStatChanges(u32 battlerAtk, u32 battlerDef)
 bool32 AI_ShouldSetUpHazards(u32 battlerAtk, u32 battlerDef, struct AiLogicData *aiData)
 {
     if (aiData->abilities[battlerDef] == ABILITY_MAGIC_BOUNCE
-     || CountUsablePartyMons(battlerDef) == 0
-     || HasMoveEffect(battlerDef, EFFECT_TIDY_UP)
-     || HasMoveEffect(battlerDef, EFFECT_MAGIC_COAT)
-     || HasMoveWithAdditionalEffect(battlerDef, MOVE_EFFECT_RAPID_SPIN)
-     || HasMoveEffect(battlerDef, EFFECT_DEFOG))
+        || CountUsablePartyMons(battlerDef) < 2
+        || HasMoveEffect(battlerDef, EFFECT_MAGIC_COAT))
         return FALSE;
 
+    if (RandomPercentage(RNG_AI_NO_SETUP_HAZARDS, CONSIDER_NO_SETUP_HAZARDS_CHANCE) 
+        && (HasMoveEffect(battlerDef, EFFECT_TIDY_UP)
+        || HasMoveWithAdditionalEffect(battlerDef, MOVE_EFFECT_RAPID_SPIN)
+        || HasMoveEffect(battlerDef, EFFECT_DEFOG)))
+        return FALSE;
     return TRUE;
 }
 
@@ -4752,41 +4763,30 @@ bool32 AI_ShouldSpicyExtract(u32 battlerAtk, u32 battlerAtkPartner, u32 move, st
 u32 IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
 {
     u32 scoreIncrease = 0;
-    if (gMovesInfo[move].effect == EFFECT_SUBSTITUTE) // Substitute specific
-    {
-        if (HasAnyKnownMove(battlerDef) && GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_NORMAL) < gBattleMons[battlerAtk].maxHP / 4)
-            scoreIncrease += GOOD_EFFECT;
-    }
-    else if (gMovesInfo[move].effect == EFFECT_SHED_TAIL) // Shed Tail specific
+
+    if (gBattleMons[battlerDef].status1 & STATUS1_SLEEP)
+        scoreIncrease += DECENT_EFFECT;
+
+    if (gMovesInfo[move].effect == EFFECT_SHED_TAIL) // Shed Tail specific
     {
         if ((ShouldPivot(battlerAtk, battlerDef, AI_DATA->abilities[battlerDef], move, AI_THINKING_STRUCT->movesetIndex))
         && (HasAnyKnownMove(battlerDef) && (GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_NORMAL) < gBattleMons[battlerAtk].maxHP / 2)))
             scoreIncrease += BEST_EFFECT;
+
+        if (AI_DATA->hpPercents[battlerAtk] >= 75)
+            scoreIncrease += WEAK_EFFECT;        
     }
+    else if (gMovesInfo[move].effect == EFFECT_SUBSTITUTE) // Substitute specific
+    {
+        if (HasAnyKnownMove(battlerDef) && GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_NORMAL) < gBattleMons[battlerAtk].maxHP / 4)
+            scoreIncrease += DECENT_EFFECT;
+    
+        if (AI_DATA->hpPercents[battlerAtk] >= 50)
+            scoreIncrease += WEAK_EFFECT;
 
-    if (gStatuses3[battlerDef] & STATUS3_PERISH_SONG)
-        scoreIncrease += GOOD_EFFECT;
-
-    if (gBattleMons[battlerDef].status1 & STATUS1_SLEEP)
-        scoreIncrease += GOOD_EFFECT;
-    else if (gBattleMons[battlerDef].status1 & (STATUS1_BURN | STATUS1_PSN_ANY | STATUS1_FROSTBITE))
-        scoreIncrease += DECENT_EFFECT;
-
-    // TODO:
-    // if (IsPredictedToSwitch(battlerDef, battlerAtk)
-    //     ADJUST_SCORE_PTR(DECENT_EFFECT);
-
-    if (HasMoveEffect(battlerDef, EFFECT_SLEEP)
-     || HasMoveEffect(battlerDef, EFFECT_TOXIC)
-     || HasMoveEffect(battlerDef, EFFECT_POISON)
-     || HasMoveEffect(battlerDef, EFFECT_PARALYZE)
-     || HasMoveEffect(battlerDef, EFFECT_WILL_O_WISP)
-     || HasMoveEffect(battlerDef, EFFECT_CONFUSE)
-     || HasMoveEffect(battlerDef, EFFECT_LEECH_SEED))
-        scoreIncrease += GOOD_EFFECT;
-
-    if (AI_DATA->hpPercents[battlerAtk] > 70)
-        scoreIncrease += WEAK_EFFECT;
+        if (scoreIncrease > BEST_EFFECT)
+            scoreIncrease = BEST_EFFECT;
+    }
     return scoreIncrease;
 }
 
