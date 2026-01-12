@@ -1141,10 +1141,6 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     ADJUST_SCORE(-10);
                 }
             }    
-            if ((GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_NORMAL)*100/gBattleMons[battlerAtk].maxHP) >= (aiData->hpPercents[battlerAtk]/2) && (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_RESTORE_STATS)) // if player deals over 50% of AI's current hp 
-            {
-                ADJUST_SCORE(-10);
-            }
             if (aiData->abilities[battlerAtk] == ABILITY_CONTRARY)
             {
                 if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_DEF))
@@ -2337,14 +2333,10 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             {
                 ADJUST_SCORE(-10);
             }
-            for (i = 0; i < MAX_MON_MOVES; i++)
+            if (isBattlerTrapped(battlerDef, TRUE))
             {
-                moveUsed = gBattleResources->battleHistory->usedMoves[battlerAtk][i];
-                if (gMovesInfo[moveUsed].effect == EFFECT_OCTOLOCK)  // if octolock was used by the AI before 
-                    {
-                        ADJUST_SCORE(-10);
-                    }
-            }  
+                ADJUST_SCORE(-10);
+            }
             break;
         case EFFECT_FLING:
             if (!CanFling(battlerAtk))
