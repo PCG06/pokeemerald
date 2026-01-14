@@ -4771,10 +4771,7 @@ u32 IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
     {
         if ((ShouldPivot(battlerAtk, battlerDef, AI_DATA->abilities[battlerDef], move, AI_THINKING_STRUCT->movesetIndex))
         && (HasAnyKnownMove(battlerDef) && (GetBestDmgFromBattler(battlerDef, battlerAtk, AI_DEFENDING_NORMAL) < gBattleMons[battlerAtk].maxHP / 2)))
-            scoreIncrease += BEST_EFFECT;
-
-        if (AI_DATA->hpPercents[battlerAtk] >= 75)
-            scoreIncrease += WEAK_EFFECT;        
+            scoreIncrease += BEST_EFFECT;     
     }
     else if (gMovesInfo[move].effect == EFFECT_SUBSTITUTE) // Substitute specific
     {
@@ -4783,10 +4780,9 @@ u32 IncreaseSubstituteMoveScore(u32 battlerAtk, u32 battlerDef, u32 move)
     
         if (AI_DATA->hpPercents[battlerAtk] >= 50)
             scoreIncrease += WEAK_EFFECT;
-
-        if (scoreIncrease > BEST_EFFECT)
-            scoreIncrease = BEST_EFFECT;
     }
+    if (scoreIncrease > BEST_EFFECT)
+        scoreIncrease = BEST_EFFECT;
     return scoreIncrease;
 }
 
