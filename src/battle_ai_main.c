@@ -734,6 +734,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
     u32 i;
     u32 weather;
     u32 predictedMove = aiData->lastUsedMove[battlerDef];
+    u32 moveUsed; // stops AI from using the same move multiple times 
 
     if (IS_TARGETING_PARTNER(battlerAtk, battlerDef))
         return score;
@@ -1128,6 +1129,14 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-8);
             break;
         case EFFECT_SHELL_SMASH:
+            for (i = 0; i < MAX_MON_MOVES; i++)
+            {
+                moveUsed = gBattleResources->battleHistory->usedMoves[battlerAtk][i];
+                if (gMovesInfo[moveUsed].effect == EFFECT_SHELL_SMASH)  // if shell smash was used by the AI before 
+                {
+                    ADJUST_SCORE(-10);
+                }
+            }    
             if (aiData->abilities[battlerAtk] == ABILITY_CONTRARY)
             {
                 if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_DEF))
@@ -1143,10 +1152,6 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                     ADJUST_SCORE(-10);
                 else if (!BattlerStatCanRise(battlerAtk, aiData->abilities[battlerAtk], STAT_SPEED))
                     ADJUST_SCORE(-10);
-                else if (gBattleMons[battlerAtk].statStages[STAT_DEF] < (DEFAULT_STAT_STAGE - 2))
-                    ADJUST_SCORE(-4);
-                else if (gBattleMons[battlerAtk].statStages[STAT_SPDEF] < (DEFAULT_STAT_STAGE - 2))
-                    ADJUST_SCORE(-4);
             }
             break;
         case EFFECT_GROWTH:
@@ -2053,7 +2058,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_FINAL_GAMBIT:
-            if (CountUsablePartyMons(battlerAtk) == 0 || DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
+            if (DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_NATURE_POWER:
@@ -2316,6 +2321,18 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             if (gFieldStatuses & STATUS_FIELD_ION_DELUGE
               || PartnerMoveIsSameNoTarget(BATTLE_PARTNER(battlerAtk), move, aiData->partnerMove))
                 ADJUST_SCORE(-10);
+            break;
+        case EFFECT_OCTOLOCK:
+            if ((IS_BATTLER_OF_TYPE(battlerDef, TYPE_GHOST) 
+                || aiData->holdEffects[battlerDef] == HOLD_EFFECT_SHED_SHELL) 
+                && (CountUsablePartyMons(battlerDef) != 0))
+            {
+                ADJUST_SCORE(-10);
+            }
+            if (isBattlerTrapped(battlerDef, TRUE))
+            {
+                ADJUST_SCORE(-10);
+            }
             break;
         case EFFECT_FLING:
             if (!CanFling(battlerAtk))
@@ -3451,6 +3468,13 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     bool32 isDoubleBattle = IsValidDoubleBattle(battlerAtk);
     u32 i;
 
+    // strength sap data 
+    u32 atkStat = gBattleMons[battlerDef].attack;
+    u32 atkStage = gBattleMons[battlerDef].statStages[STAT_ATK];
+    atkStat *= gStatStageRatios[atkStage][0];
+    atkStat /= gStatStageRatios[atkStage][1];
+    u32 healPercent = atkStat * 100 / gBattleMons[battlerAtk].maxHP;
+
     // The AI should understand that while Dynamaxed, status moves function like Protect.
     if (GetActiveGimmick(battlerAtk) == GIMMICK_DYNAMAX && gMovesInfo[move].category == DAMAGE_CATEGORY_STATUS)
         moveEffect = EFFECT_PROTECT;
@@ -3487,11 +3511,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_STRENGTH_SAP:
-        u32 atkStat = gBattleMons[battlerDef].attack;
-        u32 atkStage = gBattleMons[battlerDef].statStages[STAT_ATK];
-        atkStat *= gStatStageRatios[atkStage][0];
-        atkStat /= gStatStageRatios[atkStage][1];
-        u32 healPercent = atkStat * 100 / gBattleMons[battlerAtk].maxHP;
         if (ShouldRecover(battlerAtk, battlerDef, move, healPercent))
         {
             ADJUST_SCORE(GOOD_EFFECT);
@@ -4332,6 +4351,10 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                || !CanTargetFaintAiWithMod(battlerDef, battlerAtk, toHeal, 0)))
                 ADJUST_SCORE(WEAK_EFFECT);    // Recycle healing berry if we can't otherwise faint the target and the target wont kill us after we activate the berry
         }
+        break;
+    case EFFECT_OCTOLOCK:
+        if (ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_SPDEF) || ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_DEF) )
+            ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_RAGING_BULL:
     case EFFECT_BRICK_BREAK:

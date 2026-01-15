@@ -419,3 +419,35 @@ AI_SINGLE_BATTLE_TEST("sheer force moveeffectinplus")
         }
     }
 }
+
+
+AI_SINGLE_BATTLE_TEST("status chance are not positive effect on kills")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_VOLCANION){ Level(85); HP(1); Nature(NATURE_TIMID); Ability(ABILITY_WATER_ABSORB); Speed(165); Moves(MOVE_FLAMETHROWER); }
+        OPPONENT(SPECIES_GRIMMSNARL){ Level(85); Nature(NATURE_QUIET); Ability(ABILITY_PRANKSTER); Speed(96); Moves(MOVE_THUNDERBOLT, MOVE_MOONBLAST, MOVE_POWER_UP_PUNCH); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_FLAMETHROWER);
+            SCORE_EQ_VAL(opponent, MOVE_THUNDERBOLT, 104);
+            SCORE_EQ_VAL(opponent, MOVE_MOONBLAST, 104);
+            SCORE_EQ_VAL(opponent, MOVE_POWER_UP_PUNCH, 105);
+        }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("surf is positive effect for cramorant")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_BLAZIKEN){ Level(44); Nature(NATURE_ADAMANT); Ability(ABILITY_STRIKER); Speed(89); HP(20); Moves(MOVE_DETECT, MOVE_TRIPLE_ARROWS); }
+        OPPONENT(SPECIES_CRAMORANT){ Level(85); Nature(NATURE_QUIET); Ability(ABILITY_GULP_MISSILE); Speed(96); Moves(MOVE_SURF, MOVE_SCALD); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_TRIPLE_ARROWS);
+            SCORE_EQ_VAL(opponent, MOVE_SURF, 107);
+            SCORE_EQ_VAL(opponent, MOVE_SCALD, 106);
+        }
+    }
+}
