@@ -1008,10 +1008,6 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             {
                 ADJUST_SCORE(-10);
             }
-            if (CountUsablePartyMons(battlerAtk) == 0)
-            {
-                ADJUST_SCORE(-10);
-            }   
             break;
     // stat raising effects
         case EFFECT_ATTACK_UP:
@@ -2062,7 +2058,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_FINAL_GAMBIT:
-            if (CountUsablePartyMons(battlerAtk) == 0 || DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
+            if (DoesPartnerHaveSameMoveEffect(BATTLE_PARTNER(battlerAtk), battlerDef, move, aiData->partnerMove))
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_NATURE_POWER:
