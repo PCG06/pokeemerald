@@ -103,7 +103,7 @@ static const u8 sHyperspaceHoleDescription[] = _(
     "Can't be evaded.");
 
 static const u8 sSuckerPunchDescription[] = _(
-    "Strikes first, fails if \n"
+    "Strikes first, fails if\n"
     "the foe is not attacking.");
 
 static const u8 sFeintDescription[] = _(
@@ -403,7 +403,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .name = COMPOUND_STRING("Guillotine"),
         .description = COMPOUND_STRING(
             "A powerful pincer attack\n"
-            "causing faiting if it hits."),
+            "causing fainting if it hits."),
         .effect = EFFECT_OHKO,
         .power = 1,
         .type = TYPE_NORMAL,
@@ -3454,7 +3454,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .name = COMPOUND_STRING("High Jump Kick"),
         .description = COMPOUND_STRING(
             "A jumping knee kick. If it\n"
-            "misses, the user loses 50% max hp."),
+            "misses, the user loses 50% max HP."),
         #if B_UPDATED_MOVE_DATA >= GEN_5
             .power = 130,
         #elif B_UPDATED_MOVE_DATA == GEN_4
@@ -4781,7 +4781,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
     {
         .name = COMPOUND_STRING("Mud-Slap"),
         .description = COMPOUND_STRING(
-            "Hurls mud in the foe's \n"
+            "Hurls mud in the foe's\n"
             "face."),
         .effect = EFFECT_HIT,
         .power = 40,
@@ -4901,7 +4901,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
     {
         .name = COMPOUND_STRING("Destiny Bond"),
         .description = COMPOUND_STRING(
-            "If the user is killed, the foe\n"
+            "If the user is KOed, the foe\n"
             "is also made to faint."),
         .effect = EFFECT_DESTINY_BOND,
         .power = 0,
@@ -8294,7 +8294,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .name = COMPOUND_STRING("Muddy Water"),
         .description = COMPOUND_STRING(
             "Attacks with muddy \n"
-            "water."),
+            "water. May lower attack"),
         .effect = EFFECT_HIT,
         .power = 95,
         .type = TYPE_WATER,
