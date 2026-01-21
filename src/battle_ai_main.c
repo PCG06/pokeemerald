@@ -2323,13 +2323,9 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
                 ADJUST_SCORE(-10);
             break;
         case EFFECT_OCTOLOCK:
-            if ((IS_BATTLER_OF_TYPE(battlerDef, TYPE_GHOST) 
-                || aiData->holdEffects[battlerDef] == HOLD_EFFECT_SHED_SHELL) 
+            if ((AI_CanBattlerEscape(battlerDef) 
+                || (!AI_CanBattlerEscape(battlerDef) && IsBattlerTrapped(battlerAtk, battlerDef))) 
                 && (CountUsablePartyMons(battlerDef) != 0))
-            {
-                ADJUST_SCORE(-10);
-            }
-            if (isBattlerTrapped(battlerDef, TRUE))
             {
                 ADJUST_SCORE(-10);
             }
@@ -3745,9 +3741,9 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     case EFFECT_AURORA_VEIL:
         if (ShouldSetScreen(battlerAtk, battlerDef, moveEffect))
         {
-            ADJUST_SCORE(BEST_EFFECT);
+            ADJUST_SCORE(GOOD_EFFECT);
             if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_LIGHT_CLAY)
-                ADJUST_SCORE(DECENT_EFFECT);
+                ADJUST_SCORE(WEAK_EFFECT);
         }
         break;
     case EFFECT_REST:
@@ -3851,7 +3847,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 //ADJUST_SCORE(7);
         }
         break;
-    case EFFECT_BATON_PASS:
+    case EFFECT_BATON_PASS: //TO DO MGR
         if ((AI_DATA->shouldSwitch & (1u << battlerAtk)) && (gBattleMons[battlerAtk].status2 & STATUS2_SUBSTITUTE
           || (gStatuses3[battlerAtk] & (STATUS3_ROOTED | STATUS3_AQUA_RING | STATUS3_MAGNET_RISE | STATUS3_POWER_TRICK))
           || AnyStatIsRaised(battlerAtk)))
@@ -4158,12 +4154,14 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             //ADJUST_SCORE(8);
         break;
     case EFFECT_PURSUIT:
-        // TODO
-        // if (IsPredictedToSwitch(battlerDef, battlerAtk))
-        //     ADJUST_SCORE(GOOD_EFFECT);
-        // else if (IsPredictedToUsePursuitableMove(battlerDef, battlerAtk) && !MoveWouldHitFirst(move, battlerAtk, battlerDef)) //Pursuit against fast U-Turn
-        //     ADJUST_SCORE(GOOD_EFFECT);
-        // break;
+        if (CanAIFaintTarget(battlerAtk,battlerDef, 1))
+        {
+            if (AI_IsSlower(battlerAtk,battlerDef,MOVE_NONE, MOVE_NONE, CONSIDER_PRIORITY))
+                ADJUST_SCORE(FAST_KILL+1);
+            else
+                ADJUST_SCORE(SLOW_KILL+1);
+        }
+        break;
     case EFFECT_DEFOG:
         if ((gSideStatuses[GetBattlerSide(battlerAtk)] & SIDE_STATUS_HAZARDS_ANY && CountUsablePartyMons(battlerAtk) != 0)
             || (gSideStatuses[GetBattlerSide(battlerDef)] & (SIDE_STATUS_SCREEN_ANY | SIDE_STATUS_SAFEGUARD | SIDE_STATUS_MIST)))

@@ -2021,6 +2021,7 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
     u32 aiMove, hitsToKOAI, hitsToKOPlayer, hitsToKOAIPriority, bestPlayerMove = MOVE_NONE, bestPlayerPriorityMove = MOVE_NONE, maxHitsToKO = 0;
     u32 bestResist = UQ_4_12(2.0), bestResistEffective = UQ_4_12(2.0), typeMatchup; // 2.0 is the default "Neutral" matchup from GetBattleMonTypeMatchup
     bool32 isFreeSwitch = IsFreeSwitch(switchType, battlerIn1, opposingBattler), isSwitchinFirst, isSwitchinFirstPriority, canSwitchinWin1v1;
+    u32 storeCurrBattlerPartyIndex = gBattlerPartyIndexes[battler]; //Rage Fist fix 
 
     // Iterate through mons
     for (i = firstId; i < lastId; i++)
@@ -2044,6 +2045,7 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
         else
             aliveCount++;
 
+        gBattlerPartyIndexes[battler] = i; // Rage Fist fix
         InitializeSwitchinCandidate(&party[i]);
 
         // While not really invalid per se, not really wise to switch into this mon
@@ -2065,7 +2067,8 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
             aiMove = AI_DATA->switchinCandidate.battleMon.moves[j];
             damageDealt = AI_CalcPartyMonDamage(aiMove, battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, AI_ATTACKING_IN_SWITCHIN_CALC);
             hitsToKOPlayer = GetNoOfHitsToKOBattlerDmg(damageDealt, opposingBattler);
-
+            gBattlerPartyIndexes[battler] = storeCurrBattlerPartyIndex; // Rage Fist fix
+            
             // Offensive switchin decisions are based on which whether switchin moves first and whether it can win a 1v1
             isSwitchinFirst = AI_IsPartyMonFaster(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, aiMove, bestPlayerMove, CONSIDER_PRIORITY);
             isSwitchinFirstPriority = AI_IsPartyMonFaster(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, aiMove, bestPlayerPriorityMove, CONSIDER_PRIORITY);
