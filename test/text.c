@@ -166,9 +166,6 @@ TEST("Item names fit on Pokemon Storage System")
     switch (item)
     {
     case ITEM_ENERGY_POWDER:
-    case ITEM_PEWTER_CRUNCHIES:
-    case ITEM_RAGE_CANDY_BAR:
-    case ITEM_LUMIOSE_GALETTE:
     case ITEM_HEALTH_FEATHER:
     case ITEM_MUSCLE_FEATHER:
     case ITEM_RESIST_FEATHER:
@@ -177,9 +174,7 @@ TEST("Item names fit on Pokemon Storage System")
     case ITEM_ABILITY_CAPSULE:
     case ITEM_DYNAMAX_CANDY:
     case ITEM_MAX_MUSHROOMS:
-    case ITEM_GOLD_BOTTLE_CAP:
     case ITEM_PRETTY_FEATHER:
-    case ITEM_STRANGE_SOUVENIR:
     case ITEM_FOSSILIZED_BIRD:
     case ITEM_FOSSILIZED_FISH:
     case ITEM_FOSSILIZED_DRAKE:
@@ -190,7 +185,6 @@ TEST("Item names fit on Pokemon Storage System")
     case ITEM_WHITE_APRICORN:
     case ITEM_BLACK_APRICORN:
     case ITEM_THUNDER_STONE:
-    case ITEM_GALARICA_WREATH:
     case ITEM_STRAWBERRY_SWEET:
     case ITEM_AUSPICIOUS_ARMOR:
     case ITEM_BIG_BAMBOO_SHOOT:
