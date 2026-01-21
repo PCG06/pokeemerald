@@ -2329,7 +2329,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             {
                 ADJUST_SCORE(-10);
             }
-            if (isBattlerTrapped(battlerDef, TRUE))
+            if (IsBattlerTrapped(battlerDef, TRUE))
             {
                 ADJUST_SCORE(-10);
             }
