@@ -131,6 +131,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_GruntPetalburgWoods),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_GruntPetalburgWoodsVanilla, // vanilla mode party
+            sParty_GruntPetalburgWoods,        // easy mode party (same as normal mode)
+            sParty_GruntPetalburgWoodsHard,    // hard mode party
+            sParty_GruntPetalburgWoodsHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {2, 2, 3, 3},
     },
 
     [TRAINER_MARCEL] =
@@ -3249,6 +3258,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_Roxanne1),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_RoxanneVanilla, // vanilla mode party
+            sParty_Roxanne1,       // easy mode party (same as normal mode)
+            sParty_RoxanneHard,    // hard mode party
+            sParty_RoxanneHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {3, 4, 4, 4},
     },
 
     [TRAINER_BRAWLY_1] =
@@ -10282,6 +10300,16 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_Candice),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_CandiceVanilla, // vanilla mode party
+            sParty_Candice,        // easy mode party (same as normal mode)
+            sParty_CandiceHard,    // hard mode party
+            sParty_CandiceHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {4, 4, 5, 5},
+        .startingStatus = STARTING_STATUS_SNOW,
     },
 
     [TRAINER_VOLKNER] =
@@ -10332,6 +10360,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_DawnRoute104),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_DawnRoute104Vanilla, // vanilla mode party
+            sParty_DawnRoute104,        // easy mode party (same as normal mode)
+            sParty_DawnRoute104Hard,    // hard mode party
+            sParty_DawnRoute104Hard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {3, 3, 4, 4},
     },
 
     [TRAINER_DAWN_ROUTE_111] =
