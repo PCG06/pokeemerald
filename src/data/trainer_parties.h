@@ -16733,8 +16733,7 @@ static const struct TrainerMon sParty_CandiceVanilla[] = {
 
 static const struct TrainerMon sParty_CandiceHard[] = {
     {
-            //hp, atk, def, speed, spatk, spdef
-    .iv = TRAINER_PARTY_IVS(31, 31, 30, 30, 30, 30),
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
     .lvl = 15,
     .species = SPECIES_PIKACHU_BELLE,
     .nature = NATURE_ADAMANT,
@@ -16946,7 +16945,7 @@ static const struct TrainerMon sParty_DawnRoute104Hard[] = {
     .ev = TRAINER_PARTY_EVS_JOLLY(),
     .ability = ABILITY_OBLIVIOUS,
     .heldItem = ITEM_ORAN_BERRY,
-    .moves = {MOVE_SEED_BOMB, MOVE_CUT, MOVE_PLAY_ROUGH, MOVE_TRIPLE_ARROWS}
+    .moves = {MOVE_SEED_BOMB, MOVE_CUT, MOVE_PLAY_ROUGH, MOVE_TRIPLE_AXEL}
     },
     {
          //hp, atk, def, speed, spatk, spdef
