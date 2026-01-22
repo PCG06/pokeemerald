@@ -4398,6 +4398,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                     {
                         gBattleWeather = (B_WEATHER_RAIN_TEMPORARY | B_WEATHER_RAIN_PERMANENT);
                         gBattleScripting.animArg1 = B_ANIM_RAIN_CONTINUES;
+                        gWeatherPtr->currWeather = WEATHER_RAIN;
                         effect++;
                     }
                     break;
@@ -4406,6 +4407,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                     {
                         gBattleWeather = B_WEATHER_SANDSTORM;
                         gBattleScripting.animArg1 = B_ANIM_SANDSTORM_CONTINUES;
+                        gWeatherPtr->currWeather = WEATHER_SANDSTORM;
                         effect++;
                     }
                     break;
@@ -4414,6 +4416,7 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                     {
                         gBattleWeather = (B_WEATHER_SUN_PERMANENT | B_WEATHER_SUN_TEMPORARY);
                         gBattleScripting.animArg1 = B_ANIM_SUN_CONTINUES;
+                        gWeatherPtr->currWeather = WEATHER_DROUGHT;
                         effect++;
                     }
                     break;
@@ -4424,11 +4427,13 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                         {
                             gBattleWeather = B_WEATHER_SNOW;
                             gBattleScripting.animArg1 = B_ANIM_SNOW_CONTINUES;
+                            gWeatherPtr->currWeather = WEATHER_SNOW;
                         }
                         else
                         {
                             gBattleWeather = B_WEATHER_HAIL;
                             gBattleScripting.animArg1 = B_ANIM_HAIL_CONTINUES;
+                            gWeatherPtr->currWeather = WEATHER_SNOW;
                         }
                         effect++;
                     }
