@@ -3,6 +3,7 @@
 
 u32 RivalPartyPicker(const struct Trainer *trainer);
 u32 HotHousePartyPicker(const struct Trainer *trainer);
+u32 StandardDifficultyModePartyPicker(const struct Trainer *trainer);
 
 // ADD MORE CUSTOM FUNCTION DECLARATIONS HERE!
 
