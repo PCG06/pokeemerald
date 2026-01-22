@@ -253,6 +253,77 @@ static const struct TrainerMon sParty_GruntRusturfTunnel[] = {
     }
 };
 
+static const struct TrainerMon sParty_GruntRusturfTunnelVanilla[] = {
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),   
+    .lvl =  16, 
+    .species = SPECIES_GLAMEOW,
+    .moves = {MOVE_FAKE_OUT, MOVE_KNOCK_OFF, MOVE_U_TURN, MOVE_FACADE},
+    .ability = ABILITY_OWN_TEMPO,
+    .nature = NATURE_JOLLY,
+    .heldItem = ITEM_SILK_SCARF,
+    },
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),   
+    .lvl = 17, 
+    .species = SPECIES_MIGHTYENA,
+    .moves = {MOVE_BITE, MOVE_SUCKER_PUNCH, MOVE_FIRE_FANG, MOVE_THUNDER_FANG},
+    .ability = ABILITY_INTIMIDATE,
+    .nature = NATURE_ADAMANT,
+    .heldItem = ITEM_MUSCLE_BAND,
+    },
+    {
+     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),   
+    .lvl = 16, 
+    .species = SPECIES_SPOINK,
+    .moves = {MOVE_PSYBEAM, MOVE_FLASH, MOVE_ICY_WIND, MOVE_GRASS_KNOT},
+    .ability = ABILITY_GLUTTONY,
+    .nature = NATURE_CALM,
+    .heldItem = ITEM_SITRUS_BERRY,
+    }
+};
+
+static const struct TrainerMon sParty_GruntRusturfTunnelHard[] = {
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),   
+    .lvl = 21, 
+    .species = SPECIES_PURUGLY,
+    .moves = {MOVE_FAKE_OUT, MOVE_KNOCK_OFF, MOVE_U_TURN, MOVE_FACADE},
+    .ability = ABILITY_DEFIANT,
+    .nature = NATURE_JOLLY,
+    .heldItem = ITEM_SILK_SCARF,
+    .preStatus = STATUS1_POISON,
+    },
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),   
+    .lvl = 20, 
+    .species = SPECIES_MIGHTYENA,
+    .moves = {MOVE_CRUNCH, MOVE_SUCKER_PUNCH, MOVE_FIRE_FANG, MOVE_THUNDER_FANG},
+    .ability = ABILITY_INTIMIDATE,
+    .nature = NATURE_ADAMANT,
+    .heldItem = ITEM_MUSCLE_BAND,
+    },
+    {
+     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),   
+    .lvl = 20, 
+    .species = SPECIES_SPOINK,
+    .moves = {MOVE_PSYBEAM, MOVE_FLASH, MOVE_NATURE_POWER, MOVE_GRASS_KNOT},
+    .ability = ABILITY_GLUTTONY,
+    .nature = NATURE_CALM,
+    .heldItem = ITEM_SITRUS_BERRY,
+    },
+    {
+        //hp, atk, def, speed, spatk, spdef
+    .iv = TRAINER_PARTY_IVS(31, 30, 31, 31, 30, 31),  
+    .lvl = 20, 
+    .species = SPECIES_CLAUNCHER,
+    .moves = {MOVE_WATER_PULSE, MOVE_AQUA_JET, MOVE_ICE_BEAM, MOVE_HIDDEN_POWER},
+    .ability = ABILITY_MEGA_LAUNCHER,
+    .nature = NATURE_QUIET,
+    .heldItem = ITEM_EVIOLITE,
+    }
+};
+
 static const struct TrainerMon sParty_GruntWeatherInst1[] = {
     {
     .lvl = 60,

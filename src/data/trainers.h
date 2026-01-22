@@ -214,6 +214,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_GruntRusturfTunnel),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_GruntRusturfTunnelVanilla, // vanilla mode party
+            sParty_GruntRusturfTunnel,        // easy mode party (same as normal mode)
+            sParty_GruntRusturfTunnelHard,    // hard mode party
+            sParty_GruntRusturfTunnelHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {3, 3, 4, 4},
     },
 
     [TRAINER_GRUNT_WEATHER_INST_1] =
