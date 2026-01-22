@@ -1081,7 +1081,7 @@ Route116_EventScript_BattleCandice::
 # 552 "data/maps/Route116/scripts.pory"
 	trainerbattle_no_intro TRAINER_CANDICE, Candice_Outro
 # 553 "data/maps/Route116/scripts.pory"
-	goto Route116_EventScript_CandiceGiveRockTomb
+	goto Route116_EventScript_CandiceGiveIcyWind
 	return
 
 
@@ -1093,26 +1093,35 @@ Route116_EventScript_CandiceDefeated::
 	end
 
 
-Route116_EventScript_CandiceGiveRockTomb::
+Route116_EventScript_CandiceGiveIcyWind::
 # 565 "data/maps/Route116/scripts.pory"
-	giveitem ITEM_TM_ICY_WIND
-# 566 "data/maps/Route116/scripts.pory"
 	giveitem ITEM_MUSCLE_BAND
 # 567 "data/maps/Route116/scripts.pory"
+	compare VAR_GAME_SETTING_DIFFICULTY_MODE, GAME_SETTING_DIFFICULTY_HARD_MODE
+	goto_if_ge Route116_EventScript_CandiceGiveIcyWind_2
+# 574 "data/maps/Route116/scripts.pory"
+	giveitem ITEM_TM_ICY_WIND
+# 575 "data/maps/Route116/scripts.pory"
+	msgbox Candice_ExplainIcyWindAndMuscleBand
+Route116_EventScript_CandiceGiveIcyWind_1:
+# 578 "data/maps/Route116/scripts.pory"
 	setflag FLAG_RECEIVED_TM_ICY_WIND
-# 568 "data/maps/Route116/scripts.pory"
-	msgbox Candice_ExplainRockTombAndMuscleBand
-# 569 "data/maps/Route116/scripts.pory"
+# 579 "data/maps/Route116/scripts.pory"
 	release
 	end
+
+Route116_EventScript_CandiceGiveIcyWind_2:
+# 569 "data/maps/Route116/scripts.pory"
+	msgbox Candice_ExplainIcyWindAndMuscleBandHardMode
+	goto Route116_EventScript_CandiceGiveIcyWind_1
 
 
 Route116_EventScript_BattleCandice_Text_0:
 # 551 "data/maps/Route116/scripts.pory"
 	.string "Let's do this!$"
 
-Candice_ExplainRockTombAndMuscleBand::
-# 573 "data/maps/Route116/scripts.pory"
+Candice_ExplainIcyWindAndMuscleBand::
+# 583 "data/maps/Route116/scripts.pory"
 	.string "That Technical Machine, TM21,\n"
 	.string "contains Icy Wind.\p"
 	.string "It not only inflicts damage with a cold\n"
@@ -1127,8 +1136,16 @@ Candice_ExplainRockTombAndMuscleBand::
 	.string "And the Muscle Band will boost your\n"
 	.string "Attack if held!$"
 
+Candice_ExplainIcyWindAndMuscleBandHardMode::
+# 599 "data/maps/Route116/scripts.pory"
+	.string "That Muscle Band will boost your\n"
+	.string "Attack if held!\p"
+	.string "What? Were you expecting a TM as well?\n"
+	.string "Sorry, but this is Hard Mode, Icy Wind\l"
+	.string "would make your next battle too easy!$"
+
 Candice_Greeting::
-# 589 "data/maps/Route116/scripts.pory"
+# 607 "data/maps/Route116/scripts.pory"
 	.string "Oh, hello. I'm Candice, the 7th Gym\n"
 	.string "Leader from the Sinnoh region.\p"
 	.string "I came to this Rustboro City to pay a\n"
@@ -1142,7 +1159,7 @@ Candice_Greeting::
 	.string "your first Gym challenge?$"
 
 Candice_WillYouBattleMe::
-# 603 "data/maps/Route116/scripts.pory"
+# 621 "data/maps/Route116/scripts.pory"
 	.string "Don't worry, I brought a team of lower-\n"
 	.string "level Pokémon, just in case I bumped\l"
 	.string "into any promising new trainers, so you\l"
@@ -1150,20 +1167,20 @@ Candice_WillYouBattleMe::
 	.string "What do you say we have a battle?$"
 
 Candice_Outro::
-# 611 "data/maps/Route116/scripts.pory"
+# 629 "data/maps/Route116/scripts.pory"
 	.string "Looks like the trainers here are\n"
 	.string "pretty strong! Please, take these\l"
 	.string "as rewards for beating me.$"
 
 PostBattle_Candice::
-# 618 "data/maps/Route116/scripts.pory"
+# 636 "data/maps/Route116/scripts.pory"
 	.string "It seems the quality of education here\n"
 	.string "in Hoenn is on par with ours in Sinnoh!$"
 
 Ready_Yet::
-# 623 "data/maps/Route116/scripts.pory"
+# 641 "data/maps/Route116/scripts.pory"
 	.string "Ready for our battle now?$"
 
 Come_Back_When_Ready::
-# 627 "data/maps/Route116/scripts.pory"
+# 645 "data/maps/Route116/scripts.pory"
 	.string "Come back when you're ready.$"

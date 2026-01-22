@@ -166,7 +166,14 @@ DewfordTown_MiniMarket_EventScript_Saleswoman2::
 	faceplayer
 	message gText_HowMayIServeYou
 	waitmessage
+	goto_if_ge VAR_GAME_SETTING_DIFFICULTY_MODE, GAME_SETTING_DIFFICULTY_HARD_MODE, DewfordTown_MiniMarket_EventScript_Saleswoman2_HardMode
 	tmshop DewfordTown_MiniMart2
+	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
+	release
+	end
+
+DewfordTown_MiniMarket_EventScript_Saleswoman2_HardMode::
+	tmshop DewfordTown_MiniMart2HardMode
 	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
 	release
 	end
@@ -174,6 +181,20 @@ DewfordTown_MiniMarket_EventScript_Saleswoman2::
 	.align 2
 DewfordTown_MiniMart2:
 	.2byte ITEM_TM_ELECTROWEB
+	.2byte ITEM_TM_ROCK_TOMB
+	.2byte ITEM_TM_AERIAL_ACE
+	.2byte ITEM_TM_LOW_KICK
+	.2byte ITEM_TM_PLUCK
+	.2byte ITEM_TM_SNARL
+	.2byte ITEM_TM_SMACK_DOWN
+	.2byte ITEM_NONE
+	release
+	end
+
+	.align 2
+DewfordTown_MiniMart2HardMode:
+	.2byte ITEM_TM_ELECTROWEB
+	.2byte ITEM_TM_ICY_WIND
 	.2byte ITEM_TM_ROCK_TOMB
 	.2byte ITEM_TM_AERIAL_ACE
 	.2byte ITEM_TM_LOW_KICK

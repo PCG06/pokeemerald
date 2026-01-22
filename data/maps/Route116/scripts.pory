@@ -550,7 +550,7 @@ script Route116_EventScript_DeclineCandiceBattle {
 script Route116_EventScript_BattleCandice{
 	msgbox("Let's do this!", MSGBOX_DEFAULT)
 	trainerbattle_no_intro(TRAINER_CANDICE, Candice_Outro)
-	goto(Route116_EventScript_CandiceGiveRockTomb)
+	goto(Route116_EventScript_CandiceGiveIcyWind)
 	return
 }
 	
@@ -561,16 +561,26 @@ script Route116_EventScript_CandiceDefeated{
 	end
 }
 
-script Route116_EventScript_CandiceGiveRockTomb{
-	giveitem(ITEM_TM_ICY_WIND)
+script Route116_EventScript_CandiceGiveIcyWind{
 	giveitem(ITEM_MUSCLE_BAND)
+
+	if (var(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
+	{
+		msgbox(Candice_ExplainIcyWindAndMuscleBandHardMode)
+		
+	}
+	else
+	{
+		giveitem(ITEM_TM_ICY_WIND)
+		msgbox(Candice_ExplainIcyWindAndMuscleBand)
+	}
+	
 	setflag(FLAG_RECEIVED_TM_ICY_WIND)
-	msgbox(Candice_ExplainRockTombAndMuscleBand)
 	release
 	end
 }
 
-text Candice_ExplainRockTombAndMuscleBand{
+text Candice_ExplainIcyWindAndMuscleBand{
 	"That Technical Machine, TM21,\n"
 	"contains Icy Wind.\p"
 	"It not only inflicts damage with a cold\n"
@@ -584,6 +594,14 @@ text Candice_ExplainRockTombAndMuscleBand{
 	"many times as you want!\p"
 	"And the Muscle Band will boost your\n"
 	"Attack if held!"
+}
+
+text Candice_ExplainIcyWindAndMuscleBandHardMode{
+	"That Muscle Band will boost your\n"
+	"Attack if held!\p"
+	"What? Were you expecting a TM as well?\n"
+	"Sorry, but this is Hard Mode, Icy Wind\l"
+	"would make your next battle too easy!"
 }
 
 text Candice_Greeting{
