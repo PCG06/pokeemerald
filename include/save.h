@@ -17,8 +17,8 @@
 
 #define SECTOR_ID_SAVEBLOCK2          0
 #define SECTOR_ID_SAVEBLOCK1_START    1
-#define SECTOR_ID_SAVEBLOCK1_END      4
-#define SECTOR_ID_PKMN_STORAGE_START  5
+#define SECTOR_ID_SAVEBLOCK1_END      13
+#define SECTOR_ID_PKMN_STORAGE_START  14
 #define SECTOR_ID_PKMN_STORAGE_END    27
 #define NUM_SECTORS_PER_SLOT          28
 // Save Slot 1: 0-13;  Save Slot 2: 14-27 -- no longer accurate

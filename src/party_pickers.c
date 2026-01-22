@@ -2,6 +2,7 @@
 #include "data.h"
 #include "event_data.h"
 #include "starter_choose.h"
+#include "constants/game_settings.h"
 
 
 // This enum is not really necessary, i am just including it to help visualize what the return values
@@ -75,5 +76,9 @@ u32 HotHousePartyPicker(const struct Trainer *trainer)
     return BADGE_2_PARTY;
 }
 
-
-// ADD MORE CUSTOM FUNCTION DEFINITIONS HERE!
+// This is a function that will be used for picking a party
+// that only differs based on the difficulty mode, should be used a lot
+u32 StandardDifficultyModePartyPicker(const struct Trainer *trainer)
+{
+    return VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE);
+}

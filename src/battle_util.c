@@ -40,6 +40,7 @@
 #include "constants/battle_move_effects.h"
 #include "constants/battle_script_commands.h"
 #include "constants/battle_string_ids.h"
+#include "constants/game_settings.h"
 #include "constants/hold_effects.h"
 #include "constants/items.h"
 #include "constants/moves.h"
@@ -4382,6 +4383,53 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                     {
                         gBattleWeather = B_WEATHER_FOG;
                         gBattleScripting.animArg1 = B_ANIM_FOG_CONTINUES;
+                        effect++;
+                    }
+                    break;
+                }
+            }
+
+            if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
+            {
+                switch (gBattleStruct->startingStatus)
+                {
+                case STARTING_STATUS_RAIN:
+                    if (!(gBattleWeather & B_WEATHER_RAIN))
+                    {
+                        gBattleWeather = (B_WEATHER_RAIN_TEMPORARY | B_WEATHER_RAIN_PERMANENT);
+                        gBattleScripting.animArg1 = B_ANIM_RAIN_CONTINUES;
+                        effect++;
+                    }
+                    break;
+                case STARTING_STATUS_SAND:
+                    if (!(gBattleWeather & B_WEATHER_SANDSTORM))
+                    {
+                        gBattleWeather = B_WEATHER_SANDSTORM;
+                        gBattleScripting.animArg1 = B_ANIM_SANDSTORM_CONTINUES;
+                        effect++;
+                    }
+                    break;
+                case STARTING_STATUS_SUN:
+                    if (!(gBattleWeather & B_WEATHER_SUN))
+                    {
+                        gBattleWeather = (B_WEATHER_SUN_PERMANENT | B_WEATHER_SUN_TEMPORARY);
+                        gBattleScripting.animArg1 = B_ANIM_SUN_CONTINUES;
+                        effect++;
+                    }
+                    break;
+                case STARTING_STATUS_SNOW:
+                    if (!(gBattleWeather & (B_WEATHER_HAIL | B_WEATHER_SNOW)))
+                    {
+                        if (B_OVERWORLD_SNOW >= GEN_9)
+                        {
+                            gBattleWeather = B_WEATHER_SNOW;
+                            gBattleScripting.animArg1 = B_ANIM_SNOW_CONTINUES;
+                        }
+                        else
+                        {
+                            gBattleWeather = B_WEATHER_HAIL;
+                            gBattleScripting.animArg1 = B_ANIM_HAIL_CONTINUES;
+                        }
                         effect++;
                     }
                     break;

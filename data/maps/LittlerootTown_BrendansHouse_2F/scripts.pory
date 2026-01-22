@@ -403,6 +403,51 @@ CheatCodeMegaStones::
 	giveitemfast ITEM_SLAKITE
 	giveitemfast ITEM_ROSERADITE
 	giveitemfast ITEM_DUSKNOIRITE
+	giveitemfast ITEM_CLEFABLITE
+	giveitemfast ITEM_VICTREEBELITE
+	giveitemfast ITEM_STARMINITE
+	giveitemfast ITEM_DRAGONINITE
+	giveitemfast ITEM_MEGANIUMITE
+	giveitemfast ITEM_FERALIGITE
+	giveitemfast ITEM_SKARMORITE
+	giveitemfast ITEM_FROSLASSITE
+	giveitemfast ITEM_EMBOARITE
+	giveitemfast ITEM_EXCADRITE
+	giveitemfast ITEM_SCOLIPITE
+	giveitemfast ITEM_SCRAFTINITE
+	giveitemfast ITEM_EELEKTROSSITE
+	giveitemfast ITEM_CHANDELURITE
+	giveitemfast ITEM_CHESNAUGHTITE
+	giveitemfast ITEM_DELPHOXITE
+	giveitemfast ITEM_GRENINJITE
+	giveitemfast ITEM_PYROARITE
+	giveitemfast ITEM_FLOETTITE
+	giveitemfast ITEM_MALAMARITE
+	giveitemfast ITEM_BARBARACITE
+	giveitemfast ITEM_DRAGALGITE
+	giveitemfast ITEM_HAWLUCHANITE
+	giveitemfast ITEM_ZYGARDITE
+	giveitemfast ITEM_DRAMPANITE
+	giveitemfast ITEM_FALINKSITE
+	giveitemfast ITEM_HEATRANITE
+	giveitemfast ITEM_DARKRANITE
+	giveitemfast ITEM_ZERAORITE
+	giveitemfast ITEM_RAICHUNITE_X
+	giveitemfast ITEM_RAICHUNITE_Y
+	giveitemfast ITEM_CHIMECHITE
+	giveitemfast ITEM_ABSOLITE_Z
+	giveitemfast ITEM_STARAPTITE
+	giveitemfast ITEM_GARCHOMPITE_Z
+	giveitemfast ITEM_LUCARIONITE_Z
+	giveitemfast ITEM_GOLURKITE
+	giveitemfast ITEM_MEOWSTICITE
+	giveitemfast ITEM_CRABOMINITE
+	giveitemfast ITEM_GOLISOPITE
+	giveitemfast ITEM_MAGEARNITE
+	giveitemfast ITEM_SCOVILLAINITE
+	giveitemfast ITEM_BAXCALIBRITE
+	giveitemfast ITEM_TATSUGIRINITE
+	giveitemfast ITEM_GLIMMORANITE
 	msgbox CheatCodeMegaStonesGiven_Text, MSGBOX_DEFAULT
 	releaseall
 	end

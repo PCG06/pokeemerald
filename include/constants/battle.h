@@ -555,4 +555,12 @@
 #define STARTING_STATUS_TAILWIND_PLAYER     8
 #define STARTING_STATUS_TAILWIND_OPPONENT   9
 
+#define STARTING_STATUS_RAIN                10
+#define STARTING_STATUS_SUN                 11
+#define STARTING_STATUS_SAND                12
+#define STARTING_STATUS_SNOW                13
+#define STARTING_STATUS_HEAVY_RAIN          14 // not implemented yet
+#define STARTING_STATUS_HARSH_SUN           15 // not implemented yet
+#define STARTING_STATUS_STRONG_WINDS        16 // not implemented yet
+
 #endif // GUARD_CONSTANTS_BATTLE_H
