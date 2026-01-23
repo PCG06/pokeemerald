@@ -10285,6 +10285,16 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_Gardenia),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_GardeniaVanilla, // vanilla mode party
+            sParty_Gardenia,        // easy mode party (same as normal mode)
+            sParty_GardeniaHard,    // hard mode party
+            sParty_GardeniaHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {5, 5, 6, 6},
+        .startingStatus = STARTING_STATUS_GRASSY_TERRAIN,
     },
 
     [TRAINER_GARDENIA2] =
@@ -10298,6 +10308,7 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_Gardenia2),
         .isBossTrainer = TRUE,
+        .startingStatus = STARTING_STATUS_GRASSY_TERRAIN,
     },
 
     [TRAINER_FANTINA] =
