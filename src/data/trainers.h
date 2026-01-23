@@ -7144,6 +7144,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_MayAndBrendanRustboroTreecko),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_MayAndBrendanRustboroTreeckoVanilla, // vanilla mode party
+            sParty_MayAndBrendanRustboroTreecko,        // easy mode party (same as normal mode)
+            sParty_MayAndBrendanRustboroTreeckoHard,    // hard mode party
+            sParty_MayAndBrendanRustboroTreeckoHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {4, 4, 6, 6},
     },
 
     [TRAINER_BRENDAN_RUSTBORO_MUDKIP] =
@@ -7157,6 +7166,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_MayAndBrendanRustboroMudkip),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_MayAndBrendanRustboroMudkipVanilla, // vanilla mode party
+            sParty_MayAndBrendanRustboroMudkip,        // easy mode party (same as normal mode)
+            sParty_MayAndBrendanRustboroMudkipHard,    // hard mode party
+            sParty_MayAndBrendanRustboroMudkipHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {4, 4, 6, 6},
     },
 
     [TRAINER_PAXTON] =
@@ -7232,6 +7250,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_MayAndBrendanRustboroTorchic),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_MayAndBrendanRustboroTorchicVanilla, // vanilla mode party
+            sParty_MayAndBrendanRustboroTorchic,        // easy mode party (same as normal mode)
+            sParty_MayAndBrendanRustboroTorchicHard,    // hard mode party
+            sParty_MayAndBrendanRustboroTorchicHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {4, 4, 6, 6},
     },
 
     [TRAINER_MAY_RUSTBORO_MUDKIP] =
@@ -7245,6 +7272,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_MayAndBrendanRustboroMudkip),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_MayAndBrendanRustboroMudkipVanilla, // vanilla mode party
+            sParty_MayAndBrendanRustboroMudkip,        // easy mode party (same as normal mode)
+            sParty_MayAndBrendanRustboroMudkipHard,    // hard mode party
+            sParty_MayAndBrendanRustboroMudkipHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {4, 4, 6, 6},
     },
 
     [TRAINER_MAXIE_MAGMA_HIDEOUT] =
@@ -9188,6 +9224,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_MayAndBrendanRustboroTreecko),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_MayAndBrendanRustboroTreeckoVanilla, // vanilla mode party
+            sParty_MayAndBrendanRustboroTreecko,        // easy mode party (same as normal mode)
+            sParty_MayAndBrendanRustboroTreeckoHard,    // hard mode party
+            sParty_MayAndBrendanRustboroTreeckoHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {4, 4, 6, 6},
     },
 
     [TRAINER_MAY_RUSTBORO_TORCHIC] =
@@ -9201,6 +9246,15 @@
         .aiFlags = AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_OMNISCIENT | AI_FLAG_SMART_MON_CHOICES,
         .party = TRAINER_PARTY(sParty_MayAndBrendanRustboroTorchic),
         .isBossTrainer = TRUE,
+        .partyPickerFunction = StandardDifficultyModePartyPicker,
+        .additionalParties =
+        {
+            sParty_MayAndBrendanRustboroTorchicVanilla, // vanilla mode party
+            sParty_MayAndBrendanRustboroTorchic,        // easy mode party (same as normal mode)
+            sParty_MayAndBrendanRustboroTorchicHard,    // hard mode party
+            sParty_MayAndBrendanRustboroTorchicHard,    // HOF mode party (same as hard mode)
+        },
+        .additionalPartySizes = {4, 4, 6, 6},
     },
 
     [TRAINER_ROXANNE_2] =
