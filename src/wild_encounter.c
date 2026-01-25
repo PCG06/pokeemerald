@@ -417,7 +417,7 @@ void CreateWildMon(u16 species, u8 level)
 {
     bool32 checkCuteCharm = TRUE;
     u8 ivToMakeMon = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
+    if(FlagGet(FLAG_MIN_GRINDING_MODE)) // min grinding mode flag is cleared in HOF mode so dont need an additional check here
         ivToMakeMon = MAX_PER_STAT_IVS;
 
     ZeroEnemyPartyMons();

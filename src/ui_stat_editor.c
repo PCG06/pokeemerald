@@ -39,6 +39,7 @@
 #include "trainer_pokemon_sprites.h"
 #include "field_effect.h"
 #include "field_screen_effect.h"
+#include "constants/game_settings.h"
 
 /*
  * 
@@ -920,7 +921,7 @@ static void ChangeAndUpdateStat()
 // The function equivalent of the macro CHECK_IF_STAT_CANT_INCREASE
 static bool8 CheckIfStatCantIncrease(void) 
 {
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && sStatEditorDataPtr->selector_x == EDITING_EVS)
+    if((FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE) && sStatEditorDataPtr->selector_x == EDITING_EVS)
         return TRUE;
 
     if (sStatEditorDataPtr->selector_x == EDITING_EVS && (sStatEditorDataPtr->editingStat == EV_MAX_SINGLE_STAT || sStatEditorDataPtr->evTotal == EV_MAX_TOTAL))
@@ -935,7 +936,7 @@ static bool8 CheckIfStatCantIncrease(void)
 
 bool8 CheckIfStatCantDecrease(void) 
 {
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && sStatEditorDataPtr->selector_x == EDITING_EVS)
+    if((FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE) && sStatEditorDataPtr->selector_x == EDITING_EVS)
         return TRUE;
      
     return FALSE;

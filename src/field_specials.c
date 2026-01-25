@@ -60,6 +60,7 @@
 #include "constants/field_effects.h"
 #include "constants/field_specials.h"
 #include "constants/items.h"
+#include "constants/game_settings.h"
 #include "constants/heal_locations.h"
 #include "constants/map_types.h"
 #include "constants/mystery_gift.h"
@@ -1418,7 +1419,7 @@ void GiveLeadMonEffortRibbon(void)
 bool8 Special_AreLeadMonEVsMaxedOut(void)
 {
     u16 maxTotalEvToUseInCalc = MAX_TOTAL_EVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         maxTotalEvToUseInCalc = 0;
     }

@@ -1648,7 +1648,7 @@ void CreateMonWithEVSpread(struct Pokemon *mon, u16 species, u8 level, u8 fixedI
     u16 evAmount;
     u8 evsBits;
     u16 maxTotalEvToUseInCalc = MAX_TOTAL_EVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         maxTotalEvToUseInCalc = 0;
     }
@@ -1803,7 +1803,7 @@ void CreateApprenticeMon(struct Pokemon *mon, const struct Apprentice *src, u8 m
     u32 personality = ((gApprentices[src->id].otId >> 8) | ((gApprentices[src->id].otId & 0xFF) << 8))
                     + src->party[monId].species + src->number;
     u16 maxTotalEvToUseInCalc = MAX_TOTAL_EVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         maxTotalEvToUseInCalc = 0;
     }
@@ -1838,7 +1838,7 @@ void CreateMonWithEVSpreadNatureOTID(struct Pokemon *mon, u16 species, u8 level,
     u8 evsBits;
     u16 evAmount;
     u16 maxTotalEvToUseInCalc = MAX_TOTAL_EVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         maxTotalEvToUseInCalc = 0;
     }
@@ -2009,7 +2009,7 @@ void CreateEnemyEventMon(void)
     s32 itemId = gSpecialVar_0x8006;
     u8 ivsToUse = USE_RANDOM_IVS;
 
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
+    if(FlagGet(FLAG_MIN_GRINDING_MODE)) // min grinding mode flag is cleared in HOF mode so dont need an additional check here
         ivsToUse = MAX_PER_STAT_IVS;
 
 
@@ -2028,7 +2028,7 @@ void CreateEnemyEventMon(void)
 {                                                               \
     u8 baseStat = gSpeciesInfo[species].base;                   \
     s32 n;                                                      \
-    if (FlagGet(FLAG_MIN_GRINDING_MODE))                        \
+    if (FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)                        \
         n = (((2 * baseStat + iv) * level) / 100) + 5;          \
     else                                                        \
         n = (((2 * baseStat + iv + ev / 4) * level) / 100) + 5; \
@@ -2070,7 +2070,7 @@ void CalculateMonStats(struct Pokemon *mon)
     else
     {
         s32 n = 2 * gSpeciesInfo[species].baseHP + hpIV;
-        if (FlagGet(FLAG_MIN_GRINDING_MODE))
+        if (FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
             newMaxHP = ((n * level) / 100) + level + 10;
         else
             newMaxHP = (((n + hpEV / 4) * level) / 100) + level + 10;
@@ -3981,7 +3981,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
     u16 evCount;
     s32 evPerStatToUseInCalc = MAX_PER_STAT_EVS;
     u16 maxTotalEvToUseInCalc = MAX_TOTAL_EVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         evPerStatToUseInCalc = 0;
         maxTotalEvToUseInCalc = 0;
@@ -5462,7 +5462,7 @@ void MonGainEVs(struct Pokemon *mon, u16 defeatedSpecies)
     u8 bonus;
     s16 evPerStatToUseInCalc = MAX_PER_STAT_EVS;
     u16 maxTotalEvToUseInCalc = MAX_TOTAL_EVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         evPerStatToUseInCalc = 0;
         maxTotalEvToUseInCalc = 0;

@@ -62,6 +62,7 @@
 #include "constants/expansion.h"
 #include "constants/flags.h"
 #include "constants/items.h"
+#include "constants/game_settings.h"
 #include "constants/map_groups.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
@@ -3991,7 +3992,7 @@ static void DebugAction_Give_Pokemon_SelectEVs(u8 taskId)
     u16 totalEV = GetDebugPokemonTotalEV();
     u16 evPerStatToUseInCalc = MAX_PER_STAT_EVS;
     u16 maxTotalEvToUseInCalc = MAX_TOTAL_EVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         evPerStatToUseInCalc = 0;
         maxTotalEvToUseInCalc = 0;

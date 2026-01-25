@@ -1152,7 +1152,7 @@ static void CreateDexNavWildMon(u16 species, u8 potential, u8 level, u8 abilityN
     
     CreateWildMon(species, level);  // shiny rate bonus handled in CreateBoxMon
     
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
+    if(FlagGet(FLAG_MIN_GRINDING_MODE)) // min grinding mode flag is cleared in HOF mode so dont need an additional check here
     {
         SetMonData(mon, MON_DATA_HP_IV, &perfectIv);
         SetMonData(mon, MON_DATA_ATK_IV, &perfectIv);

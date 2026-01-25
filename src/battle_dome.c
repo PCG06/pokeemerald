@@ -35,6 +35,7 @@
 #include "constants/battle_dome.h"
 #include "constants/battle_move_effects.h"
 #include "constants/frontier_util.h"
+#include "constants/game_settings.h"
 #include "constants/moves.h"
 #include "constants/trainers.h"
 #include "constants/abilities.h"
@@ -2128,7 +2129,7 @@ static void InitDomeTrainers(void)
 #define CALC_STAT(base, statIndex)                                                          \
 {                                                                                           \
     u8 baseStat = gSpeciesInfo[fmon->species].base;                                                 \
-    if (FlagGet(FLAG_MIN_GRINDING_MODE))                     \
+    if (FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)                     \
         stats[statIndex] = (((2 * baseStat + ivs) * level) / 100) + 5;                      \
     else                                                                                   \
         stats[statIndex] = (((2 * baseStat + ivs + evs[statIndex] / 4) * level) / 100) + 5;     \
@@ -2155,7 +2156,7 @@ static void CalcDomeMonStats(const struct TrainerMon *fmon, int level, u8 ivs, i
     else
     {
         int n = 2 * gSpeciesInfo[fmon->species].baseHP;
-        if (FlagGet(FLAG_MIN_GRINDING_MODE))
+        if (FlagGet(FLAG_MIN_GRINDING_MODE) || VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
             stats[STAT_HP] = (((n + ivs) * level) / 100) + level + 10;
         else
             stats[STAT_HP] = (((n + ivs + evs[STAT_HP] / 4) * level) / 100) + level + 10;

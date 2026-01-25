@@ -275,7 +275,7 @@ void CreateScriptedWildMon(u16 species, u8 level, u16 item)
 {
     u8 heldItem[2];
     u8 ivToMakeMon = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
+    if(FlagGet(FLAG_MIN_GRINDING_MODE)) // min grinding mode flag is cleared in HOF mode so dont need an additional check here
         ivToMakeMon = MAX_PER_STAT_IVS;
 
     ZeroEnemyPartyMons();
@@ -295,7 +295,7 @@ void CreateScriptedDoubleWildMon(u16 species1, u8 level1, u16 item1, u16 species
     u8 heldItem1[2];
     u8 heldItem2[2];
     u8 ivToMakeMon = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
+    if(FlagGet(FLAG_MIN_GRINDING_MODE)) // min grinding mode flag is cleared in HOF mode so dont need an additional check here
         ivToMakeMon = MAX_PER_STAT_IVS;
 
     ZeroEnemyPartyMons();
@@ -555,10 +555,11 @@ static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, u
     if(FlagGet(FLAG_MIN_GRINDING_MODE))
     {
         evToUseInCalc = 0;
-        if(VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
-        {
-            ivToMakeMon = MAX_PER_STAT_IVS;
-        }
+        ivToMakeMon = MAX_PER_STAT_IVS;
+    }
+    if(VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_HOF_MODE)
+    {
+        evToUseInCalc = 0;
     }
     // check whether to use a specific nature or a random one
     if (nature >= NUM_NATURES)
@@ -697,7 +698,7 @@ static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, u
 u32 ScriptGiveMon(u16 species, u8 level, u16 item)
 {
     u8 ivToMakeMon = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
+    if(FlagGet(FLAG_MIN_GRINDING_MODE)) // min grinding mode flag is cleared in HOF mode so dont need an additional check here
         ivToMakeMon = MAX_PER_STAT_IVS;
 
     u8 evs[NUM_STATS]        = {0, 0, 0, 0, 0, 0};
@@ -714,7 +715,7 @@ u32 ScriptGiveMon(u16 species, u8 level, u16 item)
  */
 void ScrCmd_createmon(struct ScriptContext *ctx)
 {
-    bool8 useMaxIVs = (FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE);
+    bool8 useMaxIVs = FlagGet(FLAG_MIN_GRINDING_MODE); // min grinding mode flag is cleared in HOF mode so dont need an additional check here
     u8 side           = ScriptReadByte(ctx);
     u8 slot           = ScriptReadByte(ctx);
     u16 species       = VarGet(ScriptReadHalfword(ctx));
@@ -758,7 +759,7 @@ void ScrCmd_createmon(struct ScriptContext *ctx)
  */
 void ScrCmd_createrandommon(struct ScriptContext *ctx)
 {
-    bool8 useMaxIVs = (FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE);
+    bool8 useMaxIVs = FlagGet(FLAG_MIN_GRINDING_MODE); // min grinding mode flag is cleared in HOF mode so dont need an additional check here
     u8 side           = ScriptReadByte(ctx);
     u8 slot           = ScriptReadByte(ctx);
     u16 species       = VarGet(ScriptReadHalfword(ctx));
