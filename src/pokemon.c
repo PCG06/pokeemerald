@@ -54,6 +54,7 @@
 #include "constants/cries.h"
 #include "constants/event_objects.h"
 #include "constants/form_change_types.h"
+#include "constants/game_settings.h"
 #include "constants/hold_effects.h"
 #include "constants/item_effects.h"
 #include "constants/items.h"
@@ -2006,9 +2007,14 @@ void CreateEnemyEventMon(void)
     s32 species = gSpecialVar_0x8004;
     s32 level = gSpecialVar_0x8005;
     s32 itemId = gSpecialVar_0x8006;
+    u8 ivsToUse = USE_RANDOM_IVS;
+
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
+        ivsToUse = MAX_PER_STAT_IVS;
+
 
     ZeroEnemyPartyMons();
-    CreateEventMon(&gEnemyParty[0], species, level, USE_RANDOM_IVS, FALSE, 0, OT_ID_PLAYER_ID, 0);
+    CreateEventMon(&gEnemyParty[0], species, level, ivsToUse, FALSE, 0, OT_ID_PLAYER_ID, 0);
     if (itemId)
     {
         u8 heldItem[2];

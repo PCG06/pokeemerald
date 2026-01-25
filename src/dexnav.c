@@ -54,6 +54,7 @@
 #include "constants/species.h"
 #include "constants/maps.h"
 #include "constants/field_effects.h"
+#include "constants/game_settings.h"
 #include "constants/items.h"
 #include "constants/songs.h"
 #include "constants/abilities.h"
@@ -1151,7 +1152,7 @@ static void CreateDexNavWildMon(u16 species, u8 potential, u8 level, u8 abilityN
     
     CreateWildMon(species, level);  // shiny rate bonus handled in CreateBoxMon
     
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
     {
         SetMonData(mon, MON_DATA_HP_IV, &perfectIv);
         SetMonData(mon, MON_DATA_ATK_IV, &perfectIv);

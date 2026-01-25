@@ -37,6 +37,7 @@
 #include "battle.h" // to get rid of later
 #include "constants/rgb.h"
 #include "party_menu.h"
+#include "constants/game_settings.h"
 
 #define GFXTAG_EGG       12345
 #define GFXTAG_EGG_SHARD 23456
@@ -319,7 +320,7 @@ static void CreateHatchedMon(struct Pokemon *egg, struct Pokemon *temp)
     u16 moves[MAX_MON_MOVES];
     u32 ivs[NUM_STATS];
     u8 ivToMakeEgg = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
         ivToMakeEgg = MAX_PER_STAT_IVS;
 
     species = GetMonData(egg, MON_DATA_SPECIES);

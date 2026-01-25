@@ -18,6 +18,7 @@
 #include "battle_pike.h"
 #include "battle_pyramid.h"
 #include "constants/abilities.h"
+#include "constants/game_settings.h"
 #include "constants/game_stat.h"
 #include "constants/item.h"
 #include "constants/items.h"
@@ -416,7 +417,7 @@ void CreateWildMon(u16 species, u8 level)
 {
     bool32 checkCuteCharm = TRUE;
     u8 ivToMakeMon = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
         ivToMakeMon = MAX_PER_STAT_IVS;
 
     ZeroEnemyPartyMons();

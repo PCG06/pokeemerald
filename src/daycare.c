@@ -23,6 +23,7 @@
 #include "item.h"
 #include "constants/form_change_types.h"
 #include "constants/items.h"
+#include "constants/game_settings.h"
 #include "constants/hold_effects.h"
 #include "constants/moves.h"
 #include "constants/region_map_sections.h"
@@ -1098,7 +1099,7 @@ void CreateEgg(struct Pokemon *mon, u16 species, bool8 setHotSpringsLocation)
     u8 metLocation;
     u8 isEgg;
     u8 ivToMakeEgg = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
         ivToMakeEgg = MAX_PER_STAT_IVS;
 
     CreateMon(mon, species, EGG_HATCH_LEVEL, ivToMakeEgg, FALSE, 0, OT_ID_PLAYER_ID, 0);
@@ -1127,7 +1128,7 @@ static void SetInitialEggData(struct Pokemon *mon, u16 species, struct DayCare *
     u8 metLevel;
     u8 language;
     u8 ivToMakeEgg = USE_RANDOM_IVS;
-    if(FlagGet(FLAG_MIN_GRINDING_MODE))
+    if(FlagGet(FLAG_MIN_GRINDING_MODE) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE)
         ivToMakeEgg = MAX_PER_STAT_IVS;
 
     personality = daycare->offspringPersonality;

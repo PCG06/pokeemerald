@@ -4,6 +4,7 @@
 #include "pokemon.h"
 #include "random.h"
 #include "roamer.h"
+#include "constants/game_settings.h"
 
 // Despite having a variable to track it, the roamer is
 // hard-coded to only ever be in map group 0
@@ -101,7 +102,8 @@ void MoveAllRoamers(void)
 static void CreateInitialRoamerMon(u8 index, u16 species, u8 level)
 {
     ClearRoamerLocationHistory(index);
-    u8 ivToMakeRoamer = FlagGet(FLAG_MIN_GRINDING_MODE) ? MAX_PER_STAT_IVS : USE_RANDOM_IVS;
+    u8 ivToMakeRoamer = (FlagGet(FLAG_MIN_GRINDING_MODE) 
+                        && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) != GAME_SETTING_DIFFICULTY_HOF_MODE) ? MAX_PER_STAT_IVS : USE_RANDOM_IVS;
     CreateMon(&gEnemyParty[0], species, level, ivToMakeRoamer, FALSE, 0, OT_ID_PLAYER_ID, 0);
     ROAMER(index)->ivs = GetMonData(&gEnemyParty[0], MON_DATA_IVS);
     ROAMER(index)->personality = GetMonData(&gEnemyParty[0], MON_DATA_PERSONALITY);
