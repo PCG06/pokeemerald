@@ -89,7 +89,7 @@ InsideOfTruck_Text_WantToUseDefaultSettings:
 	.string "{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY}Would you like to play Pokémon Emerald\n"
 	.string "Imperium with the default settings?\p"
 	.string "The default settings are as follows:\p"
-	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal difficulty{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} - challenging boss\n"
+	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal difficulty{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} - challenging Boss\n"
 	.string "battles with hard level caps enforced.\p"
 	.string "{COLOR GREEN}{SHADOW LIGHT_GREEN}Minimal Grinding Mode is ON{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} - this\n"
 	.string "guarantees all Pokémon will have\l"
@@ -617,7 +617,7 @@ text NormalDifficultyCurrentlySelected
 	"This is the recommended difficulty\n"
 	"mode and is what this game is primarily\l"
 	"balanced around.\p"
-	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Mode{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} has challenging boss\n"
+	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Mode{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} has challenging Boss\n"
 	"battles with hard level caps enforced.\p"
 	"The player cannot access the Bag\n"
 	"during trainer battles, and the battle\l"
@@ -646,17 +646,61 @@ text EasyDifficultyCurrentlySelected
 
 text HardDifficultyCurrentlySelected
 {
-	"hard mode texxt filler TODO iriv"
+	"This mode will be substantially more\n"
+	"difficult than Normal. Many Boss teams\l"
+	"will be  altered to be more challenging.\p"
+	"Field effects such as Terrain, Weather,\n"
+	"etc will be made permanent, and options\l"
+	"to clear them from the field will be\l"
+	"removed from the player.\p"
+	"Certain Moves and Abilities will also be\n"
+	"restricted from the player.\l"
+	"This difficulty mode will feel unfair!\p"
+	"You currently have {COLOR GREEN}{SHADOW LIGHT_GREEN}Hard Mode{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} enabled.\n"
+	"Please select a different difficulty\l"
+	"mode if you wish to change it."
 }
 
 text VanillaDifficultyCurrentlySelected
 {
-	"vanilla mode texxt filler TODO iriv"
+	"This mode is meant to feel as close to a\n"
+	"regular Pokémon game as possible, and\l"
+	"is considered to be the easiest.\p"
+	"The Boss teams will be roughly the same\n"
+	"as in Normal Mode, but there will be no\l"
+	"level caps enforced, and no Boss teams\l"
+	"will have their levels scale with the\l"
+	"Player's team.\p"
+	"Because there are no level caps, the\n"
+	"Infinite Candy will not be given by\l"
+	"default.\p"
+	"You currently have {COLOR GREEN}{SHADOW LIGHT_GREEN}Vanilla Mode{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} enabled.\n"
+	"Please select a different difficulty\l"
+	"mode if you wish to change it."
 }
 
 text HoFDifficultyCurrentlySelected
 {
-	"hof mode texxt filler TODO iriv"
+	"Hall of Fame mode is meant for players\n"
+	"attempting to stream their runs to\l"
+	"make it onto the “Nuzlocke Hall of\l"
+	"Fame”, which is maintained externally\l"
+	"(see the Discord for more details).\p"
+	"This mode will impose all the same rules\n"
+	"as Hard Mode, but will also forcefully\l"
+	"disable Minimal Grinding Mode and all\l"
+	"Randomizer options. Using EVs will still\l"
+	"be disabled.\p"
+	"Pokémon that you catch will not have\n"
+	"perfect IVs, and there will be a\l"
+	"resource system in place to limit the\l"
+	"amount of IV, Nature, and Ability\l"
+	"changes that you can do as the Player.\p"
+	"This is meant to the hardest and most\n"
+	"restrictive difficulty mode.\p"
+	"You currently have {COLOR GREEN}{SHADOW LIGHT_GREEN}HoF Mode{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} enabled.\n"
+	"Please select a different difficulty\l"
+	"mode if you wish to change it."
 }
 
 text NormalDifficultyYesNo
@@ -664,7 +708,7 @@ text NormalDifficultyYesNo
 	"This is the recommended difficulty\n"
 	"mode and is what this game is primarily\l"
 	"balanced around.\p"
-	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Mode{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} has challenging boss\n"
+	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Normal Mode{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} has challenging Boss\n"
 	"battles with hard level caps enforced.\p"
 	"The player cannot access the Bag\n"
 	"during trainer battles, and the battle\l"
@@ -691,24 +735,57 @@ text EasyDifficultyYesNo
 
 text HardDifficultyYesNo
 {
-	"hard mode filler TODO iriv\n"
-	"Do you want to turn on\l"
+	"This mode will be substantially more\n"
+	"difficult than Normal. Many Boss teams\l"
+	"will be  altered to be more challenging.\p"
+	"Field effects such as Terrain, Weather,\n"
+	"etc will be made permanent, and options\l"
+	"to clear them from the field will be\l"
+	"removed from the player.\p"
+	"Certain Moves and Abilities will also be\n"
+	"restricted from the player.\l"
+	"This difficulty mode will feel unfair!\p"
+	"Do you want to turn on\n"
 	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Hard Mode?"
 }
 
 text HoFDifficultyYesNo
 {
-	"hof mode TODO iriv\n"
-	"This will disable Minimal Grinding Mode\l"
-	"and all Randomizer options.\p"
+	"Hall of Fame mode is meant for players\n"
+	"attempting to stream their runs to\l"
+	"make it onto the “Nuzlocke Hall of\l"
+	"Fame”, which is maintained externally\l"
+	"(see the Discord for more details).\p"
+	"This mode will impose all the same rules\n"
+	"as Hard Mode, but will also forcefully\l"
+	"disable Minimal Grinding Mode and all\l"
+	"Randomizer options. Using EVs will still\l"
+	"be disabled.\p"
+	"Pokémon that you catch will not have\n"
+	"perfect IVs, and there will be a\l"
+	"resource system in place to limit the\l"
+	"amount of IV, Nature, and Ability\l"
+	"changes that you can do as the Player.\p"
+	"This is meant to the hardest and most\n"
+	"restrictive difficulty mode.\p"
 	"Do you want to turn on\n"
 	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Hall of Fame Mode?"
 }
 
 text VanillaDifficultyYesNo
 {
-	"vanilla mode filler TODO iriv\n"
-	"Do you want to turn on\l"
+	"This mode is meant to feel as close to a\n"
+	"regular Pokémon game as possible, and\l"
+	"is considered to be the easiest.\p"
+	"The Boss teams will be roughly the same\n"
+	"as in Normal Mode, but there will be no\l"
+	"level caps enforced, and no Boss teams\l"
+	"will have their levels scale with the\l"
+	"Player's team.\p"
+	"Because there are no level caps, the\n"
+	"Infinite Candy will not be given by\l"
+	"default.\p"
+	"Do you want to turn on\n"
 	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Vanilla Mode?"
 }
 
@@ -864,7 +941,7 @@ text NormalSpeciesRandomizerAlreadyOnYesNo
 {
 	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Species Randomizer{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} randomizes\n"
 	"encounters, trainers, and gifts.\l"
-	"It does not randomize boss battles.\p"
+	"It does not randomize Boss battles.\p"
 	"Many legendaries cannot be\n"
 	"encountered.\p"
 	"Do you want to turn off the\n"
@@ -875,7 +952,7 @@ text NormalSpeciesRandomizerAlreadyOffYesNo
 {
 	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Species Randomizer{COLOR DARK_GRAY}{SHADOW LIGHT_GRAY} randomizes\n"
 	"encounters, trainers, and gifts.\l"
-	"It does not randomize boss battles.\p"
+	"It does not randomize Boss battles.\p"
 	"Many legendaries cannot be\n"
 	"encountered.\p"
 	"Do you want to turn on the\n"
@@ -902,7 +979,7 @@ text ScaledSpeciesRandomizerAlreadyOnYesNo
 	"This randomization is based off the\n"
 	"base stat total of the original\l"
 	"encounter.\l"
-	"It does not randomize boss battles.\p"
+	"It does not randomize Boss battles.\p"
 	"Do you want to turn off the\n"
 	"{COLOR RED}{SHADOW LIGHT_RED}Scaled Randomizer?"
 }
@@ -915,7 +992,7 @@ text ScaledSpeciesRandomizerAlreadyOffYesNo
 	"This randomization is based off the\n"
 	"base stat total of the original\l"
 	"encounter.\l"
-	"It does not randomize boss battles.\p"
+	"It does not randomize Boss battles.\p"
 	"Do you want to turn on the\n"
 	"{COLOR GREEN}{SHADOW LIGHT_GREEN}Scaled Randomizer?"
 }
