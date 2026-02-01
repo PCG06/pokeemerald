@@ -404,7 +404,7 @@ AI_SINGLE_BATTLE_TEST("CompareMoveSpeeds should ignore fake out and status moves
     }
 }
 
-AI_SINGLE_BATTLE_TEST("sheer force moveeffectinplus")
+AI_SINGLE_BATTLE_TEST("Sheer force moveeffectinplus")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
@@ -421,7 +421,7 @@ AI_SINGLE_BATTLE_TEST("sheer force moveeffectinplus")
 }
 
 
-AI_SINGLE_BATTLE_TEST("status chance are not positive effect on kills")
+AI_SINGLE_BATTLE_TEST("Status chance are not positive effect on kills")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
@@ -437,7 +437,7 @@ AI_SINGLE_BATTLE_TEST("status chance are not positive effect on kills")
     }
 }
 
-AI_SINGLE_BATTLE_TEST("surf is positive effect for cramorant")
+AI_SINGLE_BATTLE_TEST("Surf is positive effect for cramorant")
 {
     GIVEN {
         AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
@@ -448,6 +448,22 @@ AI_SINGLE_BATTLE_TEST("surf is positive effect for cramorant")
             MOVE(player, MOVE_TRIPLE_ARROWS);
             SCORE_EQ_VAL(opponent, MOVE_SURF, 107);
             SCORE_EQ_VAL(opponent, MOVE_SCALD, 106);
+        }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Dire Claw is positive effect")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_WOBBUFFET){ Level(1); Nature(NATURE_TIMID); Moves(MOVE_TACKLE); Item(ITEM_FOCUS_SASH);}
+        OPPONENT(SPECIES_SNEASLER){ Level(85); Nature(NATURE_QUIET); Ability(ABILITY_UNBURDEN); Moves( MOVE_TACKLE, MOVE_DIRE_CLAW, MOVE_POISON_JAB); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_TACKLE);
+            SCORE_EQ_VAL(opponent, MOVE_TACKLE, 100);
+            SCORE_EQ_VAL(opponent, MOVE_DIRE_CLAW, 101);
+            SCORE_EQ_VAL(opponent, MOVE_POISON_JAB, 101);
         }
     }
 }

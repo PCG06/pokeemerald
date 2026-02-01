@@ -416,10 +416,7 @@ static bool32 ShouldSwitchIfAllMovesBad(u32 battler)
                 return FALSE;
         }
     }
-
-    if (AI_DATA->mostSuitableMonId[battler] == PARTY_SIZE) // No good candidate mons, find any one that can deal damage
-        return FindMonWithMoveOfEffectiveness(battler, opposingBattler, UQ_4_12(1.0));
-    else // Good candidate mon, send that in
+    if (AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_ALL_MOVES_BAD, 50)) // Good candidate mon, send that in if you win 50/50
         return SetSwitchinAndSwitch(battler, PARTY_SIZE);
 
     return FALSE;
@@ -599,59 +596,6 @@ static bool32 FindMonThatAbsorbsOpponentsMove(u32 battler)
     return FALSE;
 }
 
-static bool32 ShouldSwitchIfOpponentChargingOrInvulnerable(u32 battler)
-{
-    u32 opposingBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler)));
-    u32 incomingMove = AI_DATA->lastUsedMove[opposingBattler];
-    bool32 isOpposingBattlerChargingOrInvulnerable = (IsSemiInvulnerable(opposingBattler, incomingMove) || IsTwoTurnNotSemiInvulnerableMove(opposingBattler, incomingMove));
-
-    if (IsDoubleBattle() || !(AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING))
-        return FALSE;
-
-    if (isOpposingBattlerChargingOrInvulnerable && AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE)
-        return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-
-    return FALSE;
-}
-
-static bool32 ShouldSwitchIfTrapperInParty(u32 battler)
-{
-    s32 firstId;
-    s32 lastId;
-    struct Pokemon *party;
-    s32 i;
-    u16 monAbility;
-    s32 opposingBattler =  GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler)));
-
-    // Only use this if AI_FLAG_SMART_SWITCHING is set for the trainer
-    if (!(AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING))
-        return FALSE;
-
-    // Check if opposing battler is already trapped
-    if (IsBattlerTrapped(battler, opposingBattler))
-        return FALSE;
-
-    // Check party for mon with ability that traps opponent
-    GetAIPartyIndexes(battler, &firstId, &lastId);
-    party = GetBattlerParty(battler);
-
-    for (i = firstId; i < lastId; i++)
-    {
-        if (IsAceMon(battler, i))
-            return FALSE;
-
-        monAbility = GetMonAbility(&party[i]);
-
-        if (AI_CanSwitchinAbilityTrapOpponent(monAbility, opposingBattler) || (AI_CanSwitchinAbilityTrapOpponent(AI_GetBattlerAbility(opposingBattler), opposingBattler) && monAbility == ABILITY_TRACE))
-        {
-            // If mon in slot i is the most suitable switchin candidate, then it's a trapper than wins 1v1
-            if (i == AI_DATA->mostSuitableMonId[battler])
-                return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-        }
-    }
-    return FALSE;
-}
-
 static bool32 ShouldSwitchIfBadlyStatused(u32 battler)
 {
     bool32 switchMon = FALSE;
@@ -672,7 +616,8 @@ static bool32 ShouldSwitchIfBadlyStatused(u32 battler)
         //Yawn
         if (gStatuses3[battler] & STATUS3_YAWN
             && CanBeSlept(battler, monAbility, TRUE)
-            && gBattleMons[battler].hp > gBattleMons[battler].maxHP / 3)
+            && gBattleMons[battler].hp > gBattleMons[battler].maxHP / 3
+            && RandomPercentage(RNG_AI_SWITCH_YAWN, 50))
         {
             switchMon = TRUE;
 
@@ -691,7 +636,7 @@ static bool32 ShouldSwitchIfBadlyStatused(u32 battler)
                 || monAbility == ABILITY_EARLY_BIRD)
                 || holdEffect == (HOLD_EFFECT_CURE_SLP | HOLD_EFFECT_CURE_STATUS)
                 || HasMove(battler, MOVE_SLEEP_TALK)
-                || (HasMoveEffect(battler, MOVE_SNORE) && AI_GetMoveEffectiveness(MOVE_SNORE, battler, opposingBattler) >= UQ_4_12(2.0))
+                || (HasMoveEffect(battler, MOVE_SNORE) && AI_GetMoveEffectiveness(MOVE_SNORE, battler, opposingBattler) >= UQ_4_12(1.0))
                 || (IsBattlerGrounded(battler)
                     && (HasMove(battler, MOVE_MISTY_TERRAIN) || HasMove(battler, MOVE_ELECTRIC_TERRAIN)))
                 )
@@ -734,12 +679,6 @@ static bool32 ShouldSwitchIfBadlyStatused(u32 battler)
                 && (hasStatRaised ? RandomPercentage(RNG_AI_SWITCH_SEEDED, 10) : RandomPercentage(RNG_AI_SWITCH_SEEDED, 25)))
                 switchMon = TRUE;
         }
-
-        // Infatuation
-        if (gBattleMons[battler].status2 & STATUS2_INFATUATION
-            && !AiExpectsToFaintPlayer(battler)
-            && AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE)
-            switchMon = TRUE;
     }
 
     if (switchMon)
@@ -920,7 +859,6 @@ static bool32 CanMonSurviveHazardSwitchin(u32 battler)
 static bool32 ShouldSwitchIfEncored(u32 battler)
 {
     u32 encoredMove = gDisableStructs[battler].encoredMove;
-    u32 opposingBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler)));
 
     // Only use this if AI_FLAG_SMART_SWITCHING is set for the trainer
     if (!(AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING))
@@ -928,14 +866,6 @@ static bool32 ShouldSwitchIfEncored(u32 battler)
 
     // If not Encore'd don't switch
     if (encoredMove == MOVE_NONE)
-        return FALSE;
-
-    // Switch out if status move
-    if (gMovesInfo[encoredMove].category == DAMAGE_CATEGORY_STATUS)
-        return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-
-    // Stay in if effective move
-    else if (AI_GetMoveEffectiveness(encoredMove, battler, opposingBattler) >= UQ_4_12(2.0))
         return FALSE;
 
     // Switch out 50% of the time otherwise
@@ -962,7 +892,9 @@ static bool32 ShouldSwitchIfBadChoiceLock(u32 battler)
 
     if (HOLD_EFFECT_CHOICE(holdEffect) && IsBattlerItemEnabled(battler))
     {
-        if ((gMovesInfo[AI_DATA->lastUsedMove[battler]].category == DAMAGE_CATEGORY_STATUS || !moveAffectsTarget))
+        if ((gMovesInfo[AI_DATA->lastUsedMove[battler]].category == DAMAGE_CATEGORY_STATUS || !moveAffectsTarget)
+        && AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE    
+        && RandomPercentage(RNG_AI_SWITCH_CHOICE_LOCK, 50))
             return SetSwitchinAndSwitch(battler, PARTY_SIZE);
     }
 
@@ -1088,11 +1020,7 @@ bool32 ShouldSwitch(u32 battler)
         return TRUE;
     if ((AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING) && (CanMonSurviveHazardSwitchin(battler) == FALSE))
         return FALSE;
-    if (ShouldSwitchIfTrapperInParty(battler))
-        return TRUE;
     if (FindMonThatAbsorbsOpponentsMove(battler))
-        return TRUE;
-    if (ShouldSwitchIfOpponentChargingOrInvulnerable(battler))
         return TRUE;
     if (ShouldSwitchIfTruant(battler))
         return TRUE;
@@ -1135,7 +1063,7 @@ bool32 ShouldSwitchIfAllScoresBad(u32 battler)
         if (score > AI_BAD_SCORE_THRESHOLD)
             return FALSE;
     }
-    if (RandomPercentage(RNG_AI_SWITCH_ALL_SCORES_BAD, GetSwitchChance(SHOULD_SWITCH_ALL_SCORES_BAD)))
+    if (AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_ALL_SCORES_BAD, GetSwitchChance(SHOULD_SWITCH_ALL_SCORES_BAD)))
         return TRUE;
     return FALSE;
 }
