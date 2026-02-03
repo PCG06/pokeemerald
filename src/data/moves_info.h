@@ -8294,7 +8294,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .name = COMPOUND_STRING("Muddy Water"),
         .description = COMPOUND_STRING(
             "Attacks with muddy \n"
-            "water. May lower accuracy"),
+            "water. May lower attack"),
         .effect = EFFECT_HIT,
         .power = 95,
         .type = TYPE_WATER,
@@ -8305,7 +8305,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_DYNAMAX] =
         .category = DAMAGE_CATEGORY_SPECIAL,
         .skyBattleBanned = TRUE,
         .additionalEffects = ADDITIONAL_EFFECTS({
-            .moveEffect = MOVE_EFFECT_ACC_MINUS_1,
+            .moveEffect = MOVE_EFFECT_ATK_MINUS_1,
             .chance = 50,
         }),
         .contestEffect = CONTEST_EFFECT_STARTLE_MON_WITH_JUDGES_ATTENTION,
