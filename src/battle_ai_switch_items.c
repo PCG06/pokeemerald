@@ -2125,8 +2125,9 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
                     }
                 }
 
-                // If a self destruction move doesn't OHKO, don't factor it into revenge killing
-                if (gMovesInfo[aiMove].effect == EFFECT_EXPLOSION && damageDealt < playerMonHP)
+                // If a self destruction move doesn't OHKO, and the self-destruction move isn't valid for the AI to use, don't factor it into revenge killing
+                u32 switchInHPPercent = AI_DATA->switchinCandidate.hp * 100 / AI_DATA->switchinCandidate.maxHP;
+                if (gMovesInfo[aiMove].effect == EFFECT_EXPLOSION && (damageDealt < playerMonHP || switchInHPPercent >= 90))
                     continue;
 
                 // Check that mon isn't one shot and set best damage mon
