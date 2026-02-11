@@ -18,6 +18,7 @@ typedef s32 (*AiScoreFunc)(u32, u32, u32, s32);
 // for stat increasing / decreasing scores
 enum StatChange
 {
+    STAT_CHANGE_HP,
     STAT_CHANGE_ATK,
     STAT_CHANGE_DEF,
     STAT_CHANGE_SPEED,

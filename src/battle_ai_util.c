@@ -1359,7 +1359,7 @@ bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk)
 
     for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
-        if (IsMoveUnusable(moveIndex, moves[moveIndex], moveLimitations))
+        if (IsMoveUnusable(moveIndex, moves[moveIndex], moveLimitations) || MatchesExplosionOrSuperfang(gMovesInfo[moves[moveIndex]].effect, FALSE))
             continue;
         
         if (AI_GetDamage(battlerDef, battlerAtk, moveIndex, AI_DEFENDING_NORMAL, aiData) >= gBattleMons[battlerAtk].hp
@@ -1375,16 +1375,21 @@ u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk, enum AiConsi
     u32 i;
     u32 currNumberOfHits;
     u32 leastNumberOfHits = UNKNOWN_NO_OF_HITS;
+    u16 *moves = GetMovesArray(battlerDef);
 
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         // used to see how many hits player needs to KO AI when deciding if AI should use a setup move
         // this is the only place where AI calcs high roll dmg from the player
-        currNumberOfHits = GetNoOfHitsToKOBattler(battlerDef, battlerAtk, i, AI_DEFENDING_SETUP, CONSIDER_ENDURE);
-        if (currNumberOfHits != 0)
+        // explicitly ignore explosion for this calculation
+        if (!MatchesExplosionOrSuperfang(gMovesInfo[moves[i]].effect, FALSE))
         {
-            if (currNumberOfHits < leastNumberOfHits)
-                leastNumberOfHits = currNumberOfHits;
+            currNumberOfHits = GetNoOfHitsToKOBattler(battlerDef, battlerAtk, i, AI_DEFENDING_SETUP, CONSIDER_ENDURE);
+            if (currNumberOfHits != 0)
+            {
+                if (currNumberOfHits < leastNumberOfHits)
+                    leastNumberOfHits = currNumberOfHits;
+            }
         }
     }
     return leastNumberOfHits;
@@ -1397,6 +1402,7 @@ u32 NoOfHitsForTargetToFaintBattlerWithMod(u32 battlerDef, u32 battlerAtk, s32 h
     u32 leastNumberOfHits = UNKNOWN_NO_OF_HITS;
     u32 hpCheck = gBattleMons[battlerAtk].hp + hpMod;
     u32 damageDealt = 0;
+    u16 *moves = GetMovesArray(battlerDef);
 
     if (hpCheck > gBattleMons[battlerAtk].maxHP)
         hpCheck = gBattleMons[battlerAtk].maxHP;
@@ -1404,7 +1410,7 @@ u32 NoOfHitsForTargetToFaintBattlerWithMod(u32 battlerDef, u32 battlerAtk, s32 h
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
         damageDealt = AI_GetDamage(battlerDef, battlerAtk, i, AI_DEFENDING_NORMAL, AI_DATA);
-        if (damageDealt == 0)
+        if (damageDealt == 0 || MatchesExplosionOrSuperfang(gMovesInfo[moves[i]].effect, FALSE))
             continue;
         currNumberOfHits = hpCheck / (damageDealt + 1) + 1;
         if (currNumberOfHits != 0)
@@ -1491,7 +1497,7 @@ u32 GetBestDmgFromBattler(u32 battler, u32 battlerTarget, enum DamageCalcContext
 
     for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
-        if (IsMoveUnusable(moveIndex, moves[moveIndex], moveLimitations))
+        if (IsMoveUnusable(moveIndex, moves[moveIndex], moveLimitations) || MatchesExplosionOrSuperfang(gMovesInfo[moves[moveIndex]].effect, FALSE))
             continue;
 
         u32 damage = AI_GetDamage(battler, battlerTarget, moveIndex, calcContext, aiData);
@@ -1560,7 +1566,7 @@ bool32 CanTargetFaintAiWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod, s32 dm
 
     for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
-        if (IsMoveUnusable(moveIndex, moves[moveIndex], moveLimitations))
+        if (IsMoveUnusable(moveIndex, moves[moveIndex], moveLimitations) || MatchesExplosionOrSuperfang(gMovesInfo[moves[moveIndex]].effect, FALSE))
             continue;
         
         dmg = AI_GetDamage(battlerDef, battlerAtk, moveIndex, AI_DEFENDING_NORMAL, aiData);
@@ -4271,6 +4277,8 @@ static u32 GetStatBeingChanged(enum StatChange statChange)
             return STAT_ACC;
         case STAT_CHANGE_EVASION:
             return STAT_EVASION;
+        default:
+            return STAT_HP;
     }
     return 0; // STAT_HP, should never be getting changed
 }
@@ -4301,6 +4309,8 @@ static u32 GetStagesOfStatChange(enum StatChange statChange)
             return 3;
         case STAT_CHANGE_ATK_MAX:
             return 6;
+        default:
+            return 0;
     }
     return 0; // STAT_HP, should never be getting changed
 }
@@ -4313,6 +4323,8 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
     u32 shouldSetUp = ((noOfHitsToFaint >= 2 && aiIsFaster) || (noOfHitsToFaint >= 3 && !aiIsFaster) || noOfHitsToFaint == UNKNOWN_NO_OF_HITS);
     u32 statId = GetStatBeingChanged(statChange);
     u32 stages = GetStagesOfStatChange(statChange);
+    DebugPrintf("increased stat = %d", statId);
+    DebugPrintf("increased stages = %d", stages);
 
     if (considerContrary && AI_DATA->abilities[battlerAtk] == ABILITY_CONTRARY)
         return NO_INCREASE;
@@ -4375,6 +4387,7 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
     case STAT_CHANGE_ATK:
         if (HasMoveWithCategory(battlerAtk, DAMAGE_CATEGORY_PHYSICAL) && shouldSetUp)
         {
+            DebugPrintf("passes");
             if (stages == 1)
                 tempScore += DECENT_EFFECT;
             else if (stages == 6)
@@ -4463,6 +4476,11 @@ u32 IncreaseStatUpScore(u32 battlerAtk, u32 battlerDef, enum StatChange statChan
 u32 IncreaseStatUpScoreContrary(u32 battlerAtk, u32 battlerDef, enum StatChange statChange)
 {
     return IncreaseStatUpScoreInternal(battlerAtk, battlerDef, statChange, FALSE);
+}
+
+bool32 MatchesExplosionOrSuperfang(u32 moveEffect, bool32 isSwitch)
+{
+    return (moveEffect == EFFECT_EXPLOSION || (isSwitch && moveEffect == EFFECT_SUPER_FANG)) ? TRUE : FALSE;
 }
 
 void IncreasePoisonScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)

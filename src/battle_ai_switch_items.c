@@ -218,7 +218,8 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         if (playerMove != MOVE_NONE 
             && gMovesInfo[playerMove].category != DAMAGE_CATEGORY_STATUS 
             && gMovesInfo[playerMove].effect != EFFECT_FOCUS_PUNCH
-            && gBattleMons[opposingBattler].pp[i] > 0)
+            && gBattleMons[opposingBattler].pp[i] > 0
+            && !MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, FALSE))
         {
             damageTaken = AI_GetDamage(opposingBattler, battler, i, AI_DEFENDING_NORMAL, AI_DATA);
             if (damageTaken > maxDamageTaken && !AI_DoesChoiceEffectBlockMove(opposingBattler, playerMove))
@@ -246,7 +247,6 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
             // Check if mon has an "important" status move
             if (aiMoveEffect == EFFECT_REFLECT || aiMoveEffect == EFFECT_LIGHT_SCREEN
             || aiMoveEffect == EFFECT_SPIKES || aiMoveEffect == EFFECT_TOXIC_SPIKES || aiMoveEffect == EFFECT_STEALTH_ROCK || aiMoveEffect == EFFECT_STICKY_WEB || aiMoveEffect == EFFECT_LEECH_SEED
-            || aiMoveEffect == EFFECT_EXPLOSION
             || aiMoveEffect == EFFECT_SLEEP || aiMoveEffect == EFFECT_YAWN || aiMoveEffect == EFFECT_TOXIC || aiMoveEffect == EFFECT_WILL_O_WISP || aiMoveEffect == EFFECT_PARALYZE
             || aiMoveEffect == EFFECT_TRICK || aiMoveEffect == EFFECT_TRICK_ROOM || aiMoveEffect== EFFECT_WONDER_ROOM || aiMoveEffect ==  EFFECT_PSYCHO_SHIFT || aiMoveEffect == EFFECT_FIRST_TURN_ONLY
             )
@@ -254,9 +254,10 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
                 hasStatusMove = TRUE;
             }
 
-            // Only check damage if it's a damaging move
+            // Only check damage if it's a damaging move (skipped for explosion)
             if (gMovesInfo[aiMove].category != DAMAGE_CATEGORY_STATUS
-                && !AI_DoesChoiceEffectBlockMove(battler, aiMove))
+                && !AI_DoesChoiceEffectBlockMove(battler, aiMove)
+                && aiMoveEffect != EFFECT_EXPLOSION)
             {
                 // Check if mon has a super effective move
                 if (AI_GetMoveEffectiveness(aiMove, battler, opposingBattler) >= UQ_4_12(2.0))
@@ -267,7 +268,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
                 if (damageDealt > maxDamageDealt)
                     maxDamageDealt = damageDealt;
                 
-                if (!canBattlerWin1v1 ) // Once we can win a 1v1 we don't need to track this, but want to run the rest of the function to keep the runtime the same regardless of when we find the winning move
+                if (!canBattlerWin1v1) // Once we can win a 1v1 we don't need to track this, but want to run the rest of the function to keep the runtime the same regardless of when we find the winning move
                 {
                     hitsToKoPlayer = GetNoOfHitsToKOBattlerDmg(damageDealt, opposingBattler);
                     isBattlerFirst = AI_IsFaster(battler, opposingBattler, aiMove, bestPlayerMove, CONSIDER_PRIORITY);
@@ -1894,8 +1895,11 @@ static s32 GetMaxDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposingBattle
             }
             if (damageTaken > maxDamageTaken)
             {
-                maxDamageTaken = damageTaken;
-                *bestPlayerMove = playerMove;
+                if (!MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, TRUE))
+                {
+                    maxDamageTaken = damageTaken;
+                    *bestPlayerMove = playerMove;
+                }
             }
         }
     }
@@ -1927,13 +1931,17 @@ static s32 GetMaxPriorityDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposi
             }
             if (damageTaken > maxDamageTaken)
             {
-                maxDamageTaken = damageTaken;
-                *bestPlayerPriorityMove = playerMove;
+                if (!MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, TRUE))
+                {
+                    maxDamageTaken = damageTaken;
+                    *bestPlayerPriorityMove = playerMove;
+                }
             }
         }
     }
     return maxDamageTaken;
 }
+
 static bool32 AI_CanSwitchinAbilityTrapOpponent(u16 ability, u32 opposingBattler)
 {
     if (AI_CanBattlerEscape(opposingBattler))
@@ -2092,7 +2100,7 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
             }
 
             // Track max hits to KO and set defensive mon
-            if(hitsToKOAI > maxHitsToKO && (canSwitchinWin1v1 || AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_STALL))
+            if (hitsToKOAI > maxHitsToKO && (canSwitchinWin1v1 || AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_STALL))
             {
                 maxHitsToKO = hitsToKOAI;
                 if(maxHitsToKO > defensiveMonHitKOThreshold)
