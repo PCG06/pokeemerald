@@ -4335,7 +4335,8 @@ static void HandleTurnActionSelectionState(void)
                     AI_DATA->shouldSwitch |= (1u << battler);
                 gBattleStruct->prevTurnSpecies[battler] = gBattleMons[battler].species;
 
-                // Do scoring
+                // Do scoring - force AI_DATA->aiCalcInProgress = TRUE for proper awareness when choosing move or action
+                AI_DATA->aiCalcInProgress = TRUE;
                 gBattleStruct->aiMoveOrAction[battler] = BattleAI_ChooseMoveOrAction();
                 ModifySwitchAfterMoveScoring(battler);
                 AI_DATA->aiCalcInProgress = FALSE;
