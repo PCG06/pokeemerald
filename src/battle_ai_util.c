@@ -871,6 +871,7 @@ struct SimulatedDamage AI_CalcDamage(u32 move, u32 battlerAtk, u32 battlerDef, u
     gBattleStruct->zmove.baseMoves[battlerAtk] = MOVE_NONE;
     if (toggledGimmick)
         SetActiveGimmick(battlerAtk, GIMMICK_NONE);
+
     AI_DATA->aiCalcInProgress = FALSE;
     return simDamage;
 }

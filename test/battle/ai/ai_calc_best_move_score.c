@@ -510,3 +510,23 @@ AI_SINGLE_BATTLE_TEST("Player EFFECT_EXPLOSION ignored for setup calculations")
         }
     }
 }
+
+AI_SINGLE_BATTLE_TEST("Bolt Beak/Fishious Rend - AI will ignore player's last used move on its first turn on the field")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_SAMUROTT){ Level(44); Moves(MOVE_VACUUM_WAVE, MOVE_CUT); }
+        OPPONENT(SPECIES_NINETALES_ALOLA){ Level(1); HP(1); Moves(MOVE_TACKLE); Ability(ABILITY_SNOW_WARNING); }
+        OPPONENT(SPECIES_ARCTOVISH){ Level(42); Moves(MOVE_CRUNCH, MOVE_FISHIOUS_REND); Ability(ABILITY_SLUSH_RUSH); }
+    } WHEN {
+        TURN {
+            MOVE(player, MOVE_VACUUM_WAVE);
+            EXPECT_MOVE(opponent, MOVE_TACKLE);
+            EXPECT_SEND_OUT(opponent, 1);
+        }
+        TURN {
+            MOVE(player, MOVE_CUT);
+            EXPECT_MOVE(opponent, MOVE_FISHIOUS_REND);
+        }
+    }
+}
