@@ -9032,7 +9032,8 @@ static inline u32 CalcMoveBasePower(struct DamageCalculationData *damageCalcData
     case EFFECT_BOLT_BEAK:
         if (AI_DATA->aiCalcInProgress)
         {
-            if (AI_IsFaster(battlerAtk, battlerDef, move, AI_DATA->lastUsedMove[battlerDef], CONSIDER_PRIORITY))
+            u32 lastKnownMove = gDisableStructs[battlerAtk].isFirstTurn ? MOVE_NONE : AI_DATA->lastUsedMove[battlerDef];
+            if (AI_IsFaster(battlerAtk, battlerDef, move, lastKnownMove, CONSIDER_PRIORITY))
                 basePower *= 2;
         }
         else if (GetBattlerTurnOrderNum(battlerAtk) < GetBattlerTurnOrderNum(battlerDef)
