@@ -254,10 +254,10 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
                 hasStatusMove = TRUE;
             }
 
-            // Only check damage if it's a damaging move (skipped for explosion)
+            // Only check damage if it's a damaging move (if the damaging move is explosion, only if it can be used)
             if (gMovesInfo[aiMove].category != DAMAGE_CATEGORY_STATUS
                 && !AI_DoesChoiceEffectBlockMove(battler, aiMove)
-                && aiMoveEffect != EFFECT_EXPLOSION)
+                && (aiMoveEffect != EFFECT_EXPLOSION || (aiMoveEffect == EFFECT_EXPLOSION && AI_DATA->shouldConsiderExplosion == TRUE)))
             {
                 // Check if mon has a super effective move
                 if (AI_GetMoveEffectiveness(aiMove, battler, opposingBattler) >= UQ_4_12(2.0))
