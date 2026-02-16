@@ -452,6 +452,65 @@ AI_SINGLE_BATTLE_TEST("surf is positive effect for cramorant")
     }
 }
 
+AI_SINGLE_BATTLE_TEST("Player EFFECT_EXPLOSION ignored for last chance calculations")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_ELECTRODE){ Level(100); Moves(MOVE_EXPLOSION, MOVE_THUNDER_SHOCK); }
+        OPPONENT(SPECIES_ZIGZAGOON){ Level(100); Moves(MOVE_SUCKER_PUNCH, MOVE_HEADBUTT); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_THUNDER_SHOCK);
+            SCORE_EQ_VAL(opponent, MOVE_SUCKER_PUNCH, 100);
+            SCORE_EQ_VAL(opponent, MOVE_HEADBUTT, 101);
+        }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Player EFFECT_EXPLOSION ignored for destiny bond calculations")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_ELECTRODE){ Level(100); Moves(MOVE_EXPLOSION, MOVE_THUNDER_SHOCK); Speed(100); }
+        OPPONENT(SPECIES_ZIGZAGOON){ Level(100); Moves(MOVE_HEADBUTT, MOVE_DESTINY_BOND); Speed(200); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_THUNDER_SHOCK);
+            SCORE_EQ_VAL(opponent, MOVE_HEADBUTT, 101);
+            SCORE_EQ_VAL(opponent, MOVE_DESTINY_BOND, 100);
+        }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Player EFFECT_EXPLOSION ignored for ShouldTryToFlinch cases")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_ELECTRODE){ Level(100); Moves(MOVE_EXPLOSION, MOVE_THUNDER_SHOCK); Speed(100); }
+        OPPONENT(SPECIES_ZIGZAGOON){ Level(100); Moves(MOVE_DIZZY_PUNCH, MOVE_HEADBUTT); Speed(200); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_THUNDER_SHOCK);
+            SCORE_EQ_VAL(opponent, MOVE_HEADBUTT, 100);
+            SCORE_EQ_VAL(opponent, MOVE_DIZZY_PUNCH, 101);
+        }
+    }
+}
+
+AI_SINGLE_BATTLE_TEST("Player EFFECT_EXPLOSION ignored for setup calculations")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_ELECTRODE){ Level(100); Moves(MOVE_EXPLOSION, MOVE_TACKLE); }
+        OPPONENT(SPECIES_ZIGZAGOON){ Level(100); Moves(MOVE_SWORDS_DANCE, MOVE_HEADBUTT); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_TACKLE);
+            SCORE_EQ_VAL(opponent, MOVE_SWORDS_DANCE, 103);
+        }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("Bolt Beak/Fishious Rend - AI will ignore player's last used move on its first turn on the field")
 {
     GIVEN {

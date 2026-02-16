@@ -497,7 +497,6 @@ static u32 ChooseMoveOrAction_Singles(u32 battlerAi)
     s32 i;
     u32 flags = AI_THINKING_STRUCT->aiFlags[battlerAi];
     u32 opposingBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battlerAi)));
-    AI_DATA->shouldConsiderExplosion = AI_RandLessThan(GetAIExplosionChanceFromHP(AI_DATA->hpPercents[battlerAi]));
 
     AI_THINKING_STRUCT->aiLogicId = 0;
     AI_THINKING_STRUCT->movesetIndex = 0;
