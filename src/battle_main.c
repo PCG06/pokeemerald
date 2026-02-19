@@ -4328,6 +4328,7 @@ static void HandleTurnActionSelectionState(void)
                 // Setup battler data
                 sBattler_AI = battler;
                 BattleAI_SetupAIData(0xF, sBattler_AI);
+                AI_DATA->shouldConsiderExplosion = AI_RandLessThan(GetAIExplosionChanceFromHP(AI_DATA->hpPercents[battler]));
 
                 // Setup switching data
                 AI_DATA->mostSuitableMonId[battler] = GetMostSuitableMonToSwitchInto(battler, SWITCH_MID_BATTLE);
@@ -4335,7 +4336,8 @@ static void HandleTurnActionSelectionState(void)
                     AI_DATA->shouldSwitch |= (1u << battler);
                 gBattleStruct->prevTurnSpecies[battler] = gBattleMons[battler].species;
 
-                // Do scoring
+                // Do scoring - force AI_DATA->aiCalcInProgress = TRUE for proper awareness when choosing move or action
+                AI_DATA->aiCalcInProgress = TRUE;
                 gBattleStruct->aiMoveOrAction[battler] = BattleAI_ChooseMoveOrAction();
                 ModifySwitchAfterMoveScoring(battler);
                 AI_DATA->aiCalcInProgress = FALSE;
@@ -4876,6 +4878,8 @@ u32 GetBattlerTotalSpeedStatArgs(u32 battler, u32 ability, u32 holdEffect)
             speed *= 2;
         else if (ability == ABILITY_CHLOROPHYLL && holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA && gBattleWeather & B_WEATHER_SUN)
             speed *= 2;
+        else if (ability == ABILITY_FLOWER_GIFT && gBattleMons[battler].species == SPECIES_CHERRIM_SUNSHINE && holdEffect != HOLD_EFFECT_UTILITY_UMBRELLA && gBattleWeather & B_WEATHER_SUN)
+            speed *= 1.5;
         else if (ability == ABILITY_SAND_RUSH   && gBattleWeather & B_WEATHER_SANDSTORM)
             speed *= 2;
         else if (ability == ABILITY_SLUSH_RUSH  && (gBattleWeather & (B_WEATHER_HAIL | B_WEATHER_SNOW)))
