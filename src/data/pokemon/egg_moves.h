@@ -586,7 +586,6 @@ static const u16 sAbraEggMoveLearnset[] = {
     MOVE_ICE_PUNCH,
     MOVE_POWER_TRICK,
     MOVE_GUARD_SWAP,
-    MOVE_SKILL_SWAP,
     MOVE_GUARD_SPLIT,
     MOVE_PSYCHO_SHIFT,
     MOVE_PSYCHIC_TERRAIN,
@@ -1924,7 +1923,6 @@ static const u16 sMisdreavusEggMoveLearnset[] = {
     MOVE_SPITE,
     MOVE_OMINOUS_WIND,
     MOVE_NASTY_PLOT,
-    MOVE_SKILL_SWAP,
     MOVE_WONDER_ROOM,
     MOVE_ME_FIRST,
     MOVE_UNAVAILABLE,
@@ -2581,7 +2579,6 @@ static const u16 sRaltsEggMoveLearnset[] = {
     MOVE_CONFUSE_RAY,
     MOVE_ENCORE,
     MOVE_SYNCHRONOISE,
-    MOVE_SKILL_SWAP,
     MOVE_MISTY_TERRAIN,
     MOVE_KNOCK_OFF,
     MOVE_UNAVAILABLE,
@@ -5375,7 +5372,6 @@ static const u16 sOricorioEggMoveLearnset[] = {
 
 #if P_FAMILY_CUTIEFLY
 static const u16 sCutieflyEggMoveLearnset[] = {
-    MOVE_SKILL_SWAP,
     MOVE_SPEED_SWAP,
     MOVE_BESTOW,
     MOVE_MOONBLAST,

@@ -903,6 +903,7 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
         case MOVE_DIVE:
             if (gBattleMons[battlerAtk].species == SPECIES_CRAMORANT)
                 return TRUE;
+            break;
     }        
    
     switch (gMovesInfo[move].effect)
@@ -1002,6 +1003,13 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
 
             switch (gMovesInfo[move].additionalEffects[i].moveEffect)
             {
+                case MOVE_EFFECT_DIRE_CLAW:
+                    if ((AI_CanPoison(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE)
+                        || AI_CanPutToSleep(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE) 
+                        || AI_CanParalyze(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE))
+                        && noOfHitsToKo > 1)
+                        return TRUE;
+                    break;
                 case MOVE_EFFECT_POISON:
                 case MOVE_EFFECT_TOXIC:
                     if (AI_CanPoison(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE) && noOfHitsToKo > 1)
@@ -4541,7 +4549,7 @@ void IncreaseParalyzeScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score)
 
         if ((defSpeed >= atkSpeed && defSpeed / 2 < atkSpeed) // You'll go first after paralyzing foe
           || HasMoveEffectANDArg(battlerAtk, EFFECT_DOUBLE_POWER_ON_ARG_STATUS, STATUS1_PARALYSIS)
-          || (HasMoveWithMoveEffectExcept(battlerAtk, MOVE_EFFECT_FLINCH, EFFECT_FIRST_TURN_ONLY)) // filter out Fake Out
+          || (HasMoveWithMoveEffectExcept(battlerAtk, MOVE_EFFECT_FLINCH, EFFECT_FIRST_TURN_ONLY) && defSpeed / 2 < atkSpeed) // filter out Fake Out
           || gBattleMons[battlerDef].status2 & STATUS2_INFATUATION
           || gBattleMons[battlerDef].status2 & STATUS2_CONFUSION)
             ADJUST_SCORE_PTR(GOOD_EFFECT);
