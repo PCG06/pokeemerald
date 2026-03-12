@@ -116,6 +116,14 @@ enum {
     MENU_CATALOG_MOWER,
     MENU_CHANGE_FORM,
     MENU_CHANGE_ABILITY,
+    MENU_MODE,
+    MENU_HP,
+    MENU_BRN,
+    MENU_FSB,
+    MENU_PAR,
+    MENU_PSN,
+    MENU_TXC,
+    MENU_SLP,
     // Start hexorb Branch
     MENU_INFLICT_SLEEP,
     MENU_INFLICT_POISON,
@@ -137,10 +145,12 @@ enum {
     ACTIONS_STORE,
     ACTIONS_SUMMARY_ONLY,
     ACTIONS_ITEM,
+    ACTIONS_MODE,
     ACTIONS_MAIL,
     ACTIONS_REGISTER,
     ACTIONS_TRADE,
     ACTIONS_SPIN_TRADE,
+    ACTIONS_MOVES_SUB,
     ACTIONS_TAKEITEM_TOSS,
     ACTIONS_ROTOM_CATALOG,
     ACTIONS_ZYGARDE_CUBE,
@@ -502,6 +512,17 @@ static void CursorCb_RelearnEgg(u8);
 static void CursorCb_LvlUpMoves(u8);
 static void CursorCb_EggMoves(u8);
 static void CursorCb_Nickname(u8);
+static void CursorCb_Mode(u8); //New predmg menu
+static void CursorCb_SetHp(u8);
+static void Task_AdjustHealth(u8);
+static void PrintHP(u8, s16);
+static void CursorCb_Burn(u8);
+static void CursorCb_Frostbite(u8);
+static void CursorCb_Paralysis(u8);
+static void CursorCb_Poison(u8); 
+static void CursorCb_Toxic(u8);
+static void CursorCb_Sleep(u8);
+static void UpdateStatus(u8, u16);// end of predmg menu
 static void CursorCb_Switch(u8);
 static void CursorCb_Cancel1(u8);
 static void CursorCb_Item(u8);
@@ -2920,6 +2941,12 @@ static u8 DisplaySelectionWindow(u8 windowType)
     case SELECTWINDOW_MOVE_RELEARN_ONE:
         window = sRelearnOneOptionsWindowTemplate;
         break;
+    case SELECTWINDOW_MODE:
+        window = sApplyModeWindowTemplate;
+        break;
+    case SELECTWINDW_SETHP:
+        window = sSetHpWindowTemplate;
+        break;
         // Start hexorb Branch
     case SELECTWINDOW_HEXORB:
         window = sHexorbSelectWindowTemplate;
@@ -3074,6 +3101,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
                 AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, relearnOptionToAppend);
         }
     }
+    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_MODE);
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_NICKNAME);
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_CANCEL1);
 }
@@ -8274,6 +8302,108 @@ void ItemUseCB_PokeBall(u8 taskId, TaskFunc task)
         ScheduleBgCopyTilemapToVram(2);
         gTasks[taskId].func = task;
     }
+}
+static void CursorCb_Mode(u8 taskId)
+{
+    PlaySE(SE_SELECT);
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
+    SetPartyMonSelectionActions(gPlayerParty, gPartyMenu.slotId, ACTIONS_MODE);
+    DisplaySelectionWindow(SELECTWINDOW_MODE);
+    DisplayPartyMenuStdMessage(PARTY_MSG_DO_WHAT_WITH_MON);
+    gTasks[taskId].data[0] = 0xFF;
+    gTasks[taskId].func = Task_HandleSelectionMenuInput;
+}
+
+#define thealthPoints data[8]
+
+static void CursorCb_SetHp(u8 taskId)
+{
+    PlaySE(SE_SELECT);
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
+    PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
+    SetPartyMonSelectionActions(gPlayerParty, gPartyMenu.slotId, ACTIONS_MODE);
+    // DisplaySelectionWindow(SELECTWINDW_SETHP);
+    sPartyMenuInternal->windowId[0] = AddWindow(&sSetHpWindowTemplate);
+    DrawStdFrameWithCustomTileAndPalette(sPartyMenuInternal->windowId[0], FALSE, 0x4F, 13);
+    PrintHP(sPartyMenuInternal->windowId[0], 1);
+    DisplayPartyMenuStdMessage(PARTY_MSG_DO_WHAT_WITH_MON);
+    gTasks[taskId].thealthPoints = 1;
+    gTasks[taskId].data[0] = 0xFF;
+    gTasks[taskId].func = Task_AdjustHealth;
+}
+
+static void Task_AdjustHealth(u8 taskId)
+{
+    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
+
+    s16 *data = gTasks[taskId].data;
+    s16 healthMon = GetMonData(mon, MON_DATA_MAX_HP);
+
+    if (AdjustQuantityAccordingToDPadInput(&thealthPoints, healthMon) == TRUE)
+    {
+        PrintHP(sPartyMenuInternal->windowId[0], thealthPoints);
+    }
+    else if (JOY_NEW(A_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        SetMonData(mon, MON_DATA_HP, &thealthPoints);
+        UpdateMonDisplayInfoAfterRareCandy(gPartyMenu.slotId, mon);
+        CursorCb_Cancel1(taskId);
+    }
+    else if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        CursorCb_Cancel1(taskId);
+    }
+}
+
+#undef thealthPoints
+
+static void PrintHP(u8 windowId, s16 quantity)
+{
+    ConvertIntToDecimalStringN(gStringVar1, quantity, STR_CONV_MODE_LEADING_ZEROS, 3);
+    StringExpandPlaceholders(gStringVar4, gText_xVar1);
+    AddTextPrinterParameterized(windowId, FONT_NORMAL, gStringVar4, 0, 0, 0, 0);
+}
+
+static void CursorCb_Burn(u8 taskId)
+{
+    UpdateStatus(taskId, STATUS1_BURN);
+}
+
+static void CursorCb_Frostbite(u8 taskId)
+{
+    UpdateStatus(taskId, STATUS1_FROSTBITE);
+}
+
+static void CursorCb_Paralysis(u8 taskId)
+{
+    UpdateStatus(taskId, STATUS1_PARALYSIS);
+}
+
+static void CursorCb_Poison(u8 taskId)
+{
+    UpdateStatus(taskId, STATUS1_POISON);
+}
+
+static void CursorCb_Toxic(u8 taskId)
+{
+    UpdateStatus(taskId, STATUS1_TOXIC_POISON);
+}
+
+static void CursorCb_Sleep(u8 taskId)
+{
+    UpdateStatus(taskId, STATUS1_SLEEP);
+}
+
+static void UpdateStatus(u8 taskId, u16 status)
+{
+    struct Pokemon *mon = &gPlayerParty[gPartyMenu.slotId];
+
+    SetMonData(mon, MON_DATA_STATUS, &status);
+    SetPartyMonAilmentGfx(mon, &sPartyMenuBoxes[gPartyMenu.slotId]);
+    CursorCb_Cancel1(taskId);
 }
 
 // Start hexorb Branch
