@@ -727,10 +727,10 @@ static const struct WindowTemplate sApplyModeWindowTemplate =
 static const struct WindowTemplate sSetHpWindowTemplate =
 {
     .bg = 2,
-    .tilemapLeft = 18,
-    .tilemapTop = 13,
-    .width = 11,
-    .height = 6,
+    .tilemapLeft = 21,
+    .tilemapTop = 15,
+    .width = 8,
+    .height = 4,
     .paletteNum = 14,
     .baseBlock = 0x2E9,
 };
