@@ -111,5 +111,7 @@
 #define SELECTWINDOW_MOVE_RELEARN_BOTH 6
 #define SELECTWINDOW_MOVE_RELEARN_ONE  7
 #define SELECTWINDOW_HEXORB            8 // hexorb Branch
+#define SELECTWINDOW_MODE              9
+#define SELECTWINDW_SETHP              10
 
 #endif // GUARD_CONSTANTS_PARTY_MENU_H
