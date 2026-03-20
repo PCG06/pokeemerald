@@ -2131,6 +2131,7 @@ void CB2_OpenPokedexPlusHGSS(void)
 
 void CB2_OpenPokedexPlusHGSSToMon()
 {
+    u16 species = gSpeciesToLoad;
     if (!POKEDEX_PLUS_HGSS) return; // prevents the compiler from emitting static .rodata
                                     // if the feature is disabled
     switch (gMain.state)
@@ -2155,7 +2156,6 @@ void CB2_OpenPokedexPlusHGSSToMon()
         gMain.state++;
         break;
     case 2:
-        u16 species = gSpeciesToLoad;
         sPokedexView = AllocZeroed(sizeof(struct PokedexView));
         ResetPokedexView(sPokedexView);
         u16 dexNum = SpeciesToNationalPokedexNum(species);
