@@ -18,6 +18,7 @@ EverGrandeCity_HallOfFame_EventScript_SetGameClearFlags::
 	call_if_unset FLAG_RECEIVED_BELDUM, EverGrandeCity_HallOfFame_EventScript_ShowStevensHouseBeldum
 	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_RIVAL_BEDROOM
 	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_RIVAL_BEDROOM
+	clearflag FLAG_HIDE_TERAPAGOS
 	call_if_eq VAR_GIVE_NAVEL_ISLAND_TICKET, 0, EverGrandeCity_HallOfFame_EventScript_ReadyBirthIslandEvent
 	return
 
