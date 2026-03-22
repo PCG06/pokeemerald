@@ -1195,3 +1195,5 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/SootopolisCity_ChampHouse/scripts.inc"
 
 	.include "data/maps/FieryPath_BackRoom/scripts.inc"
+
+	.include "data/maps/DistortionWorld/scripts.inc"

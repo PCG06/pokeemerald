@@ -437,7 +437,8 @@
     "FloatingSlab",
     "RockySlab",
     "GrassySlab",
-    "FieryPath_BackRoom"
+    "FieryPath_BackRoom",
+    "DistortionWorld"
   ],
   "gMapGroup_IndoorDynamic": [
     "SecretBase_RedCave1",
