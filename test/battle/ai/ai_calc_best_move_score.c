@@ -547,6 +547,29 @@ AI_SINGLE_BATTLE_TEST("Bolt Beak/Fishious Rend - AI will ignore player's last us
     }
 }
 
+AI_SINGLE_BATTLE_TEST("AI's comparison of damaging moves correctly reads moveset indexes for effects")
+{
+    u32 move = MOVE_NONE;
+    PARAMETRIZE { move = MOVE_TACKLE; }
+    PARAMETRIZE { move = MOVE_DUAL_CHOP; }
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_RAPIDASH_GALAR){ Level(100); Nature(NATURE_JOLLY); Moves(MOVE_TACKLE);}
+        OPPONENT(SPECIES_HAXORUS){ Level(64); Nature(NATURE_JOLLY); Ability(ABILITY_MOLD_BREAKER); Moves(move, MOVE_DRILL_RUN, MOVE_POISON_JAB); }
+    } WHEN {
+        TURN { 
+            MOVE(player, MOVE_TACKLE);
+            if (move == MOVE_WATERFALL)
+                SCORE_EQ_VAL(opponent, MOVE_WATERFALL, 100);
+            else if (move == MOVE_DUAL_CHOP)
+                SCORE_EQ_VAL(opponent, MOVE_DUAL_CHOP, 60);
+            SCORE_EQ_VAL(opponent, MOVE_DRILL_RUN, 100);
+            SCORE_EQ_VAL(opponent, MOVE_POISON_JAB, 101);
+>>>>>>> release-lt
+        }
+    }
+}
+
 AI_SINGLE_BATTLE_TEST("Retaliate sees damage correctly on the field")
 {
     GIVEN {
