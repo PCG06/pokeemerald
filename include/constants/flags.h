@@ -1268,8 +1268,8 @@
 #define FLAG_RECEIVED_NECROZMA_FUSION                               0x4BE
 #define FLAG_HIDE_HEATRAN                                           0x4BF
 #define FLAG_DEFEATED_HEATRAN                                       0x4C0
-#define FLAG_UNUSED_0x4C1                                           0x4C1 // Unused Flag
-#define FLAG_UNUSED_0x4C2                                           0x4C2 // Unused Flag
+#define FLAG_HIDE_TERAPAGOS                                         0x4C1 // Unused Flag
+#define FLAG_DEFEATED_TERAPAGOS                                     0x4C2 // Unused Flag
 #define FLAG_UNUSED_0x4C3                                           0x4C3 // Unused Flag
 #define FLAG_UNUSED_0x4C4                                           0x4C4 // Unused Flag
 #define FLAG_UNUSED_0x4C5                                           0x4C5 // Unused Flag
