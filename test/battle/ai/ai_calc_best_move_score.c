@@ -565,7 +565,6 @@ AI_SINGLE_BATTLE_TEST("AI's comparison of damaging moves correctly reads moveset
                 SCORE_EQ_VAL(opponent, MOVE_DUAL_CHOP, 60);
             SCORE_EQ_VAL(opponent, MOVE_DRILL_RUN, 100);
             SCORE_EQ_VAL(opponent, MOVE_POISON_JAB, 101);
->>>>>>> release-lt
         }
     }
 }
