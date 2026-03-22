@@ -1148,7 +1148,7 @@ static bool32 AI_IsMoveEffectInMinus(u32 battlerAtk, u32 battlerDef, u32 move, s
 // Checks if one of the moves has side effects or perks, assuming equal dmg or equal no of hits to KO
 enum MoveComparisonResult AI_WhichMoveBetter(u32 move1, u32 move2, u32 battlerAtk, u32 battlerDef, s32 noOfHitsToKo)
 {
-    bool32 effect1, effect2;
+    bool32 effect1minus, effect1plus, effect2minus, effect2plus;
     u32 defAbility = AI_DATA->abilities[battlerDef];
     u32 atkAbility = AI_DATA->abilities[battlerAtk];
 
@@ -1160,22 +1160,28 @@ enum MoveComparisonResult AI_WhichMoveBetter(u32 move1, u32 move2, u32 battlerAt
         if (gMovesInfo[move1].makesContact && !gMovesInfo[move2].makesContact)
             return MOVE_LOST_COMPARISON;
         if (gMovesInfo[move2].makesContact && !gMovesInfo[move1].makesContact)
-            return MOVE_WON_COMPARISON;;
+            return MOVE_WON_COMPARISON;
     }
 
     // Check additional effects.
-    effect1 = AI_IsMoveEffectInMinus(battlerAtk, battlerDef, move1, noOfHitsToKo);
-    effect2 = AI_IsMoveEffectInMinus(battlerAtk, battlerDef, move2, noOfHitsToKo);
-    if (effect2 && !effect1)
+    AI_THINKING_STRUCT->movesetIndex = GetMoveIndex(battlerAtk, move1);
+    effect1minus = AI_IsMoveEffectInMinus(battlerAtk, battlerDef, move1, noOfHitsToKo);
+    effect1plus = AI_IsMoveEffectInPlus(battlerAtk, battlerDef, move1, noOfHitsToKo);
+
+    AI_THINKING_STRUCT->movesetIndex = GetMoveIndex(battlerAtk, move2);
+    effect2plus = AI_IsMoveEffectInPlus(battlerAtk, battlerDef, move2, noOfHitsToKo);
+    effect2minus = AI_IsMoveEffectInMinus(battlerAtk, battlerDef, move2, noOfHitsToKo);
+
+    AI_THINKING_STRUCT->movesetIndex = 0;
+
+    if (effect2minus && !effect1minus)
         return MOVE_WON_COMPARISON;;
-    if (effect1 && !effect2)
+    if (effect1minus && !effect2minus)
         return MOVE_LOST_COMPARISON;
 
-    effect1 = AI_IsMoveEffectInPlus(battlerAtk, battlerDef, move1, noOfHitsToKo);
-    effect2 = AI_IsMoveEffectInPlus(battlerAtk, battlerDef, move2, noOfHitsToKo);
-    if (effect2 && !effect1)
+    if (effect2plus && !effect1plus)
         return MOVE_LOST_COMPARISON;
-    if (effect1 && !effect2)
+    if (effect1plus && !effect2plus)
         return MOVE_WON_COMPARISON;;
 
     return MOVE_NEUTRAL_COMPARISON;
@@ -1471,6 +1477,19 @@ void GetBestDmgMovesFromBattler(u32 battlerAtk, u32 battlerDef, enum DamageCalcC
             }
         }
     }
+}
+
+u32 GetMoveIndex(u32 battler, u32 move)
+{
+    u16 *moves = GetMovesArray(battler);
+
+    for (u32 moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
+    {
+        if (moves[moveIndex] == move)
+            return moveIndex;
+    }
+
+    return MAX_MON_MOVES;
 }
 
 u32 GetBestDmgMoveFromBattler(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext)

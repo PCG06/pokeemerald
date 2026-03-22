@@ -238,3 +238,101 @@ CaveOfOrigin_B1F_Text_WellHeadToSkyPillar:
 	.string "{PLAYER}{KUN}, there's not a moment to lose!\n"
 # 120 "data/maps/CaveOfOrigin_B1F/scripts.pory"
 	.string "We'll head to the Sky Pillar right away!$"
+# 121 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+
+# 122 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+CaveOfOrigin_B1F_OnResume:
+# 123 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, CaveOfOrigin_B1F_EventScript_TryRemoveTerapagos
+# 124 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	end
+# 125 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+
+# 126 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+CaveOfOrigin_B1F_EventScript_TryRemoveTerapagos::
+# 127 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	specialvar VAR_RESULT, GetBattleOutcome
+# 128 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+# 129 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	removeobject VAR_LAST_TALKED
+# 130 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	return
+# 131 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+
+# 132 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+CaveOfOrigin_B1F_OnTransition:
+# 133 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	call_if_unset FLAG_DEFEATED_TERAPAGOS, CaveOfOrigin_B1F_EventScript_ShowTerapagos
+# 134 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	end
+# 135 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+
+# 136 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+CaveOfOrigin_B1F_EventScript_ShowTerapagos::
+# 137 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	clearflag FLAG_HIDE_TERAPAGOS
+# 138 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	return
+# 139 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+
+# 140 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+CaveOfOrigin_B1F_EventScript_Terapagos::
+# 141 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	lock
+# 142 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	faceplayer
+# 143 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	waitse
+# 144 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	playmoncry SPECIES_TERAPAGOS, CRY_MODE_ENCOUNTER
+# 145 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	delay 40
+# 146 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	waitmoncry
+# 147 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	setwildbattle SPECIES_TERAPAGOS, 70
+# 148 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+# 149 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	special StartRegiBattle
+# 150 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	waitstate
+# 151 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+# 152 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	specialvar VAR_RESULT, GetBattleOutcome
+# 153 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, CaveOfOrigin_B1F_EventScript_DefeatedTerapagos
+# 154 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, CaveOfOrigin_B1F_EventScript_RanFromTerapagos
+# 155 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, CaveOfOrigin_B1F_EventScript_RanFromTerapagos
+# 156 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	goto_if_eq VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_RemoveStaticPokemon
+# 157 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	setflag FLAG_DEFEATED_TERAPAGOS
+# 158 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	release
+# 159 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	end
+# 160 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+
+# 161 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+CaveOfOrigin_B1F_EventScript_DefeatedTerapagos::
+# 162 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	setflag FLAG_DEFEATED_TERAPAGOS
+# 163 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	goto Common_EventScript_RemoveStaticPokemon
+# 164 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	end
+# 165 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+
+# 166 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+CaveOfOrigin_B1F_EventScript_RanFromTerapagos::
+# 167 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	setvar VAR_0x8004, SPECIES_TERAPAGOS
+# 168 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	goto Common_EventScript_LegendaryFlewAway
+# 169 "data/maps/CaveOfOrigin_B1F/scripts.pory"
+	end
