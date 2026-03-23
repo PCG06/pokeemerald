@@ -9342,7 +9342,7 @@ static inline u32 CalcMoveBasePowerAfterModifiers(struct DamageCalculationData *
         modifier = uq4_12_multiply(modifier, GetSupremeOverlordModifier(battlerAtk));
         break;
     case ABILITY_PARENTAL_BOND:
-        if(fromAiCode)
+        if (fromAiCode && IsMoveAffectedByParentalBond(move, battlerAtk))
             modifier = uq4_12_multiply(modifier, UQ_4_12(1.25));
         break;
     case ABILITY_ORAORAORAORA:
