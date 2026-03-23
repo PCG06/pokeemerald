@@ -207,3 +207,21 @@ const u16 gMetatileAttributes_MysteryEventsHouse[] = INCBIN_U16("data/tilesets/s
 
 const u16 gMetatiles_UnionRoom[] = INCBIN_U16("data/tilesets/secondary/union_room/metatiles.bin");
 const u16 gMetatileAttributes_UnionRoom[] = INCBIN_U16("data/tilesets/secondary/union_room/metatile_attributes.bin");
+
+const u16 gMetatiles_AutumnRuins[] = INCBIN_U16("data/tilesets/secondary/autumn_ruins/metatiles.bin");
+const u16 gMetatileAttributes_AutumnRuins[] = INCBIN_U16("data/tilesets/secondary/autumn_ruins/metatile_attributes.bin");
+
+const u16 gMetatiles_LugiaMovieAltar[] = INCBIN_U16("data/tilesets/secondary/lugia_movie_altar/metatiles.bin");
+const u16 gMetatileAttributes_LugiaMovieAltar[] = INCBIN_U16("data/tilesets/secondary/lugia_movie_altar/metatile_attributes.bin");
+
+const u16 gMetatiles_DesertPyramidExterior[] = INCBIN_U16("data/tilesets/secondary/desert_pyramid_exterior/metatiles.bin");
+const u16 gMetatileAttributes_DesertPyramidExterior[] = INCBIN_U16("data/tilesets/secondary/desert_pyramid_exterior/metatile_attributes.bin");
+
+const u16 gMetatiles_SnowRecolor[] = INCBIN_U16("data/tilesets/primary/snow_recolor/metatiles.bin");
+const u16 gMetatileAttributes_SnowRecolor[] = INCBIN_U16("data/tilesets/primary/snow_recolor/metatile_attributes.bin");
+
+const u16 gMetatiles_PyramidInterior[] = INCBIN_U16("data/tilesets/secondary/pyramid_interior/metatiles.bin");
+const u16 gMetatileAttributes_PyramidInterior[] = INCBIN_U16("data/tilesets/secondary/pyramid_interior/metatile_attributes.bin");
+
+const u16 gMetatiles_DistortionWorld[] = INCBIN_U16("data/tilesets/secondary/distortion_world/metatiles.bin");
+const u16 gMetatileAttributes_DistortionWorld[] = INCBIN_U16("data/tilesets/secondary/distortion_world/metatile_attributes.bin");
