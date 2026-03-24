@@ -642,10 +642,12 @@ void BattleSetup_StartLegendaryBattle(void)
         CreateBattleStartTask(B_TRANSITION_GRID_SQUARES, MUS_VS_MEW);
         break;
     case SPECIES_GIRATINA_ORIGIN:
-        CreateBattleStartTask(B_TRANSITION_BLUR, MUS_PL_VS_GIRATINA);
-        break;
     case SPECIES_YVELTAL:
-        CreateBattleStartTask(B_TRANSITION_BLUR, MUS_PL_VS_GIRATINA);
+        CreateBattleStartTask(B_TRANSITION_BLACKHOLE_PULSATE, MUS_PL_VS_GIRATINA);
+        break;
+    case SPECIES_ZYGARDE:
+        CreateBattleStartTask(B_TRANSITION_GRID_SQUARES, MUS_HG_VS_ENTEI);
+        break; 
     }
 
     IncrementGameStat(GAME_STAT_TOTAL_BATTLES);

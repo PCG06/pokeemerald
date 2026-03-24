@@ -1274,8 +1274,8 @@
 #define FLAG_DEFEATED_GIRATINA                                      0x4C4 
 #define FLAG_HIDE_YVELTAL                                           0x4C5
 #define FLAG_DEFEATED_YVELTAL                                       0x4C6
-#define FLAG_UNUSED_0x4C7                                           0x4C7 // Unused Flag
-#define FLAG_UNUSED_0x4C8                                           0x4C8 // Unused Flag
+#define FLAG_HIDE_ZYGARDE                                           0x4C7
+#define FLAG_DEFEATED_ZYGARDE                                       0x4C8
 #define FLAG_UNUSED_0x4C9                                           0x4C9 // Unused Flag
 #define FLAG_UNUSED_0x4CA                                           0x4CA // Unused Flag
 #define FLAG_UNUSED_0x4CB                                           0x4CB // Unused Flag
