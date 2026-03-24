@@ -959,6 +959,283 @@ const struct HiddenPowerTypeInfo gHiddenPowerTypeInfo[NUMBER_OF_MON_TYPES] =
     },
 };
 
+
+const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] = 
+{
+    [SPECIES_CHARIZARD_MEGA_Y] =
+    {
+        .abilities = { ABILITY_SHEER_FORCE,  ABILITY_SHEER_FORCE,  ABILITY_SHEER_FORCE }
+    },
+    [SPECIES_VULPIX] = 
+    {
+        .abilities = { ABILITY_FLASH_FIRE, ABILITY_NONE, ABILITY_SHEER_FORCE}
+    },
+    [SPECIES_NINETALES] = 
+    {
+        .abilities = { ABILITY_FLASH_FIRE, ABILITY_NONE, ABILITY_SHEER_FORCE}
+    },
+    [SPECIES_TORKOAL] =
+    {
+        .abilities = { ABILITY_WHITE_SMOKE,  ABILITY_SHELL_ARMOR,  ABILITY_SHEER_FORCE }
+    },
+    [SPECIES_GROUDON] = 
+    {
+        .abilities = { ABILITY_SHEER_FORCE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_GROUDON_PRIMAL] = 
+    {
+        .abilities = { ABILITY_SHEER_FORCE,  ABILITY_SHEER_FORCE,  ABILITY_SHEER_FORCE }
+    },
+    [SPECIES_MARACTUS] = 
+    {
+        .abilities = { ABILITY_WATER_ABSORB,  ABILITY_CHLOROPHYLL,  ABILITY_SELF_SUFFICIENT }
+    },
+    [SPECIES_TAPU_BULU] = 
+    {
+        .abilities = { ABILITY_SELF_SUFFICIENT,  ABILITY_NONE,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_GROOKEY] = 
+    {
+        .abilities = { ABILITY_OVERGROW,  ABILITY_NONE,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_THWACKEY] = 
+    {
+        .abilities = { ABILITY_OVERGROW,  ABILITY_NONE,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_RILLABOOM] = 
+    {
+        .abilities = { ABILITY_OVERGROW,  ABILITY_NONE,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_ARBOLIVA] = 
+    {
+        .abilities = { ABILITY_SELF_SUFFICIENT,  ABILITY_HARVEST,  ABILITY_NONE }
+    },
+    [SPECIES_TYRANITAR] = 
+    {
+        .abilities = { ABILITY_INTIMIDATE,  ABILITY_NONE,  ABILITY_UNNERVE }
+    },
+    [SPECIES_TYRANITAR_MEGA] = 
+    {
+        .abilities = { ABILITY_INTIMIDATE,  ABILITY_INTIMIDATE,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_HIPPOPOTAS] = 
+    {
+        .abilities = { ABILITY_SAND_FORCE,  ABILITY_SAND_FORCE,  ABILITY_NONE }
+    },
+    [SPECIES_HIPPOWDON] = 
+    {
+        .abilities = { ABILITY_SAND_FORCE,  ABILITY_SAND_FORCE,  ABILITY_NONE }
+    },
+    [SPECIES_GIGALITH] = 
+    {
+        .abilities = { ABILITY_STURDY,  ABILITY_SOLID_ROCK,  ABILITY_SAND_FORCE }
+    },
+    [SPECIES_SILICOBRA] = 
+    {
+        .abilities = {  ABILITY_SAND_FORCE,  ABILITY_SHED_SKIN,  ABILITY_SAND_VEIL }
+    },
+    [SPECIES_SANDACONDA] = 
+    {
+        .abilities = {  ABILITY_SAND_FORCE,  ABILITY_SHED_SKIN,  ABILITY_SAND_VEIL }
+    },
+    [SPECIES_POLITOED] = 
+    {
+        .abilities = { ABILITY_WATER_ABSORB,  ABILITY_DAMP,  ABILITY_ADAPTABILITY }
+    },
+    [SPECIES_PELIPPER] = 
+    {
+        .abilities = { ABILITY_FRISK,  ABILITY_RAIN_DISH,  ABILITY_ADAPTABILITY }
+    },
+    [SPECIES_KYOGRE] = 
+    {
+        .abilities = { ABILITY_ADAPTABILITY,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_KYOGRE_PRIMAL] = 
+    {
+        .abilities = { ABILITY_ADAPTABILITY,  ABILITY_ADAPTABILITY,  ABILITY_ADAPTABILITY }
+    },
+    [SPECIES_MANKEY] =
+    {
+        .abilities = {ABILITY_VITAL_SPIRIT,  ABILITY_ANGER_POINT,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_PRIMEAPE] =
+    {
+        .abilities = {ABILITY_VITAL_SPIRIT,  ABILITY_ANGER_POINT,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_ANNIHILAPE] =
+    {
+        .abilities = {ABILITY_VITAL_SPIRIT,  ABILITY_ANGER_POINT,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_ZAPDOS_GALAR] =
+    {
+        .abilities = { ABILITY_CLEAR_BODY,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_SNUBBULL] = 
+    {
+        .abilities = {ABILITY_INTIMIDATE,  ABILITY_STRONG_JAW,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_OBSTAGOON] = 
+    {
+        .abilities = {ABILITY_RECKLESS,  ABILITY_GUTS,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_HUNTAIL] = 
+    {
+        .abilities = {ABILITY_INTIMIDATE,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_PURUGLY] = 
+    {
+        .abilities = { ABILITY_THICK_FAT,  ABILITY_OWN_TEMPO,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_PAWNIARD] = 
+    {
+        .abilities = { ABILITY_CLEAR_BODY,  ABILITY_INNER_FOCUS,  ABILITY_PRESSURE}
+    },
+    [SPECIES_BISHARP] = 
+    {
+        .abilities = { ABILITY_CLEAR_BODY,  ABILITY_INNER_FOCUS,  ABILITY_PRESSURE}
+    },
+    [SPECIES_KINGAMBIT] = 
+    {
+        .abilities = { ABILITY_CLEAR_BODY,  ABILITY_SUPREME_OVERLORD,  ABILITY_PRESSURE}
+    },
+    [SPECIES_BRAVIARY] = 
+    {
+        .abilities = { ABILITY_FRISK,  ABILITY_SHEER_FORCE,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_TORNADUS_INCARNATE] = 
+    {
+        .abilities = { ABILITY_PRANKSTER,  ABILITY_NONE,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_THUNDURUS_INCARNATE] = 
+    {
+        .abilities = { ABILITY_PRANKSTER,  ABILITY_NONE,  ABILITY_CLEAR_BODY},
+    },
+    [SPECIES_PASSIMIAN] = 
+    {
+        .abilities = {  ABILITY_RECEIVER,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_FALINKS] = 
+    {
+        .abilities = {  ABILITY_BATTLE_ARMOR,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_FALINKS_MEGA] = 
+    {
+        .abilities = { ABILITY_BATTLE_ARMOR, ABILITY_NONE, ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_ZARUDE] = 
+    {
+        .abilities = {  ABILITY_LEAF_GUARD,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_ZARUDE_DADA] = 
+    {
+        .abilities = {  ABILITY_LEAF_GUARD,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_MABOSSTIFF] = 
+    {
+        .abilities = { ABILITY_INTIMIDATE,  ABILITY_CLEAR_BODY,  ABILITY_STAKEOUT }
+    },
+    [SPECIES_OKIDOGI] = 
+    {
+        .abilities = { ABILITY_TOXIC_CHAIN,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_OGERPON_TEAL] = 
+    {
+        .abilities = { ABILITY_CLEAR_BODY,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_IGGLYBUFF] = 
+    {
+        .abilities = {ABILITY_CUTE_CHARM,  ABILITY_CLEAR_BODY,  ABILITY_FRIEND_GUARD },
+    },
+    [SPECIES_JIGGLYPUFF] = 
+    {
+        .abilities = {ABILITY_CUTE_CHARM,  ABILITY_CLEAR_BODY,  ABILITY_FRIEND_GUARD }
+    },
+    [SPECIES_WIGGLYTUFF] = 
+    {
+        .abilities = {ABILITY_SHEER_FORCE,  ABILITY_CLEAR_BODY,  ABILITY_FRISK }
+    },
+    [SPECIES_ARTICUNO_GALAR] = 
+    {
+        .abilities = {ABILITY_CLEAR_BODY,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_MILOTIC] = 
+    {
+        .abilities = {ABILITY_MARVEL_SCALE,  ABILITY_CLEAR_BODY,  ABILITY_CUTE_CHARM }
+    },
+    [SPECIES_PIPLUP] = 
+    {
+        .abilities = { ABILITY_TORRENT,  ABILITY_NONE,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_PRINPLUP] = 
+    {
+        .abilities = { ABILITY_TORRENT,  ABILITY_NONE,  ABILITY_CLEAR_BODY}
+    },
+    [SPECIES_EMPOLEON] = 
+    {
+        .abilities = { ABILITY_TORRENT,  ABILITY_NONE,  ABILITY_CLEAR_BODY},
+    },
+    [SPECIES_GOTHITA] = 
+    {
+        .abilities = { ABILITY_FRISK,  ABILITY_CLEAR_BODY,  ABILITY_SHADOW_TAG}
+    },
+    [SPECIES_GOTHORITA] = 
+    {
+        .abilities = { ABILITY_FRISK,  ABILITY_CLEAR_BODY,  ABILITY_SHADOW_TAG}
+    },
+    [SPECIES_GOTHITELLE] = 
+    {
+        .abilities = { ABILITY_FRISK,  ABILITY_CLEAR_BODY,  ABILITY_SHADOW_TAG}
+    },
+    [SPECIES_MEOWSTIC_F] = 
+    {
+        .abilities = {    ABILITY_CLEAR_BODY,   ABILITY_FELINE_PROWESS,   ABILITY_INFILTRATOR   }
+    },
+    [SPECIES_MEOWSTIC_F_MEGA] = 
+    {
+        .abilities = { ABILITY_KEEN_EYE, ABILITY_INFILTRATOR, ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_YAMPER] = 
+    {
+        .abilities = {  ABILITY_PICKUP,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_BOLTUND] = 
+    {
+        .abilities = {  ABILITY_STRONG_JAW,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_WATTREL] = 
+    {
+        .abilities = { ABILITY_STATIC,  ABILITY_VOLT_ABSORB,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_KILOWATTREL] = 
+    {
+        .abilities = { ABILITY_STATIC,  ABILITY_VOLT_ABSORB,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_WEEZING_GALAR] = 
+    {
+        .abilities = {ABILITY_LEVITATE,  ABILITY_NEUTRALIZING_GAS,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_MR_MIME] = 
+    {
+        .abilities = {ABILITY_SOUNDPROOF,  ABILITY_FILTER,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_TAPU_FINI] = 
+    {
+        .abilities = {  ABILITY_TELEPATHY,  ABILITY_NONE,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_DEDENNE] = 
+    {
+        .abilities = {    ABILITY_CHEEK_POUCH,   ABILITY_PICKUP,   ABILITY_TELEPATHY   }
+    },
+    [SPECIES_TAPU_KOKO] = 
+    {
+        .abilities = {  ABILITY_TELEPATHY,  ABILITY_NONE,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_PINCURCHIN] = 
+    {
+        .abilities = {  ABILITY_LIGHTNING_ROD,  ABILITY_NONE,  ABILITY_TELEPATHY }
+    },
+};
+
 #include "data/graphics/pokemon.h"
 #include "data/pokemon_graphics/front_pic_anims.h"
 
@@ -3660,6 +3937,7 @@ u8 GetMonsStateToDoubles_2(void)
 u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
 {
     int i;
+    u16 hardModeAbility;
 
     if (abilityNum < NUM_ABILITY_SLOTS)
         gLastUsedAbility = gSpeciesInfo[species].abilities[abilityNum];
@@ -3679,6 +3957,14 @@ u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
         gLastUsedAbility = gSpeciesInfo[species].abilities[i];
     }
 
+    if (!cantRandomizeAbility && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
+    {
+        hardModeAbility = AbilityMapperHardMode(species, abilityNum);
+        if (hardModeAbility != ABILITY_NONE)
+            gLastUsedAbility = hardModeAbility;
+    }
+    
+
     #if RANDOMIZER_AVAILABLE == TRUE
         if(!cantRandomizeAbility && gLastUsedAbility != ABILITY_NONE)
         {
@@ -3696,6 +3982,11 @@ u16 GetMonAbility(struct Pokemon *mon)
     u8 cantRandomizeAbility = GetMonData(mon, MON_DATA_CANT_RANDOMIZE_ABILITY, NULL);
 
     return GetAbilityBySpecies(species, abilityNum, cantRandomizeAbility);
+}
+
+u16 AbilityMapperHardMode(u16 species, u8 abilityNum)
+{
+    return gHardModeAbilityMap[species].abilities[abilityNum];
 }
 
 void CreateSecretBaseEnemyParty(struct SecretBase *secretBaseRecord)
