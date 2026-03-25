@@ -1622,6 +1622,30 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = {    ABILITY_REFRIGERATE,   ABILITY_NONE,   ABILITY_SLUSH_RUSH   }
     },
+    [SPECIES_WEEZING] = 
+    {
+        .abilities = {ABILITY_LEVITATE,  ABILITY_NEUTRALIZING_GAS,  ABILITY_CORROSION }
+    },
+    [SPECIES_QWILFISH] = 
+    {
+        .abilities = {ABILITY_CORROSION,  ABILITY_SWIFT_SWIM,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_OVERQWIL] = 
+    {
+        .abilities = {ABILITY_CORROSION,  ABILITY_SWIFT_SWIM,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_GLIMMET] = 
+    {
+        .abilities = { ABILITY_CORROSION,  ABILITY_NONE,  ABILITY_CORROSION }
+    },
+    [SPECIES_GLIMMORA] = 
+    {
+        .abilities = { ABILITY_CORROSION,  ABILITY_NONE,  ABILITY_CORROSION }
+    },
+    [SPECIES_GLIMMORA_MEGA] = 
+    {
+        .abilities = { ABILITY_CORROSION,  ABILITY_NONE,  ABILITY_CORROSION }
+    },
 };
 
 #include "data/graphics/pokemon.h"
