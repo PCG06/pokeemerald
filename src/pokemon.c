@@ -1310,6 +1310,22 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = { ABILITY_TORRENT,  ABILITY_NONE,  ABILITY_UNNERVE }
     },
+    [SPECIES_GLASTRIER] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_SPECTRIER] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_CALYREX_ICE] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_CALYREX_SHADOW] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
 };
 
 #include "data/graphics/pokemon.h"
