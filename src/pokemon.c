@@ -1574,6 +1574,26 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = {  ABILITY_CUTE_CHARM,  ABILITY_NONE,  ABILITY_BAD_COMPANY }
     },
+    [SPECIES_DROWZEE] = 
+    {
+        .abilities = {ABILITY_INSOMNIA,  ABILITY_BAD_DREAMS,  ABILITY_DAZZLING }
+    },
+    [SPECIES_HYPNO] = 
+    {
+        .abilities = {ABILITY_INSOMNIA,  ABILITY_BAD_DREAMS,  ABILITY_DAZZLING }
+    },
+    [SPECIES_TAPU_LELE] = 
+    {
+        .abilities = {  ABILITY_DAZZLING,  ABILITY_NONE,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_INDEEDEE_M] = 
+    {
+        .abilities = {  ABILITY_INNER_FOCUS,  ABILITY_SYNCHRONIZE,  ABILITY_DAZZLING }
+    },
+    [SPECIES_INDEEDEE_F] = 
+    {
+        .abilities = {  ABILITY_OWN_TEMPO,  ABILITY_SYNCHRONIZE,  ABILITY_DAZZLING }
+    },
 };
 
 #include "data/graphics/pokemon.h"
