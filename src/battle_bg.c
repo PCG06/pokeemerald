@@ -778,6 +778,8 @@ void DrawMainBattleBackground(void)
             LoadCompressedPalette(gBattleTerrainPalette_Rayquaza, BG_PLTT_ID(2), 3 * PLTT_SIZE_4BPP);
             break;
         case SPECIES_GIRATINA_ORIGIN:
+        case SPECIES_YVELTAL:
+        case SPECIES_ZYGARDE:
             LZDecompressVram(gBattleTerrainTiles_Cave, (void*)(BG_CHAR_ADDR(2)));
             LZDecompressVram(gBattleTerrainTilemap_Cave, (void*)(BG_SCREEN_ADDR(26)));
             LoadCompressedPalette(gBattleTerrainPalette_Groudon, BG_PLTT_ID(2), 3 * PLTT_SIZE_4BPP);
