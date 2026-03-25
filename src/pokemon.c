@@ -1234,6 +1234,82 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = {  ABILITY_LIGHTNING_ROD,  ABILITY_NONE,  ABILITY_TELEPATHY }
     },
+    [SPECIES_PINSIR] = 
+    {
+        .abilities = {ABILITY_HYPER_CUTTER,  ABILITY_MOLD_BREAKER,  ABILITY_UNNERVE }
+    },
+    [SPECIES_GYARADOS] = 
+    {
+        .abilities = {ABILITY_INTIMIDATE,  ABILITY_NONE,  ABILITY_UNNERVE }
+    },
+    [SPECIES_HONCHKROW] = 
+    {
+        .abilities = {ABILITY_INSOMNIA,  ABILITY_SUPER_LUCK,  ABILITY_UNNERVE }
+    },
+    [SPECIES_HERACROSS] = 
+    {
+        .abilities = {ABILITY_SWARM,  ABILITY_GUTS,  ABILITY_UNNERVE }
+    },
+    [SPECIES_POOCHYENA] = 
+    {
+        .abilities = {ABILITY_INTIMIDATE,  ABILITY_STRONG_JAW,  ABILITY_UNNERVE }
+    },
+    [SPECIES_MIGHTYENA] = 
+    {
+        .abilities = {  ABILITY_STRONG_JAW,  ABILITY_NONE,  ABILITY_CLEAR_BODY }
+    },
+    [SPECIES_SALAMENCE] = 
+    {
+        .abilities = {ABILITY_INTIMIDATE,  ABILITY_NONE,  ABILITY_UNNERVE }
+    },
+    [SPECIES_LIEPARD] = 
+    {
+        .abilities = { ABILITY_UNNERVE,  ABILITY_UNBURDEN,  ABILITY_PRANKSTER}
+    },
+    [SPECIES_SANDILE] = 
+    {
+        .abilities = { ABILITY_INTIMIDATE,  ABILITY_UNNERVE,  ABILITY_ANGER_POINT}
+    },
+    [SPECIES_KROKOROK] = 
+    {
+        .abilities = { ABILITY_INTIMIDATE,  ABILITY_UNNERVE,  ABILITY_ANGER_POINT}
+    },
+    [SPECIES_KROOKODILE] = 
+    {
+        .abilities = { ABILITY_INTIMIDATE,  ABILITY_UNNERVE,  ABILITY_ANGER_POINT}
+    },
+    [SPECIES_SCRAGGY] = 
+    {
+        .abilities = { ABILITY_SHED_SKIN,  ABILITY_INTIMIDATE,  ABILITY_UNNERVE}
+    },
+    [SPECIES_SCRAFTY] = 
+    {
+        .abilities = { ABILITY_SHED_SKIN,  ABILITY_INTIMIDATE,  ABILITY_UNNERVE}
+    },
+    [SPECIES_SCRAFTY_MEGA] = 
+    {
+        .abilities = { ABILITY_SHED_SKIN, ABILITY_UNNERVE, ABILITY_INTIMIDATE }
+    },
+    [SPECIES_LITLEO] = 
+    {
+        .abilities = {    ABILITY_RIVALRY,   ABILITY_UNNERVE,   ABILITY_UNNERVE   }
+    },
+    [SPECIES_PYROAR_MEGA] = 
+    {
+        .abilities = { ABILITY_RIVALRY, ABILITY_UNNERVE, ABILITY_UNNERVE }
+    },
+    [SPECIES_QUAXLY] = 
+    {
+        .abilities = { ABILITY_TORRENT,  ABILITY_NONE,  ABILITY_UNNERVE }
+    },
+    [SPECIES_QUAXWELL] = 
+    {
+        .abilities = { ABILITY_TORRENT,  ABILITY_NONE,  ABILITY_UNNERVE }
+    },
+    [SPECIES_QUAQUAVAL] = 
+    {
+        .abilities = { ABILITY_TORRENT,  ABILITY_NONE,  ABILITY_UNNERVE }
+    },
 };
 
 #include "data/graphics/pokemon.h"
