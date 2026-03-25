@@ -1490,6 +1490,42 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = {ABILITY_OVERGROW,  ABILITY_NONE,  ABILITY_NATURAL_CURE }
     },
+    [SPECIES_ALAKAZAM_MEGA] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_SYNCHRONIZE,  ABILITY_SYNCHRONIZE }
+    },
+    [SPECIES_PORYGON] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_DOWNLOAD,  ABILITY_ANALYTIC }
+    },
+    [SPECIES_PORYGON2] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_DOWNLOAD,  ABILITY_ANALYTIC }
+    },
+    [SPECIES_RALTS] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_SYNCHRONIZE,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_KIRLIA] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_SYNCHRONIZE,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_GARDEVOIR] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_SYNCHRONIZE,  ABILITY_TELEPATHY }
+    },
+    [SPECIES_MUDBRAY] = 
+    {
+        .abilities = {  ABILITY_OWN_TEMPO,  ABILITY_INNER_FOCUS,  ABILITY_INNER_FOCUS }
+    },
+    [SPECIES_MUDSDALE] = 
+    {
+        .abilities = {  ABILITY_STRIKER,  ABILITY_INNER_FOCUS,  ABILITY_TANGLING_HAIR }
+    },
+    [SPECIES_ARCHALUDON] = 
+    {
+        .abilities = {  ABILITY_INNER_FOCUS,  ABILITY_STURDY,  ABILITY_BAD_COMPANY }
+    },
 };
 
 #include "data/graphics/pokemon.h"
