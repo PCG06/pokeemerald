@@ -4373,20 +4373,21 @@ u16 GetAbilityBySpecies(u16 species, u8 abilityNum, u8 cantRandomizeAbility)
         gLastUsedAbility = gSpeciesInfo[species].abilities[i];
     }
 
-    if (!cantRandomizeAbility && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
+    if (!cantRandomizeAbility && gLastUsedAbility != ABILITY_NONE)
     {
-        hardModeAbility = AbilityMapperHardMode(species, abilityNum);
-        if (hardModeAbility != ABILITY_NONE)
-            gLastUsedAbility = hardModeAbility;
-    }
-    
-
-    #if RANDOMIZER_AVAILABLE == TRUE
-        if(!cantRandomizeAbility && gLastUsedAbility != ABILITY_NONE)
+        if (FlagGet(RANDOMIZER_FLAG_ABILITIES))
         {
+            // this accounts for hard mode ability restrictions built into it
             gLastUsedAbility = RandomizeAbility(species, abilityNum, gLastUsedAbility);
         }
-    #endif
+        else if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
+        {
+            // we are not in the randomizer but we are in hard mode, apply ability restrictions
+            hardModeAbility = AbilityMapperHardMode(species, abilityNum);
+            if (hardModeAbility != ABILITY_NONE)
+                gLastUsedAbility = hardModeAbility;
+        } 
+    }
     
     return gLastUsedAbility;
 }
