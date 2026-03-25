@@ -1398,6 +1398,42 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = { ABILITY_QUARK_DRIVE,  ABILITY_NONE,  ABILITY_NONE }
     },
+    [SPECIES_YANMA] = 
+    {
+        .abilities = {ABILITY_INFILTRATOR,  ABILITY_COMPOUND_EYES,  ABILITY_FRISK }
+    },
+    [SPECIES_YANMEGA] = 
+    {
+        .abilities = {ABILITY_INFILTRATOR,  ABILITY_TINTED_LENS,  ABILITY_FRISK }
+    },
+    [SPECIES_NINJASK] = 
+    {
+        .abilities = {ABILITY_INFILTRATOR,  ABILITY_NONE,  ABILITY_INFILTRATOR }
+    },
+    [SPECIES_CARVANHA] = 
+    {
+        .abilities = {ABILITY_ROUGH_SKIN,  ABILITY_NONE,  ABILITY_INFILTRATOR }
+    },
+    [SPECIES_SHARPEDO] = 
+    {
+        .abilities = {ABILITY_ROUGH_SKIN,  ABILITY_NONE,  ABILITY_INFILTRATOR }
+    },
+    [SPECIES_VENIPEDE] = 
+    {
+        .abilities = { ABILITY_POISON_TOUCH,  ABILITY_SWARM,  ABILITY_INFILTRATOR}
+    },
+    [SPECIES_WHIRLIPEDE] = 
+    {
+        .abilities = { ABILITY_POISON_TOUCH,  ABILITY_SWARM,  ABILITY_INFILTRATOR}
+    },
+    [SPECIES_SCOLIPEDE] = 
+    {
+        .abilities = { ABILITY_POISON_TOUCH,  ABILITY_SWARM,  ABILITY_INFILTRATOR}
+    },
+    [SPECIES_SCOLIPEDE_MEGA] = 
+    {
+        .abilities = { ABILITY_POISON_TOUCH,  ABILITY_SWARM,  ABILITY_INFILTRATOR}
+    },
 };
 
 #include "data/graphics/pokemon.h"
