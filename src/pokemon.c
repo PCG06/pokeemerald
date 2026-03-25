@@ -1594,6 +1594,34 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = {  ABILITY_OWN_TEMPO,  ABILITY_SYNCHRONIZE,  ABILITY_DAZZLING }
     },
+    [SPECIES_VULPIX_ALOLA] = 
+    {
+        .abilities = {ABILITY_SERENE_GRACE,  ABILITY_NONE,  ABILITY_SLUSH_RUSH }
+    },
+    [SPECIES_NINETALES_ALOLA] = 
+    {
+        .abilities = {ABILITY_SERENE_GRACE,  ABILITY_NONE,  ABILITY_SLUSH_RUSH }
+    },
+    [SPECIES_ABOMASNOW] = 
+    {
+        .abilities = { ABILITY_SLUSH_RUSH,  ABILITY_NONE, ABILITY_SOUNDPROOF }
+    },
+    [SPECIES_ABOMASNOW_MEGA] = 
+    {
+        .abilities = { ABILITY_SLUSH_RUSH,  ABILITY_SLUSH_RUSH,  ABILITY_SLUSH_RUSH}
+    },
+    [SPECIES_VANILLUXE] = 
+    {
+        .abilities = { ABILITY_ICE_BODY,  ABILITY_SLUSH_RUSH,  ABILITY_WEAK_ARMOR}
+    },
+    [SPECIES_AMAURA] = 
+    {
+        .abilities = {    ABILITY_REFRIGERATE,   ABILITY_NONE,   ABILITY_SLUSH_RUSH   }
+    },
+    [SPECIES_AURORUS] = 
+    {
+        .abilities = {    ABILITY_REFRIGERATE,   ABILITY_NONE,   ABILITY_SLUSH_RUSH   }
+    },
 };
 
 #include "data/graphics/pokemon.h"
