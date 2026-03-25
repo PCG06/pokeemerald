@@ -1434,6 +1434,50 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = { ABILITY_POISON_TOUCH,  ABILITY_SWARM,  ABILITY_INFILTRATOR}
     },
+    [SPECIES_ESPEON] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_SYNCHRONIZE,  ABILITY_MAGIC_GUARD }
+    },
+    [SPECIES_NATU] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_EARLY_BIRD,  ABILITY_MAGIC_GUARD }
+    },
+    [SPECIES_XATU] = 
+    {
+        .abilities = {ABILITY_SYNCHRONIZE,  ABILITY_EARLY_BIRD,  ABILITY_MAGIC_GUARD }
+    },
+    [SPECIES_SABLEYE_MEGA] = 
+    {
+        .abilities = {ABILITY_MAGIC_GUARD,  ABILITY_MAGIC_GUARD,  ABILITY_MAGIC_GUARD }
+    },
+    [SPECIES_ABSOL_MEGA] = 
+    {
+        .abilities = {ABILITY_MAGIC_GUARD,  ABILITY_SHARPNESS,  ABILITY_SHARPNESS }
+    },
+    [SPECIES_ABSOL_MEGA_Z] = 
+    {
+        .abilities = { ABILITY_MAGIC_GUARD, ABILITY_MAGIC_GUARD, ABILITY_MAGIC_GUARD }
+    },
+    [SPECIES_DIANCIE_MEGA] = 
+    {
+        .abilities = {    ABILITY_MAGIC_GUARD,   ABILITY_MAGIC_GUARD,   ABILITY_MAGIC_GUARD   }
+    },
+    [SPECIES_HATENNA] = 
+    {
+        .abilities = {  ABILITY_MAGIC_GUARD,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_HATTREM] = 
+    {
+        .abilities = {  ABILITY_MAGIC_GUARD,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_HATTERENE] = 
+    {
+        .abilities = {  ABILITY_MAGIC_GUARD,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_DITTO] = 
+    {
+        .abilities = {ABILITY_LIMBER,  ABILITY_NONE,  ABILITY_LIMBER }
+    },
 };
 
 #include "data/graphics/pokemon.h"
