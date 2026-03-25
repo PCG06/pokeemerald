@@ -1346,6 +1346,50 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
     },
+    [SPECIES_NIHILEGO] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_BUZZWOLE] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_PHEROMOSA] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_XURKITREE] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_CELESTEELA] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_KARTANA] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_GUZZLORD] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_DARK_AURA }
+    },
+    [SPECIES_POIPOLE] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_NAGANADEL] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_STAKATAKA] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_BLACEPHALON] = 
+    {
+        .abilities = {  ABILITY_UNNERVE,  ABILITY_NONE,  ABILITY_NONE }
+    },
 };
 
 #include "data/graphics/pokemon.h"
