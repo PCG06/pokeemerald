@@ -1526,6 +1526,54 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     {
         .abilities = {  ABILITY_INNER_FOCUS,  ABILITY_STURDY,  ABILITY_BAD_COMPANY }
     },
+    [SPECIES_SHUCKLE] = 
+    {
+        .abilities = {ABILITY_STURDY,  ABILITY_SOLID_ROCK,  ABILITY_BAD_COMPANY }
+    },
+    [SPECIES_SNIVY] = 
+    {
+        .abilities = { ABILITY_OVERGROW,  ABILITY_NONE,  ABILITY_BAD_COMPANY}
+    },
+    [SPECIES_SERVINE] = 
+    {
+        .abilities = { ABILITY_OVERGROW,  ABILITY_NONE,  ABILITY_BAD_COMPANY}
+    },
+    [SPECIES_SERPERIOR] = 
+    {
+        .abilities = { ABILITY_OVERGROW,  ABILITY_NONE,  ABILITY_BAD_COMPANY}
+    },
+    [SPECIES_SAWK] = 
+    {
+        .abilities = { ABILITY_STURDY,  ABILITY_INNER_FOCUS,  ABILITY_BAD_COMPANY}
+    },
+    [SPECIES_INKAY] = 
+    {
+        .abilities = {    ABILITY_BAD_COMPANY,   ABILITY_SUCTION_CUPS,   ABILITY_INFILTRATOR   }
+    },
+    [SPECIES_MALAMAR] = 
+    {
+        .abilities = {    ABILITY_BAD_COMPANY,   ABILITY_SUCTION_CUPS,   ABILITY_INFILTRATOR   }
+    },
+    [SPECIES_MALAMAR_MEGA] = 
+    {
+        .abilities = { ABILITY_BAD_COMPANY, ABILITY_SUCTION_CUPS, ABILITY_INFILTRATOR }
+    },
+    [SPECIES_FOMANTIS] = 
+    {
+        .abilities = {  ABILITY_LEAF_GUARD,  ABILITY_NONE,  ABILITY_BAD_COMPANY }
+    },
+    [SPECIES_LURANTIS] = 
+    {
+        .abilities = {  ABILITY_LEAF_GUARD,  ABILITY_NONE,  ABILITY_BAD_COMPANY }
+    },
+    [SPECIES_APPLETUN_MEGA] = 
+    {
+        .abilities = {  ABILITY_BAD_COMPANY,  ABILITY_BAD_COMPANY,  ABILITY_BAD_COMPANY }
+    },
+    [SPECIES_ENAMORUS_INCARNATE] = 
+    {
+        .abilities = {  ABILITY_CUTE_CHARM,  ABILITY_NONE,  ABILITY_BAD_COMPANY }
+    },
 };
 
 #include "data/graphics/pokemon.h"
