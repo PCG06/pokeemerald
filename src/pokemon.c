@@ -1649,7 +1649,47 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     [SPECIES_KLAWF] = 
     {
         .abilities = { ABILITY_REGENERATOR,  ABILITY_SHELL_ARMOR,  ABILITY_REGENERATOR },
-    }
+    },
+    [SPECIES_PSYDUCK] = 
+    {
+        .abilities = {ABILITY_DAMP,  ABILITY_RAIN_DISH,  ABILITY_SWIFT_SWIM }
+    },
+    [SPECIES_GOLDUCK] = 
+    {
+        .abilities = {ABILITY_SWIFT_SWIM,  ABILITY_RAIN_DISH,  ABILITY_NEUROFORCE }
+    },
+    [SPECIES_LICKITUNG] = 
+    {
+        .abilities = {ABILITY_OWN_TEMPO,  ABILITY_OBLIVIOUS,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_LICKILICKY] = 
+    {
+        .abilities = {ABILITY_OWN_TEMPO,  ABILITY_UNAWARE,  ABILITY_INTIMIDATE }
+    },
+    [SPECIES_SWABLU] = 
+    {
+        .abilities = {ABILITY_NATURAL_CURE,  ABILITY_NONE,  ABILITY_WIND_RIDER
+    },
+    [SPECIES_ALTARIA] = 
+    {
+        .abilities = {ABILITY_NATURAL_CURE,  ABILITY_NONE,  ABILITY_WIND_RIDER }
+    },
+    [SPECIES_DRAMPA_MEGA] = 
+    {
+        .abilities = { ABILITY_BERSERK, ABILITY_SAP_SIPPER, ABILITY_ADAPTABILITY }
+    },
+    [SPECIES_RAYQUAZA] = 
+    {
+        .abilities = { ABILITY_DRAGONS_MAW, ABILITY_NONE,  ABILITY_NONE }
+    },
+    [SPECIES_CORSOLA_GALAR] = 
+    {
+        .abilities = { ABILITY_WEAK_ARMOR,  ABILITY_UNBURDEN,  ABILITY_PRESSURE }
+    },
+    [SPECIES_CURSOLA] = 
+    {
+        .abilities = { ABILITY_WEAK_ARMOR,  ABILITY_UNBURDEN,  ABILITY_PRESSURE }
+    },
 };
 
 #include "data/graphics/pokemon.h"
