@@ -1668,7 +1668,7 @@ const struct HardModeAbilityMap gHardModeAbilityMap[NUM_SPECIES] =
     },
     [SPECIES_SWABLU] = 
     {
-        .abilities = {ABILITY_NATURAL_CURE,  ABILITY_NONE,  ABILITY_WIND_RIDER
+        .abilities = {ABILITY_NATURAL_CURE,  ABILITY_NONE,  ABILITY_WIND_RIDER }
     },
     [SPECIES_ALTARIA] = 
     {
