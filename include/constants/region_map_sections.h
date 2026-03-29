@@ -220,7 +220,8 @@
 #define MAPSEC_HOT_HOUSE                    0xD8
 #define MAPSEC_TRICK_HOUSE                  0xD9
 #define MAPSEC_DISTORTION_WORLD             0xDA
-#define MAPSEC_NONE                         0xDB
+#define MAPSEC_SPEAR_PILLAR                 0xDB
+#define MAPSEC_NONE                         0xDC
 
 #define METLOC_SPECIAL_EGG                  0xFD
 #define METLOC_IN_GAME_TRADE                0xFE

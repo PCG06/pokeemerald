@@ -21,7 +21,7 @@
       "x": 4,
       "y": 6,
       "elevation": 3,
-      "dest_map": "MAP_NAVEL_ROCK_UP1",
+      "dest_map": "MAP_NAVEL_ROCK_UP3",
       "dest_warp_id": "0"
     },
     {
@@ -35,7 +35,7 @@
       "x": 22,
       "y": 6,
       "elevation": 3,
-      "dest_map": "MAP_NAVEL_ROCK_DOWN01",
+      "dest_map": "MAP_NAVEL_ROCK_DOWN10",
       "dest_warp_id": "0"
     }
   ],

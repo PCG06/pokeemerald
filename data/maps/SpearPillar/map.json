@@ -1,0 +1,39 @@
+{
+  "id": "MAP_SPEAR_PILLAR",
+  "name": "SpearPillar",
+  "layout": "LAYOUT_SPEAR_PILLAR",
+  "music": "MUS_DP_SPEAR_PILLAR",
+  "region_map_section": "MAPSEC_SPEAR_PILLAR",
+  "requires_flash": false,
+  "weather": "WEATHER_NONE",
+  "map_type": "MAP_TYPE_ROUTE",
+  "allow_cycling": false,
+  "allow_escaping": false,
+  "allow_running": true,
+  "show_map_name": true,
+  "battle_scene": "MAP_BATTLE_SCENE_NORMAL",
+  "connections": [
+    {
+      "map": "MAP_ROUTE103",
+      "offset": -15,
+      "direction": "down"
+    },
+    {
+      "map": "MAP_HALLOF_ORIGIN",
+      "offset": 0,
+      "direction": "up"
+    }
+  ],
+  "object_events": [
+
+  ],
+  "warp_events": [
+
+  ],
+  "coord_events": [
+
+  ],
+  "bg_events": [
+
+  ]
+}

@@ -17,13 +17,13 @@ Route103_OnLoad:
 	end
 
 Route103_EventScript_OpenAlteringCave::
-	setmetatile 45, 5, METATILE_General_CaveEntrance_Top, TRUE
-	setmetatile 45, 6, METATILE_General_CaveEntrance_Bottom, FALSE
+	setmetatile 45, 25, METATILE_General_CaveEntrance_Top, TRUE
+	setmetatile 45, 26, METATILE_General_CaveEntrance_Bottom, FALSE
 	return
 
 Route103_CloseLakeEntrance::
-	setmetatile 34, 7, METATILE_General_RockWall_RockBase, TRUE
-	setmetatile 34, 8, METATILE_General_RockWall_SandBase, TRUE
+	setmetatile 34, 27, METATILE_General_RockWall_RockBase, TRUE
+	setmetatile 34, 28, METATILE_General_RockWall_SandBase, TRUE
 	return
 
 Route103_EventScript_Rival::
