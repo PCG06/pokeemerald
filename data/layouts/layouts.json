@@ -4515,7 +4515,7 @@
       "id": "LAYOUT_SPEAR_PILLAR",
       "name": "SpearPillar_Layout",
       "width": 50,
-      "height": 40,
+      "height": 45,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_LugiaMovieAltar",
       "border_filepath": "data/layouts/SpearPillar/border.bin",

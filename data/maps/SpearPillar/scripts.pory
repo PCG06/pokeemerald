@@ -1,5 +1,99 @@
 raw `
 SpearPillar_MapScripts::
+	map_script MAP_SCRIPT_ON_RESUME, SpearPillar_OnResume
+	map_script MAP_SCRIPT_ON_TRANSITION, SpearPillar_OnTransition
 	.byte 0
+
+SpearPillar_OnResume:
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, SpearPillar_EventScript_TryRemoveDialga
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, SpearPillar_EventScript_TryRemovePalkia
+	end
+
+SpearPillar_EventScript_TryRemoveDialga::
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
+
+SpearPillar_EventScript_TryRemovePalkia::
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
+
+
+SpearPillar_OnTransition:
+	call_if_unset FLAG_DEFEATED_DIALGA, SpearPillar_EventScript_ShowDialga
+	call_if_unset FLAG_DEFEATED_PALKIA, SpearPillar_EventScript_ShowPalkia
+	end
+
+SpearPillar_EventScript_ShowDialga::
+	clearflag FLAG_HIDE_DIALGA
+	return
+
+SpearPillar_EventScript_ShowPalkia::
+	clearflag FLAG_HIDE_PALKIA
+	return
+
+SpearPillar_EventScript_Dialga::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_DIALGA, CRY_MODE_ENCOUNTER
+	delay 40
+	waitmoncry
+	setwildbattle SPECIES_DIALGA, 70
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	special BattleSetup_StartLegendaryBattle
+	waitstate
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, SpearPillar_EventScript_DefeatedDialga
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, SpearPillar_EventScript_RanFromDialga
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, SpearPillar_EventScript_RanFromDialga
+	setflag FLAG_DEFEATED_DIALGA
+	release
+	end
+
+SpearPillar_EventScript_DefeatedDialga::
+	setflag FLAG_DEFEATED_DIALGA
+	goto Common_EventScript_RemoveStaticPokemon
+	end
+
+SpearPillar_EventScript_RanFromDialga::
+	setvar VAR_0x8004, SPECIES_DIALGA
+	goto Common_EventScript_LegendaryFlewAway
+	end
+
+
+SpearPillar_EventScript_Palkia::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_PALKIA, CRY_MODE_ENCOUNTER
+	delay 40
+	waitmoncry
+	setwildbattle SPECIES_PALKIA, 70
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	special BattleSetup_StartLegendaryBattle
+	waitstate
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, SpearPillar_EventScript_DefeatedPalkia
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, SpearPillar_EventScript_RanFromPalkia
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, SpearPillar_EventScript_RanFromPalkia
+	setflag FLAG_DEFEATED_PALKIA
+	release
+	end
+
+SpearPillar_EventScript_DefeatedPalkia::
+	setflag FLAG_DEFEATED_PALKIA
+	goto Common_EventScript_RemoveStaticPokemon
+	end
+
+SpearPillar_EventScript_RanFromPalkia::
+	setvar VAR_0x8004, SPECIES_PALKIA
+	goto Common_EventScript_LegendaryFlewAway
+	end
 
 `

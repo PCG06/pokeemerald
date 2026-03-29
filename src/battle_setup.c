@@ -648,6 +648,12 @@ void BattleSetup_StartLegendaryBattle(void)
     case SPECIES_ZYGARDE:
         CreateBattleStartTask(B_TRANSITION_GRID_SQUARES, MUS_HG_VS_ENTEI);
         break; 
+    case SPECIES_ARCEUS:
+        CreateBattleStartTask(B_TRANSITION_BLUR, MUS_DP_VS_ARCEUS);
+        break; 
+    case SPECIES_XERNEAS_ACTIVE:
+        CreateBattleStartTask(B_TRANSITION_BLUR, MUS_HG_VS_LUGIA);
+        break; 
     }
 
     IncrementGameStat(GAME_STAT_TOTAL_BATTLES);
