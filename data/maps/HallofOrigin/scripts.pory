@@ -1,0 +1,109 @@
+raw `
+HallofOrigin_MapScripts::
+	map_script MAP_SCRIPT_ON_RESUME, HallofOrigin_OnResume
+	map_script MAP_SCRIPT_ON_TRANSITION, HallofOrigin_OnTransition
+	.byte 0
+
+HallofOrigin_OnResume:
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, HallofOrigin_EventScript_TryRemoveArceus
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, HallofOrigin_EventScript_TryRemoveXerneas
+	end
+
+HallofOrigin_EventScript_TryRemoveArceus::
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
+
+HallofOrigin_EventScript_TryRemoveXerneas::
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
+
+
+HallofOrigin_OnTransition:
+	call_if_unset FLAG_DEFEATED_ARCEUS, HallofOrigin_EventScript_ShowArceus
+	call_if_unset FLAG_DEFEATED_XERNEAS, HallofOrigin_EventScript_ShowXerneas
+	end
+
+HallofOrigin_EventScript_ShowArceus::
+	clearflag FLAG_HIDE_ARCEUS
+	return
+
+HallofOrigin_EventScript_ShowXerneas::
+	clearflag FLAG_HIDE_XERNEAS
+	return
+
+HallofOrigin_EventScript_Arceus::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_ARCEUS, CRY_MODE_ENCOUNTER
+	delay 40
+	waitmoncry
+	setwildbattle SPECIES_ARCEUS, 70
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	special BattleSetup_StartLegendaryBattle
+	waitstate
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, HallofOrigin_EventScript_DefeatedArceus
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, HallofOrigin_EventScript_RanFromArceus
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, HallofOrigin_EventScript_RanFromArceus
+	setflag FLAG_DEFEATED_ARCEUS
+	release
+	end
+
+HallofOrigin_EventScript_DefeatedArceus::
+	setflag FLAG_DEFEATED_ARCEUS
+	goto Common_EventScript_RemoveStaticPokemon
+	end
+
+HallofOrigin_EventScript_RanFromArceus::
+	setvar VAR_0x8004, SPECIES_ARCEUS
+	goto Common_EventScript_LegendaryFlewAway
+	end
+
+
+HallofOrigin_EventScript_Xerneas::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_XERNEAS_ACTIVE, CRY_MODE_ENCOUNTER
+	delay 40
+	waitmoncry
+	setwildbattle SPECIES_XERNEAS_ACTIVE, 70
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	special BattleSetup_StartLegendaryBattle
+	waitstate
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, HallofOrigin_EventScript_DefeatedXerneas
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, HallofOrigin_EventScript_RanFromXerneas
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, HallofOrigin_EventScript_RanFromXerneas
+	setflag FLAG_DEFEATED_XERNEAS
+	release
+	end
+
+HallofOrigin_EventScript_DefeatedXerneas::
+	setflag FLAG_DEFEATED_XERNEAS
+	goto Common_EventScript_RemoveStaticPokemon
+	end
+
+HallofOrigin_EventScript_RanFromXerneas::
+	setvar VAR_0x8004, SPECIES_XERNEAS
+	goto Common_EventScript_LegendaryFlewAway
+	end
+
+HallofOrigin_EventScript_BigAssRockSign::
+	msgbox HallofOrigin_Text_BigAssRockSign, MSGBOX_SIGN
+	end
+
+HallofOrigin_Text_BigAssRockSign:
+	.string "The flow of time never stops...\n"
+	.string "“The past, future, and present...\l"
+	.string "“Space is ever-expanding dimensions...\l"
+	.string "Our spirits, too, are as space...”$"
+
+`

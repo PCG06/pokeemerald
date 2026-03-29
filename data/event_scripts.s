@@ -1197,3 +1197,7 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/FieryPath_BackRoom/scripts.inc"
 
 	.include "data/maps/DistortionWorld/scripts.inc"
+
+	.include "data/maps/HallofOrigin/scripts.inc"
+
+	.include "data/maps/SpearPillar/scripts.inc"
