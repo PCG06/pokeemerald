@@ -335,7 +335,9 @@ bool32 AI_CanBattlerEscape(u32 battler)
 }
 
 bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
-{
+{   
+    if (IS_BATTLER_OF_TYPE(battlerDef, TYPE_GHOST))
+        return FALSE;
     if (gBattleMons[battlerDef].status2 & (STATUS2_ESCAPE_PREVENTION | STATUS2_WRAPPED))
         return TRUE;
     if (gStatuses3[battlerDef] & (STATUS3_ROOTED | STATUS3_SKY_DROPPED))
@@ -346,10 +348,10 @@ bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef)
         && (B_SHADOW_TAG_ESCAPE >= GEN_4 && AI_DATA->abilities[battlerDef] != ABILITY_SHADOW_TAG))
         return TRUE;
     if (AI_IsAbilityOnSide(battlerAtk, ABILITY_ARENA_TRAP)
-        && IsBattlerGrounded(battlerAtk))
+        && IsBattlerGrounded(battlerDef))
         return TRUE;
     if (AI_IsAbilityOnSide(battlerAtk, ABILITY_MAGNET_PULL)
-        && IS_BATTLER_OF_TYPE(battlerAtk, TYPE_STEEL))
+        && IS_BATTLER_OF_TYPE(battlerDef, TYPE_STEEL))
         return TRUE;
 
     return FALSE;
@@ -921,6 +923,10 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
     // check ADDITIONAL_EFFECTS
     for (i = 0; i < gMovesInfo[move].numAdditionalEffects; i++)
     {
+        // Only consider effects with a guaranteed chance to happen
+        if (!MoveEffectIsGuaranteed(battlerAtk, AI_DATA->abilities[battlerAtk], &gMovesInfo[move].additionalEffects[i]))
+            continue;
+
         // Consider move effects that target self
         if (gMovesInfo[move].additionalEffects[i].self)
         {
@@ -1112,7 +1118,7 @@ static bool32 AI_IsMoveEffectInMinus(u32 battlerAtk, u32 battlerDef, u32 move, s
                     case MOVE_EFFECT_V_CREATE:
                     case MOVE_EFFECT_ATK_DEF_DOWN:
                     case MOVE_EFFECT_DEF_SPDEF_DOWN:
-                        if ((gMovesInfo[move].additionalEffects[i].self && abilityAtk != ABILITY_CONTRARY && abilityAtk != ABILITY_BAD_COMPANY)
+                        if ((gMovesInfo[move].additionalEffects[i].self && abilityAtk != ABILITY_CONTRARY && abilityAtk != ABILITY_BAD_COMPANY && AI_DATA->holdEffects[battlerAtk] == HOLD_EFFECT_RESTORE_STATS)
                             || (noOfHitsToKo > 1 && !gMovesInfo[move].additionalEffects[i].self && abilityDef == ABILITY_CONTRARY && !DoesBattlerIgnoreAbilityChecks(abilityAtk, move)))
                                 return TRUE;
                         break;
@@ -1133,7 +1139,7 @@ static bool32 AI_IsMoveEffectInMinus(u32 battlerAtk, u32 battlerDef, u32 move, s
                     case MOVE_EFFECT_EVS_PLUS_2:
                     case MOVE_EFFECT_ACC_PLUS_2:
                     case MOVE_EFFECT_ALL_STATS_UP:
-                        if ((gMovesInfo[move].additionalEffects[i].self && abilityAtk == ABILITY_CONTRARY)
+                        if ((gMovesInfo[move].additionalEffects[i].self && abilityAtk == ABILITY_CONTRARY && AI_DATA->holdEffects[battlerAtk] == HOLD_EFFECT_RESTORE_STATS)
                             || (noOfHitsToKo > 1 && !gMovesInfo[move].additionalEffects[i].self && !(abilityDef == ABILITY_CONTRARY && !DoesBattlerIgnoreAbilityChecks(abilityAtk, move))))
                                 return TRUE;
                         break;
@@ -2043,17 +2049,22 @@ void ProtectChecks(u32 battlerAtk, u32 battlerDef, u32 move, u32 predictedMove, 
 {
     // TODO more sophisticated logic
     u32 uses = gDisableStructs[battlerAtk].protectUses;
+    u32 lastMoveAtk = AI_DATA->lastUsedMove[battlerAtk];
+    u32 itemAtk = AI_DATA->items[battlerAtk];
+    u32 abilityAtk = AI_DATA->abilities[battlerAtk];
+    u32 abilityDef = AI_DATA->abilities[battlerDef];
 
-    /*if (GetMoveResultFlags(predictedMove) & (MOVE_RESULT_NO_EFFECT | MOVE_RESULT_MISSED))
-    {
-        ADJUST_SCORE_PTR(-5);
-        return;
-    }*/
-
+    if (CanTargetFaintAi(battlerDef, battlerAtk)) // the player can KO the AI
+        ADJUST_SCORE_PTR(DECENT_EFFECT);
+        
     if (uses == 0)
     {
-        if (predictedMove != MOVE_NONE && predictedMove != 0xFFFF && !IS_MOVE_STATUS(predictedMove))
-            ADJUST_SCORE_PTR(DECENT_EFFECT);
+        if ((lastMoveAtk == MOVE_OCTOLOCK || gStatuses3[battlerDef] & (STATUS3_PERISH_SONG)) && IsBattlerTrapped(battlerAtk, battlerDef))
+            ADJUST_SCORE_PTR(BEST_EFFECT);
+        else if (itemAtk == ITEM_FLAME_ORB && gBattleMons[battlerAtk].status1 & STATUS1_NONE && (abilityAtk == ABILITY_FLARE_BOOST || abilityAtk == ABILITY_MARVEL_SCALE || abilityAtk == ABILITY_GUTS))
+            ADJUST_SCORE_PTR(GOOD_EFFECT);
+        else if (itemAtk == ITEM_TOXIC_ORB && gBattleMons[battlerAtk].status1 & STATUS1_NONE && (abilityAtk == ABILITY_TOXIC_BOOST || abilityAtk == ABILITY_POISON_HEAL || abilityAtk == ABILITY_GUTS))
+            ADJUST_SCORE_PTR(GOOD_EFFECT);
         else if (Random() % 256 < 100)
             ADJUST_SCORE_PTR(WEAK_EFFECT);
     }
@@ -2071,11 +2082,6 @@ void ProtectChecks(u32 battlerAtk, u32 battlerDef, u32 move, u32 predictedMove, 
     {
         ADJUST_SCORE_PTR(-1);
     }
-
-    if (gBattleMons[battlerDef].status1 & STATUS1_TOXIC_POISON
-      || gBattleMons[battlerDef].status2 & (STATUS2_CURSED | STATUS2_INFATUATION)
-      || gStatuses3[battlerDef] & (STATUS3_PERISH_SONG | STATUS3_LEECHSEED | STATUS3_YAWN))
-        ADJUST_SCORE_PTR(DECENT_EFFECT);
 }
 
 // stat stages
@@ -2918,7 +2924,14 @@ bool32 HasDamagingMoveOfType(u32 battlerId, u32 type)
 
 bool32 HasSubstituteIgnoringMove(u32 battler)
 {
-    CHECK_MOVE_FLAG(ignoresSubstitute);
+    s32 i;                                                                                                      
+    u16 *moves = GetMovesArray(battler);                                                                        
+    for (i = 0; i < MAX_MON_MOVES; i++)                                                                        
+    {                                                                                                          
+        if (moves[i] != MOVE_NONE && moves[i] != MOVE_UNAVAILABLE && gMovesInfo[moves[i]].ignoresSubstitute && gMovesInfo[moves[i]].power != 0)                 
+            return TRUE;                                                                                        
+    }                                                                                                           
+    return FALSE;
 }
 
 bool32 HasHighCritRatioMove(u32 battler)
@@ -3584,11 +3597,7 @@ u32 ShouldTryToFlinch(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbi
     {
         return 0;
     }
-    else if ((atkAbility == ABILITY_SERENE_GRACE
-      || gBattleMons[battlerDef].status1 & STATUS1_PARALYSIS
-      || gBattleMons[battlerDef].status2 & STATUS2_INFATUATION
-      || gBattleMons[battlerDef].status2 & STATUS2_CONFUSION)
-      || ((AI_IsFaster(battlerAtk, battlerDef, move, MOVE_NONE, CONSIDER_PRIORITY)) && CanTargetFaintAi(battlerDef, battlerAtk)))
+    else if ((AI_IsFaster(battlerAtk, battlerDef, move, MOVE_NONE, CONSIDER_PRIORITY)) && CanTargetFaintAi(battlerDef, battlerAtk))
     {
         return 2;   // good idea to flinch
     }
@@ -4860,4 +4869,36 @@ bool32 HasLowAccuracyMove(u32 battlerAtk, u32 battlerDef)
             return TRUE;
     }
     return FALSE;
+}
+
+bool32 IsStatLoweringSecondaryEffect(u32 battlerAtk, u32 battlerDef, u32 move)
+{
+    u32 i;
+    u32 abilityDef = AI_DATA->abilities[battlerDef];
+    u32 abilityAtk = AI_DATA->abilities[battlerAtk];
+    for (i = 0; i < gMovesInfo[move].numAdditionalEffects; i++)
+    {
+    if (IsAdditionalEffectBlocked(battlerAtk, abilityAtk, battlerDef, abilityDef))
+        continue;
+
+    switch (gMovesInfo[move].additionalEffects[i].moveEffect)
+    {
+    case MOVE_EFFECT_ATK_MINUS_1:
+    case MOVE_EFFECT_ATK_MINUS_2:
+    case MOVE_EFFECT_SP_ATK_MINUS_1:
+    case MOVE_EFFECT_SP_ATK_MINUS_2:
+    case MOVE_EFFECT_DEF_MINUS_1:
+    case MOVE_EFFECT_SPD_MINUS_1:
+    case MOVE_EFFECT_SP_DEF_MINUS_1:
+    case MOVE_EFFECT_ACC_MINUS_1:
+    case MOVE_EFFECT_EVS_MINUS_1:
+    case MOVE_EFFECT_DEF_MINUS_2:
+    case MOVE_EFFECT_SPD_MINUS_2:
+    case MOVE_EFFECT_SP_DEF_MINUS_2:
+    case MOVE_EFFECT_ACC_MINUS_2:
+    case MOVE_EFFECT_EVS_MINUS_2:
+        return TRUE;
+    default:
+        return FALSE;
+    }
 }

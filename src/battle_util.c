@@ -9033,6 +9033,8 @@ static inline u32 CalcMoveBasePower(struct DamageCalculationData *damageCalcData
         if (AI_DATA->aiCalcInProgress)
         {
             u32 lastKnownMove = gDisableStructs[battlerAtk].isFirstTurn ? MOVE_NONE : AI_DATA->lastUsedMove[battlerDef];
+            if (gMovesInfo[gLastUsedMove].effect == EFFECT_PROTECT || gMovesInfo[gLastUsedMove].effect == EFFECT_FIRST_TURN_ONLY)
+                lastKnownMove = MOVE_NONE; 
             if (AI_IsFaster(battlerAtk, battlerDef, move, lastKnownMove, CONSIDER_PRIORITY))
                 basePower *= 2;
         }
