@@ -3221,104 +3221,72 @@ static bool32 PartyBattlerShouldAvoidHazards(u32 currBattler, u32 switchBattler)
     return FALSE;
 }
 
-enum AIPivot ShouldPivot(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move, u32 moveIndex)
+
+bool32 AI_BattlerAtMaxHp(enum BattlerId battlerId)
 {
-    bool32 hasStatBoost = AnyUsefulStatIsRaised(battlerAtk) || gBattleMons[battlerDef].statStages[STAT_EVASION] >= 9; //Significant boost in evasion for any class
-    u32 battlerToSwitch;
+    if (AI_DATA->hpPercents[battlerId] == 100)
+        return TRUE;
+    return FALSE;
+}
 
-    battlerToSwitch = gBattleStruct->AI_monToSwitchIntoId[battlerAtk];
+bool32 BattlerHasMaxHPProtection(enum BattlerId battler)
+{
+    u32 ability = AI_DATA->abilities[battler];
+    if (!AI_BattlerAtMaxHp(battler))
+        return FALSE;
+    if (AI_DATA->holdEffects[battler] == HOLD_EFFECT_FOCUS_SASH)
+        return TRUE;
+    if (B_STURDY >= GEN_5 && ability == ABILITY_STURDY)
+        return TRUE;
+    if (ability == ABILITY_MULTISCALE || ability == ABILITY_SHADOW_SHIELD)
+        return TRUE;
+    return FALSE;
+}
 
-    // Palafin always wants to activate Zero to Hero
-    if (gBattleMons[battlerAtk].species == SPECIES_PALAFIN_ZERO
-        && gBattleMons[battlerAtk].ability == ABILITY_ZERO_TO_HERO
-        && CountUsablePartyMons(battlerAtk) != 0)
-        return SHOULD_PIVOT;
+bool32 IsAIDeadToPriorityMove(enum BattlerId battlerAtk, enum BattlerId battlerDef)
+{
+    u32 moveIndex;
+    u16 *moves = gBattleMons[battlerAtk].moves;
 
-    if (PartyBattlerShouldAvoidHazards(battlerAtk, battlerToSwitch))
-        return DONT_PIVOT;
-
-    if (!IsDoubleBattle())
+    for (moveIndex = 0; moveIndex < MAX_MON_MOVES; moveIndex++)
     {
-        if (CountUsablePartyMons(battlerAtk) == 0)
-            return CAN_TRY_PIVOT; // can't switch, but attack might still be useful
-
-        if (AI_IsFaster(battlerAtk, battlerDef, move, MOVE_NONE, CONSIDER_PRIORITY)) // Attacker goes first
-        {
-            if (!CanAIFaintTarget(battlerAtk, battlerDef, 0)) // Can't KO foe otherwise
-            {
-                if ((AI_DATA->mostSuitableMonId[battlerAtk] != PARTY_SIZE)              // there is actually a suitable mon to switch into
-                    && (AI_DATA->hpPercents[battlerAtk] >= 33 // And the current mon has at least 1/3 their HP, or 1/4 HP and Regenerator
-                    || (gBattleMons[battlerAtk].ability == ABILITY_REGENERATOR
-                    && AI_DATA->hpPercents[battlerAtk] >= 25)))
-                {
-                    if (CanTargetFaintAi(battlerDef, battlerAtk)) // the player can KO the AI
-                        return SHOULD_PIVOT;
-
-                    if (!IS_MOVE_STATUS(move) && !hasStatBoost && ((AI_DATA->shouldSwitch & (1u << battlerAtk))
-                        || (AtMaxHp(battlerDef) && (AI_DATA->holdEffects[battlerDef] == HOLD_EFFECT_FOCUS_SASH
-                        || (B_STURDY >= GEN_5 && defAbility == ABILITY_STURDY)
-                        || defAbility == ABILITY_MULTISCALE
-                        || defAbility == ABILITY_SHADOW_SHIELD))))
-                        return SHOULD_PIVOT;   // pivot to break sash/sturdy/multiscale
-
-                    if (!hasStatBoost && AI_DATA->shouldSwitch & (1u << battlerAtk)) // general case of should switch
-                        return SHOULD_PIVOT;
-                }  
-            }
-        }
-        else // Opponent Goes First
-        {
-            if (CanTargetFaintAi(battlerDef, battlerAtk))
-            {
-                if (gMovesInfo[move].effect == EFFECT_TELEPORT)
-                    return DONT_PIVOT; // If you're going to faint because you'll go second, use a different move
-                else
-                    return CAN_TRY_PIVOT; // You're probably going to faint anyways so if for some reason you don't, better switch
-            }
-            else if (CanTargetFaintAiWithMod(battlerDef, battlerAtk, 0, 2)) // Foe can 2HKO AI
-            {
-                if (CanAIFaintTarget(battlerAtk, battlerDef, 0))
-                {
-                    if (!BattlerWillFaintFromSecondaryDamage(battlerAtk, AI_DATA->abilities[battlerAtk]))
-                        return CAN_TRY_PIVOT; // Use this move to KO if you must
-                }
-                else // Can't KO the foe
-                {
-                    return SHOULD_PIVOT;
-                }
-            }
-            else // Foe can 3HKO+ AI
-            {
-                if (CanAIFaintTarget(battlerAtk, battlerDef, 0))
-                {
-                    if (!BattlerWillFaintFromSecondaryDamage(battlerAtk, AI_DATA->abilities[battlerAtk]) // This is the only move that can KO
-                      && !hasStatBoost) //You're not wasting a valuable stat boost
-                    {
-                        return CAN_TRY_PIVOT;
-                    }
-                }
-                else if (CanAIFaintTarget(battlerAtk, battlerDef, 2))
-                {
-                    // can knock out foe in 2 hits
-                    if (IS_MOVE_STATUS(move) && ((AI_DATA->shouldSwitch & (1u << battlerAtk)) //Damaging move
-                      //&& (switchScore >= SWITCHING_INCREASE_RESIST_ALL_MOVES + SWITCHING_INCREASE_KO_FOE //remove hazards
-                     || (AI_DATA->holdEffects[battlerDef] == HOLD_EFFECT_FOCUS_SASH && AtMaxHp(battlerDef))))
-                        return DONT_PIVOT; // Pivot to break the sash
-                    else
-                        return CAN_TRY_PIVOT;
-                }
-                else
-                {
-                    if (!hasStatBoost && AI_DATA->mostSuitableMonId[battlerAtk] != PARTY_SIZE)
-                    {
-                        return CAN_TRY_PIVOT;
-                    }
-                }
-            }
-        }
+            if (CanIndexMoveFaintTarget(battlerDef, battlerAtk, moveIndex, AI_DEFENDING_NORMAL))
+                if (gMovesInfo[moves[moveIndex]].priority > 0)
+                    return TRUE;
     }
+    return FALSE;
+}
 
-    return DONT_PIVOT;
+enum AIPivot ShouldPivot(enum BattlerId battlerAtk, enum BattlerId battlerDef, enum Move move)
+{   
+    u32 isAIDeadToPrio = IsAIDeadToPriorityMove(battlerAtk, battlerDef);
+    bool32 aiIsFaster = AI_IsFaster(battlerAtk, battlerDef, move, MOVE_NONE, CONSIDER_PRIORITY);
+    bool32 hasGoodSwitchin = AI_DATA->mostSuitableMonId[battlerAtk] >= PARTY_SIZE ? FALSE : TRUE;
+    // If AI should switch, it should pivot
+    if (aiIsFaster)
+    {
+        if (AI_DATA->shouldSwitch & (1u << battlerAtk) && !isAIDeadToPrio)
+            return SHOULD_PIVOT;
+    }
+    else
+    {
+        if (AI_DATA->shouldSwitch & (1u << battlerAtk) && !CanTargetFaintAi(battlerDef, battlerAtk))
+            return SHOULD_PIVOT;
+    }
+    // Break Focus Sash / Multiscale effects if a good switchin exists
+    if (!IS_MOVE_STATUS(move) && BattlerHasMaxHPProtection(battlerDef) && hasGoodSwitchin && RandomPercentage(RNG_AI_SHOULD_PIVOT_BREAK_SASH, SHOULD_PIVOT_BREAK_SASH_CHANCE))
+        return SHOULD_PIVOT;
+    // Would benefit from Regenerator and have a good switchin
+    if (AI_DATA->abilities[battlerAtk] == ABILITY_REGENERATOR && ShouldRecover(battlerAtk, battlerDef, move, 33) && hasGoodSwitchin)
+        return SHOULD_PIVOT;
+    // Palafin always wants to activate Zero to Hero via pivoting when able
+    if (AI_DATA->abilities[battlerAtk] == ABILITY_ZERO_TO_HERO && gBattleMons[battlerAtk].species == SPECIES_PALAFIN_ZERO && CountUsablePartyMons(battlerAtk) != 0)
+        return SHOULD_PIVOT;
+    // If no good switchin candidate and can't KO to change the situation, not good to pivot
+    if (GetNoOfHitsToKOBattler(battlerAtk, battlerDef, AI_THINKING_STRUCT->movesetIndex, AI_ATTACKING_ON_FIELD, CONSIDER_ENDURE) && !hasGoodSwitchin)
+        return DONT_PIVOT;
+    // Otherwise, neutral effect
+    return CAN_TRY_PIVOT;
 }
 
 bool32 CanKnockOffItem(u32 battler, u32 item)
