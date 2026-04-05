@@ -4329,6 +4329,8 @@ static void HandleTurnActionSelectionState(void)
                 sBattler_AI = battler;
                 BattleAI_SetupAIData(0xF, sBattler_AI);
                 AI_DATA->shouldConsiderExplosion = AI_RandLessThan(GetAIExplosionChanceFromHP(AI_DATA->hpPercents[battler]));
+                AI_DATA->hasFastKill = FALSE;
+                AI_DATA->hasSlowKill = FALSE;
 
                 // Setup switching data
                 AI_DATA->mostSuitableMonId[battler] = GetMostSuitableMonToSwitchInto(battler, SWITCH_MID_BATTLE);

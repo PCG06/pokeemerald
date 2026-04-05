@@ -229,7 +229,6 @@ bool32 HasMagicCoatAffectedMove(u32 battler);
 bool32 HasSnatchAffectedMove(u32 battler);
 bool32 IsSubstituteEffect(u32 effect);
 bool32 IsHazardClearingMove(u32 move);
-bool32 BattlerPreventsSecondaryEffect(u32 battler);
 
 // status checks
 bool32 AI_CanGetFrostbite(u32 battler, u32 ability);

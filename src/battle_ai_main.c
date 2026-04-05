@@ -2663,15 +2663,23 @@ static s32 AI_TryToFaint(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         //ADJUST_SCORE(IncreaseIndexMoveScoreBasedOnRolls(battlerAtk, battlerDef, movesetIndex));
 
         if (AI_IsFaster(battlerAtk, battlerDef, move, MOVE_NONE, CONSIDER_PRIORITY))
+        {
             ADJUST_SCORE(FAST_KILL);
+            AI_DATA->hasFastKill = TRUE;
+        }
         else
+        {
             ADJUST_SCORE(SLOW_KILL);
+            AI_DATA->hasSlowKill = TRUE;
+        }
+
     }
     else if (CanTargetFaintAi(battlerDef, battlerAtk)
             && GetWhichBattlerFasterOrTies(battlerAtk, battlerDef, TRUE) != AI_IS_FASTER
-            && GetMovePriority(battlerAtk, move) > 0)
+            && GetMovePriority(battlerAtk, move) > 0
+            && !IsDoubleBattle())
     {
-        if (RandomPercentage(RNG_AI_PRIORITIZE_LAST_CHANCE, PRIORITIZE_LAST_CHANCE_CHANCE) && !IsDoubleBattle()) // Last Chance behaviour is too easily abused in doubles
+        if (RandomPercentage(RNG_AI_PRIORITIZE_LAST_CHANCE, PRIORITIZE_LAST_CHANCE_CHANCE)) // Last Chance behaviour is too easily abused in doubles
             ADJUST_SCORE(SLOW_KILL + 2); // Don't outscore Fast Kill (which gets a bonus point in AI_CompareDamagingMoves), but do outscore Slow Kill getting the same
         else
             ADJUST_SCORE(LAST_CHANCE);
@@ -3490,8 +3498,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         if (ShouldRecover(battlerAtk, battlerDef, move, healPercent))
         {
             ADJUST_SCORE(GOOD_EFFECT);
-            if (aiData->holdEffects[battlerAtk] == HOLD_EFFECT_BIG_ROOT)
-                ADJUST_SCORE(WEAK_EFFECT);
         }
         break;
     case EFFECT_FINAL_GAMBIT:
@@ -4134,13 +4140,10 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             //ADJUST_SCORE(8);
         break;
     case EFFECT_PURSUIT:
-        if (CanAIFaintTarget(battlerAtk,battlerDef, 1))
-        {
-            if (AI_IsSlower(battlerAtk,battlerDef,MOVE_NONE, MOVE_NONE, CONSIDER_PRIORITY))
-                ADJUST_SCORE(FAST_KILL+1);
-            else
-                ADJUST_SCORE(SLOW_KILL+1);
-        }
+        if (AI_DATA->hasFastKill && RandomPercentage(RNG_AI_INCREASE_PURSUIT_SCORE, INCREASE_PURSUIT_SCORE))
+            ADJUST_SCORE(FAST_KILL + 1);
+        else if (AI_DATA->hasSlowKill && RandomPercentage(RNG_AI_INCREASE_PURSUIT_SCORE, INCREASE_PURSUIT_SCORE))
+            ADJUST_SCORE(SLOW_KILL + 1);
         break;
     case EFFECT_DEFOG:
         if ((gSideStatuses[GetBattlerSide(battlerAtk)] & SIDE_STATUS_HAZARDS_ANY && CountUsablePartyMons(battlerAtk) != 0)
@@ -4828,21 +4831,21 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                     score += ShouldTryToFlinch(battlerAtk, battlerDef, aiData->abilities[battlerAtk], aiData->abilities[battlerDef], move);
                     break;
                 case MOVE_EFFECT_SPD_MINUS_1:
-                    if (ShouldLowerSpeed(battlerAtk, battlerDef, move, -1) && !BattlerPreventsSecondaryEffect(battlerDef))
+                    if (ShouldLowerSpeed(battlerAtk, battlerDef, move, -1))
                         ADJUST_SCORE(DECENT_EFFECT);
                         break;
                 case MOVE_EFFECT_SPD_MINUS_2:
-                    if (ShouldLowerSpeed(battlerAtk, battlerDef, move, -2) && !BattlerPreventsSecondaryEffect(battlerDef))
+                    if (ShouldLowerSpeed(battlerAtk, battlerDef, move, -2))
                         ADJUST_SCORE(DECENT_EFFECT);
                         break;
                 case MOVE_EFFECT_ATK_MINUS_1:
                 case MOVE_EFFECT_ATK_MINUS_2:
-                    if (ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_ATK) && bestMoveIsPhysical)
+                    if (ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_ATK) && bestMoveIsPhysical && gBattleMons[battlerDef].statStages[STAT_ATK] > -1)
                         ADJUST_SCORE(DECENT_EFFECT);
                     break;
                 case MOVE_EFFECT_SP_ATK_MINUS_1:
                 case MOVE_EFFECT_SP_ATK_MINUS_2:
-                    if (ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_SPATK) && bestMoveIsSpecial)
+                    if (ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], STAT_SPATK) && bestMoveIsSpecial && gBattleMons[battlerDef].statStages[STAT_SPATK] > -1)
                         ADJUST_SCORE(DECENT_EFFECT);
                     break;
                 case MOVE_EFFECT_DEF_MINUS_1:
@@ -4853,7 +4856,7 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 case MOVE_EFFECT_SP_DEF_MINUS_2:
                 case MOVE_EFFECT_ACC_MINUS_2:
                 case MOVE_EFFECT_EVS_MINUS_2:
-                    if (ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], GetStatBeingLoweredFromMoveEffect(gMovesInfo[move].additionalEffects[i].moveEffect)))
+                    if (ShouldLowerStat(battlerDef, aiData->abilities[battlerDef], GetStatBeingLoweredFromMoveEffect(gMovesInfo[move].additionalEffects[i].moveEffect)) && gBattleMons[battlerDef].statStages[GetStatBeingLoweredFromMoveEffect(gMovesInfo[move].additionalEffects[i].moveEffect)] > -1)
                         ADJUST_SCORE(DECENT_EFFECT);
                     break;
                 case MOVE_EFFECT_POISON:
@@ -4862,39 +4865,9 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 case MOVE_EFFECT_CLEAR_SMOG:
                     score += AI_TryToClearStats(battlerAtk, battlerDef, FALSE);
                     break;
-                case MOVE_EFFECT_BUG_BITE:   // And pluck
-                    if (gBattleMons[battlerDef].status2 & STATUS2_SUBSTITUTE || aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
-                        break;
-                    else if (ItemId_GetPocket(aiData->items[battlerDef]) == POCKET_BERRIES)
-                        ADJUST_SCORE(WEAK_EFFECT);
-                    break;
-                case MOVE_EFFECT_INCINERATE:
-                    if (gBattleMons[battlerDef].status2 & STATUS2_SUBSTITUTE || aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
-                        break;
-                    else if (ItemId_GetPocket(aiData->items[battlerDef]) == POCKET_BERRIES || aiData->holdEffects[battlerDef] == HOLD_EFFECT_GEMS)
-                        ADJUST_SCORE(DECENT_EFFECT);
-                    break;
                 case MOVE_EFFECT_SMACK_DOWN:
                     if (!IsBattlerGrounded(battlerDef) && HasDamagingMoveOfType(battlerAtk, TYPE_GROUND) && !CanTargetFaintAi(battlerDef, battlerAtk))
                         ADJUST_SCORE(DECENT_EFFECT);
-                    break;
-                case MOVE_EFFECT_KNOCK_OFF:
-                    if (CanKnockOffItem(battlerDef, aiData->items[battlerDef]))
-                    {
-                        switch (aiData->holdEffects[battlerDef])
-                        {
-                        case HOLD_EFFECT_IRON_BALL:
-                            if (HasMoveEffect(battlerDef, EFFECT_FLING))
-                                ADJUST_SCORE(DECENT_EFFECT);
-                            break;
-                        case HOLD_EFFECT_LAGGING_TAIL:
-                        case HOLD_EFFECT_STICKY_BARB:
-                            break;
-                        default:
-                            ADJUST_SCORE(DECENT_EFFECT);
-                            break;
-                        }
-                    }
                     break;
                 case MOVE_EFFECT_STEAL_ITEM:
                     {

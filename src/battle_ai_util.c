@@ -907,7 +907,6 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
                 return TRUE;
             break;
     }        
-   
     switch (gMovesInfo[move].effect)
     {
     case EFFECT_FELL_STINGER:
@@ -1062,6 +1061,10 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
                 case MOVE_EFFECT_ACC_MINUS_2:
                 case MOVE_EFFECT_EVS_MINUS_2:
                     if (ShouldLowerStat(battlerDef, abilityDef, GetStatBeingLoweredFromMoveEffect(gMovesInfo[move].additionalEffects[i].moveEffect)) && noOfHitsToKo > 1)
+                        return TRUE;
+                    break;
+                case MOVE_EFFECT_KNOCK_OFF:
+                    if (CanKnockOffItem(battlerDef, AI_DATA->items[battlerDef]))
                         return TRUE;
                     break;
             }
@@ -2091,7 +2094,9 @@ bool32 ShouldLowerStat(u32 battler, u32 battlerAbility, u32 stat)
         if (AI_DATA->holdEffects[battler] == HOLD_EFFECT_CLEAR_AMULET
          || battlerAbility == ABILITY_CLEAR_BODY
          || battlerAbility == ABILITY_WHITE_SMOKE
-         || battlerAbility == ABILITY_FULL_METAL_BODY)
+         || battlerAbility == ABILITY_FULL_METAL_BODY
+         || battlerAbility == ABILITY_COMPETITIVE
+         || battlerAbility == ABILITY_DEFIANT)
             return FALSE;
 
         switch (stat)
@@ -2183,6 +2188,8 @@ bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_WHITE_SMOKE
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_HYPER_CUTTER
+      && defAbility != ABILITY_DEFIANT
+      && defAbility != ABILITY_COMPETITIVE
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -2202,6 +2209,8 @@ bool32 ShouldLowerDefense(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_WHITE_SMOKE
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_BIG_PECKS
+      && defAbility != ABILITY_DEFIANT
+      && defAbility != ABILITY_COMPETITIVE
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -2220,6 +2229,8 @@ bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_WHITE_SMOKE
+      && defAbility != ABILITY_DEFIANT
+      && defAbility != ABILITY_COMPETITIVE
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -2238,6 +2249,8 @@ bool32 ShouldLowerSpDef(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_WHITE_SMOKE
+      && defAbility != ABILITY_DEFIANT
+      && defAbility != ABILITY_COMPETITIVE
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -2256,6 +2269,8 @@ bool32 ShouldLowerAccuracy(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_KEEN_EYE
       && defAbility != ABILITY_MINDS_EYE
+      && defAbility != ABILITY_DEFIANT
+      && defAbility != ABILITY_COMPETITIVE
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -2273,6 +2288,8 @@ bool32 ShouldLowerEvasion(u32 battlerAtk, u32 battlerDef, u32 defAbility)
       && defAbility != ABILITY_CLEAR_BODY
       && defAbility != ABILITY_FULL_METAL_BODY
       && defAbility != ABILITY_WHITE_SMOKE
+      && defAbility != ABILITY_DEFIANT
+      && defAbility != ABILITY_COMPETITIVE
       && AI_DATA->holdEffects[battlerDef] != HOLD_EFFECT_CLEAR_AMULET)
         return TRUE;
     return FALSE;
@@ -2292,24 +2309,6 @@ bool32 CanIndexMoveFaintTarget(u32 battlerAtk, u32 battlerDef, u32 moveIndex, en
         return TRUE;
     return FALSE;
 }
-
-// u32 IncreaseIndexMoveScoreBasedOnRolls(u32 battlerAtk, u32 battlerDef, u32 moveIndex)
-// {
-//     s32 minDmg, medDmg;
-//     u16 *moves = gBattleMons[battlerAtk].moves;
-//     bool32 canEndureHit = CanEndureHit(battlerAtk, battlerDef, moves[moveIndex]);
-
-//     minDmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][moveIndex].minimum;
-//     medDmg = AI_DATA->simulatedDmg[battlerAtk][battlerDef][moveIndex].median;
-
-//     if (gBattleMons[battlerDef].hp <= minDmg && !canEndureHit)
-//         return DECENT_EFFECT;
-    
-//     if (gBattleMons[battlerDef].hp <= medDmg && !canEndureHit)
-//         return WEAK_EFFECT;
-    
-//     return NO_INCREASE;
-// }
 
 u16 *GetMovesArray(u32 battler)
 {
@@ -4281,8 +4280,8 @@ static u32 IncreaseStatUpScoreInternal(u32 battlerAtk, u32 battlerDef, u32 statC
     if (HasBattlerSideAbility(battlerDef, ABILITY_UNAWARE, AI_DATA))
         return NO_INCREASE;
 
-    // Don't increase stat if AI is at +4
-    if (gBattleMons[battlerAtk].statStages[statId] >= MAX_STAT_STAGE - 2)
+    // Don't increase stat if AI is at +1
+    if (gBattleMons[battlerAtk].statStages[statId] >= MAX_STAT_STAGE - 5)
         return NO_INCREASE;
 
     // Don't increase stat if AI has less then 70% HP and number of hits isn't known
@@ -4846,14 +4845,11 @@ bool32 ShouldLowerSpeed(u32 battlerAtk, u32 battlerDef, u32 move, s32 statDecrea
     if (speedBattlerDef > speedBattlerAtk)
         return FALSE;
 
-    if (CanBattlerFaintTargetWithIndexMoveAndBestDamageMove(battlerAtk, battlerDef))
-        return TRUE;
-
-    if (AI_DATA->effectiveness[battlerAtk][battlerDef][AI_THINKING_STRUCT->movesetIndex] == UQ_4_12(1.0))
-        return FALSE;
-
     if (CanAIWin1V1(battlerAtk, battlerDef))
         return FALSE;
+
+    if (CanBattlerFaintTargetWithIndexMoveAndBestDamageMove(battlerAtk, battlerDef))
+        return TRUE;
 
     return TRUE;
 }
@@ -4900,14 +4896,11 @@ bool32 ShouldIncreaseSpeed(u32 battlerAtk, u32 battlerDef, u32 move, u32 statInc
     if (speedBattlerDef > speedBattlerAtk)
         return FALSE;
 
-    if (CanBattlerFaintTargetWithIndexMoveAndBestDamageMove(battlerAtk, battlerDef))
-        return TRUE;
-
-    if (AI_DATA->effectiveness[battlerAtk][battlerDef][AI_THINKING_STRUCT->movesetIndex] == UQ_4_12(1.0))
-        return FALSE;
-
     if (CanAIWin1V1(battlerAtk, battlerDef))
         return FALSE;
+
+    if (CanBattlerFaintTargetWithIndexMoveAndBestDamageMove(battlerAtk, battlerDef))
+        return TRUE;
 
     return TRUE;
 }
@@ -4925,12 +4918,4 @@ bool32 ShouldIncreaseSpeedWithStatusMove(u32 battlerAtk, u32 battlerDef, u32 mov
         return FALSE;
 
     return TRUE;
-}
-
-bool32 BattlerPreventsSecondaryEffect(u32 battler)
-{
-    u32 holdEffect = AI_DATA->holdEffects[battler];
-    return AI_DATA->abilities[battler] == ABILITY_SHIELD_DUST
-        || holdEffect == HOLD_EFFECT_CLEAR_AMULET
-        || holdEffect == HOLD_EFFECT_COVERT_CLOAK;
 }
