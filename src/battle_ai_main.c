@@ -3523,10 +3523,12 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_DEF_2));
         break;
     case EFFECT_SPEED_UP:
-        ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED));
+        if (ShouldIncreaseSpeedWithStatusMove(battlerAtk, battlerDef, move, 1))
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED));
         break;
     case EFFECT_SPEED_UP_2:
-        ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED_2));
+        if (ShouldIncreaseSpeedWithStatusMove(battlerAtk, battlerDef, move, 2))
+            ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED_2));
         break;
     case EFFECT_SPECIAL_ATTACK_UP:
         ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPATK));
@@ -3572,10 +3574,10 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             ADJUST_SCORE(-2);
         break;
     case EFFECT_SPEED_DOWN:
+        if (ShouldLowerSpeedWithStatus(battlerAtk, battlerDef, move, -1))
+            ADJUST_SCORE(DECENT_EFFECT);
     case EFFECT_SPEED_DOWN_2:
-        if (AI_IsFaster(battlerAtk, battlerDef, move, MOVE_NONE, CONSIDER_PRIORITY))
-            ADJUST_SCORE(-3);
-        else if (!AI_RandLessThan(70))
+        if (ShouldLowerSpeedWithStatus(battlerAtk, battlerDef, move, -2))
             ADJUST_SCORE(DECENT_EFFECT);
         break;
     case EFFECT_SPECIAL_ATTACK_DOWN:
@@ -4746,7 +4748,6 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                 {
                 case MOVE_EFFECT_ATK_PLUS_1:
                 case MOVE_EFFECT_DEF_PLUS_1:
-                case MOVE_EFFECT_SPD_PLUS_1:
                 case MOVE_EFFECT_SP_ATK_PLUS_1:
                 case MOVE_EFFECT_SP_DEF_PLUS_1:
                     StageStatId = STAT_CHANGE_ATK + gMovesInfo[move].additionalEffects[i].moveEffect - MOVE_EFFECT_ATK_PLUS_1;
@@ -4754,11 +4755,22 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                     break;
                 case MOVE_EFFECT_ATK_PLUS_2:
                 case MOVE_EFFECT_DEF_PLUS_2:
-                case MOVE_EFFECT_SPD_PLUS_2:
                 case MOVE_EFFECT_SP_ATK_PLUS_2:
                 case MOVE_EFFECT_SP_DEF_PLUS_2:
                     StageStatId = STAT_CHANGE_ATK_2 + gMovesInfo[move].additionalEffects[i].moveEffect - MOVE_EFFECT_ATK_PLUS_1;
                     ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, StageStatId));
+                    break;
+                case MOVE_EFFECT_SPD_PLUS_1:
+                    if (ShouldIncreaseSpeed(battlerAtk, battlerDef, move, 1))
+                    {
+                        ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED));
+                    }
+                    break;
+                case MOVE_EFFECT_SPD_PLUS_2:
+                    if (ShouldIncreaseSpeed(battlerAtk, battlerDef, move, 2))
+                    {
+                        ADJUST_SCORE(IncreaseStatUpScore(battlerAtk, battlerDef, STAT_CHANGE_SPEED_2));
+                    }
                     break;
                 case MOVE_EFFECT_ACC_PLUS_1:
                 case MOVE_EFFECT_ACC_PLUS_2:
