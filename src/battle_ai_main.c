@@ -2517,7 +2517,7 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
         case EFFECT_SUCKER_PUNCH:
             if (predictedMove != MOVE_NONE)
             {
-                if (IS_MOVE_STATUS(predictedMove) || AI_IsSlower(battlerAtk, battlerDef, move, predictedMove, CONSIDER_PRIORITY)) // Opponent going first
+                if ((IS_MOVE_STATUS(predictedMove) || AI_IsSlower(battlerAtk, battlerDef, move, predictedMove, CONSIDER_PRIORITY)) && RandomPercentage(RNG_AVOID_SUCKER_PUNCH, AVOID_SUCKER_PUNCH)) // Opponent going first
                     ADJUST_SCORE(-10);
             }
             break;

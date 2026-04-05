@@ -61,6 +61,7 @@
 #define CONSIDER_NO_SETUP_HAZARDS_CHANCE                        80 // Chance the AI does not set up hazards if the player has defog, tidy up or rapid spin
 #define SHOULD_PIVOT_BREAK_SASH_CHANCE                          50 // Chance for ShouldPivot to return true when trying to break Multiscale and Focus Sash type effects while having a good switchin
 #define INCREASE_PURSUIT_SCORE                                  30 // AI has a low chance to click pursuit when it sees a kill with another move
+#define AVOID_SUCKER_PUNCH                                      50 // AI has 50% to still score sucker punch normally after player tried to avoid it, reproducing player behavior better and being less abusable
 
 #define PRIORITIZE_LAST_CHANCE_CHANCE                           80 // Chance the AI will prioritize Last Chance (priority move in the face of being outsped and KO'd) over Slow KO
 

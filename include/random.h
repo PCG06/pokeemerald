@@ -200,6 +200,7 @@ enum RandomTag
     RNG_AI_SWITCH_ABSORBING_STAY_IN,
     RNG_AI_NO_SETUP_HAZARDS,
     RNG_AI_SHOULD_PIVOT_BREAK_SASH,
+    RNG_AVOID_SUCKER_PUNCH,
 };
 
 #define RandomWeighted(tag, ...) \
