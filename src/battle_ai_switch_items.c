@@ -157,7 +157,7 @@ static bool32 AI_DoesChoiceEffectBlockMove(u32 battler, u32 move)
     return FALSE;
 }
 
-static inline bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32 isBattlerFirst)
+bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32 isBattlerFirst)
 {
     // Player's best move deals 0 damage
     if (hitsToKOAI == 0 && hitsToKOPlayer > 0)
@@ -183,6 +183,71 @@ static inline bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32
             return TRUE;
     }
     return FALSE;
+}
+
+bool32 CanAIWin1V1(u32 battlerAtk, u32 battlerDef)
+{
+    //Variable initialization
+    u16 aiMoveEffect;
+    s32 i, damageDealt = 0, maxDamageDealt = 0, damageTaken = 0, maxDamageTaken = 0, maxDamageTakenPriority = 0;
+    u32 aiMove, playerMove, bestPlayerMove = MOVE_NONE, bestPlayerPriorityMove = MOVE_NONE;
+    u32 hitsToKoAI = 0, hitsToKoAIPriority = 0, hitsToKoPlayer = 0;
+    bool32 canBattlerWin1v1 = FALSE, isBattlerFirst, isBattlerFirstPriority;
+
+    // Get max damage mon could take
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        playerMove = gBattleMons[battlerDef].moves[i];
+        if (playerMove != MOVE_NONE 
+            && gMovesInfo[playerMove].category != DAMAGE_CATEGORY_STATUS 
+            && gMovesInfo[playerMove].effect != EFFECT_FOCUS_PUNCH
+            && gBattleMons[battlerDef].pp[i] > 0
+            && !MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, FALSE))
+        {
+            damageTaken = AI_GetDamage(battlerDef, battlerAtk, i, AI_DEFENDING_NORMAL, AI_DATA);
+            if (damageTaken > maxDamageTaken && !AI_DoesChoiceEffectBlockMove(battlerDef, playerMove))
+            {
+                maxDamageTaken = damageTaken;
+                bestPlayerMove = playerMove;
+            }
+            if (GetMovePriority(battlerDef, playerMove) > 0 && damageTaken > maxDamageTakenPriority && !AI_DoesChoiceEffectBlockMove(battlerDef, playerMove))
+            {
+                maxDamageTakenPriority = damageTaken;
+                bestPlayerPriorityMove = playerMove;
+            }
+        }
+    }
+
+    hitsToKoAI = GetNoOfHitsToKOBattlerDmg(maxDamageTaken, battlerAtk);
+    hitsToKoAIPriority = GetNoOfHitsToKOBattlerDmg(maxDamageTakenPriority, battlerAtk);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        aiMove = gBattleMons[battlerAtk].moves[i];
+        aiMoveEffect = gMovesInfo[aiMove].effect;
+        if (aiMove != MOVE_NONE && gBattleMons[battlerAtk].pp[i] > 0)
+        {
+            // Only check damage if it's a damaging move (if the damaging move is explosion, only if it can be used)
+            if (gMovesInfo[aiMove].category != DAMAGE_CATEGORY_STATUS
+                && !AI_DoesChoiceEffectBlockMove(battlerAtk, aiMove)
+                && (aiMoveEffect != EFFECT_EXPLOSION || (aiMoveEffect == EFFECT_EXPLOSION && AI_DATA->shouldConsiderExplosion == TRUE)))
+            {
+                // Get maximum damage mon can deal
+                damageDealt = AI_GetDamage(battlerAtk, battlerDef, i, AI_ATTACKING_ON_FIELD, AI_DATA);
+                if (damageDealt > maxDamageDealt)
+                    maxDamageDealt = damageDealt;
+                
+                if (!canBattlerWin1v1) // Once we can win a 1v1 we don't need to track this, but want to run the rest of the function to keep the runtime the same regardless of when we find the winning move
+                {
+                    hitsToKoPlayer = GetNoOfHitsToKOBattlerDmg(damageDealt, battlerDef);
+                    isBattlerFirst = AI_IsFaster(battlerAtk, battlerDef, aiMove, bestPlayerMove, CONSIDER_PRIORITY);
+                    isBattlerFirstPriority = AI_IsFaster(battlerAtk, battlerDef, aiMove, bestPlayerPriorityMove, CONSIDER_PRIORITY);
+                    canBattlerWin1v1 = CanBattlerWin1v1(hitsToKoAI, hitsToKoPlayer, isBattlerFirst) && CanBattlerWin1v1(hitsToKoAIPriority, hitsToKoPlayer, isBattlerFirstPriority);
+                }
+            }
+        }
+    }
+    return canBattlerWin1v1;
 }
 
 // Note that as many return statements as possible are INTENTIONALLY put after all of the loops;
