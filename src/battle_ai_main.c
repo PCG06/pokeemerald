@@ -3456,8 +3456,8 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
     atkStat *= gStatStageRatios[atkStage][0];
     atkStat /= gStatStageRatios[atkStage][1];
     u32 healPercent = atkStat * 100 / gBattleMons[battlerAtk].maxHP;
-    bool32 bestMoveIsPhysical = HasPhysicalBestMove(battlerDef, battlerAtk, AI_DEFENDING_SETUP);
-    bool32 bestMoveIsSpecial = HasSpecialBestMove(battlerDef, battlerAtk, AI_DEFENDING_SETUP);
+    bool32 bestMoveIsPhysical = HasPhysicalBestMove(battlerDef, battlerAtk, AI_DEFENDING_NORMAL);
+    bool32 bestMoveIsSpecial = HasSpecialBestMove(battlerDef, battlerAtk, AI_DEFENDING_NORMAL);
 
     // The AI should understand that while Dynamaxed, status moves function like Protect.
     if (GetActiveGimmick(battlerAtk) == GIMMICK_DYNAMAX && gMovesInfo[move].category == DAMAGE_CATEGORY_STATUS)
@@ -4142,7 +4142,9 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
             //ADJUST_SCORE(8);
         break;
     case EFFECT_PURSUIT:
-        if (AI_DATA->hasFastKill && RandomPercentage(RNG_AI_INCREASE_PURSUIT_SCORE, INCREASE_PURSUIT_SCORE))
+        if (CanAIMoveFaintTarget(move, battlerAtk, battlerDef, 1))
+            break;
+        else if (AI_DATA->hasFastKill && RandomPercentage(RNG_AI_INCREASE_PURSUIT_SCORE, INCREASE_PURSUIT_SCORE))
             ADJUST_SCORE(FAST_KILL + 1);
         else if (AI_DATA->hasSlowKill && RandomPercentage(RNG_AI_INCREASE_PURSUIT_SCORE, INCREASE_PURSUIT_SCORE))
             ADJUST_SCORE(SLOW_KILL + 1);

@@ -1008,13 +1008,6 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
 
             switch (gMovesInfo[move].additionalEffects[i].moveEffect)
             {
-                case MOVE_EFFECT_DIRE_CLAW:
-                    if ((AI_CanPoison(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE)
-                        || AI_CanPutToSleep(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE) 
-                        || AI_CanParalyze(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE))
-                        && noOfHitsToKo > 1)
-                        return TRUE;
-                    break;
                 case MOVE_EFFECT_POISON:
                 case MOVE_EFFECT_TOXIC:
                     if (AI_CanPoison(battlerAtk, battlerDef, abilityDef, move, MOVE_NONE) && noOfHitsToKo > 1)
@@ -1042,12 +1035,12 @@ static bool32 AI_IsMoveEffectInPlus(u32 battlerAtk, u32 battlerDef, u32 move, s3
                     break;
                 case MOVE_EFFECT_ATK_MINUS_1:
                 case MOVE_EFFECT_ATK_MINUS_2:
-                    if (ShouldLowerStat(battlerDef, abilityDef, STAT_ATK) && noOfHitsToKo > 1 && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_PHYSICAL))
+                    if (ShouldLowerStat(battlerDef, abilityDef, STAT_ATK) && noOfHitsToKo > 1 && HasPhysicalBestMove(battlerDef, battlerAtk, AI_DEFENDING_NORMAL))
                         return TRUE;
                     break;
                 case MOVE_EFFECT_SP_ATK_MINUS_1:
                 case MOVE_EFFECT_SP_ATK_MINUS_2:
-                    if (ShouldLowerStat(battlerDef, abilityDef, STAT_SPATK) && noOfHitsToKo > 1 && HasMoveWithCategory(battlerDef, DAMAGE_CATEGORY_SPECIAL))
+                    if (ShouldLowerStat(battlerDef, abilityDef, STAT_SPATK) && noOfHitsToKo > 1 && HasSpecialBestMove(battlerDef, battlerAtk, AI_DEFENDING_NORMAL))
                         return TRUE;
                     break;
                 case MOVE_EFFECT_DEF_MINUS_1:
@@ -1574,6 +1567,17 @@ bool32 CanAIFaintTarget(u32 battlerAtk, u32 battlerDef, u32 numHits)
         }
     }
 
+    return FALSE;
+}
+
+bool32 CanAIMoveFaintTarget(u32 move, u32 battlerAtk, u32 battlerDef, u32 nHits)
+{
+    u32 indexSlot = GetMoveSlot(GetMovesArray(battlerAtk), move);
+    if (indexSlot < MAX_MON_MOVES)
+    {
+        if (GetNoOfHitsToKO(AI_GetDamage(battlerAtk, battlerDef, indexSlot, AI_ATTACKING_ON_FIELD, AI_DATA), gBattleMons[battlerDef].hp) <= nHits)
+            return TRUE;
+    }
     return FALSE;
 }
 
@@ -4534,7 +4538,7 @@ void IncreaseFrostbiteScore(u32 battlerAtk, u32 battlerDef, u32 move, s32 *score
 
     if (AI_CanGiveFrostbite(battlerAtk, battlerDef, AI_DATA->abilities[battlerDef], BATTLE_PARTNER(battlerAtk), move, AI_DATA->partnerMove))
     {
-        u32 bestMoveIsSpecial = HasSpecialBestMove(battlerDef, battlerAtk, AI_DEFENDING_SETUP);
+        u32 bestMoveIsSpecial = HasSpecialBestMove(battlerDef, battlerAtk, AI_DEFENDING_NORMAL);
         if (bestMoveIsSpecial)
         {
             ADJUST_SCORE_PTR(WEAK_EFFECT);
