@@ -38,7 +38,6 @@ enum AiConsiderEndure
 enum AiCompareMovesPriority
 {
     PRIORITY_EFFECT,
-    PRIORITY_ACCURACY,
     PRIORITY_SIGNIFICANTLY_MORE_DAMAGE,
     PRIORITY_GUARANTEE,
     PRIORITY_NOT_CHARGING,
@@ -98,17 +97,22 @@ u32 GetAIChosenMove(u32 battlerId);
 u32 GetTotalBaseStat(u32 species);
 bool32 IsTruantMonVulnerable(u32 battlerAI, u32 opposingBattler);
 bool32 AtMaxHp(u32 battler);
+bool32 AI_BattlerAtMaxHp(u32 battlerId);
 u32 GetHealthPercentage(u32 battler);
 bool32 AI_CanBattlerEscape(u32 battler);
 bool32 IsBattlerTrapped(u32 battlerAtk, u32 battlerDef);
 s32 AI_WhoStrikesFirst(u32 battlerAI, u32 battler2, u32 aiMoveConsidered, u32 playerMoveConsidered, enum ConsiderPriority considerPriority);
 bool32 CanTargetFaintAi(u32 battlerDef, u32 battlerAtk);
+bool32 AI_FaintsTargetFaster(u32 battlerAtk, u32 battlerDef);
+bool32 CanBattlerFaintTargetWithIndexMoveAndBestDamageMove(u32 battler, u32 battlerTarget);
 u32 NoOfHitsForTargetToFaintBattler(u32 battlerDef, u32 battlerAtk, enum AiConsiderEndure considerEndure);
 u32 GetMoveIndex(u32 battler, u32 move);
 u32 GetBestDmgMoveFromBattler(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext);
 u32 GetBestDmgFromBattler(u32 battler, u32 battlerTarget, enum DamageCalcContext calcContext);
+bool32 CanAIMoveFaintTarget(u32 move, u32 battlerAtk, u32 battlerDef, u32 nHits);
 bool32 CanTargetMoveFaintAi(u32 move, u32 battlerDef, u32 battlerAtk, u32 nHits);
 bool32 CanTargetFaintAiWithMod(u32 battlerDef, u32 battlerAtk, s32 hpMod, s32 dmgMod);
+bool32 IsAIDeadToPriorityMove(u32 battlerAtk, u32 battlerDef);
 s32 AI_DecideKnownAbilityForTurn(u32 battlerId);
 u32 AI_DecideHoldEffectForTurn(u32 battlerId);
 bool32 DoesBattlerIgnoreAbilityChecks(u32 atkAbility, u32 move);
@@ -127,7 +131,7 @@ u32 GetBattlerSideSpeedAverage(u32 battler);
 bool32 ShouldAbsorb(u32 battlerAtk, u32 battlerDef, u32 move, s32 damage);
 bool32 ShouldRecover(u32 battlerAtk, u32 battlerDef, u32 move, u32 healPercent);
 bool32 ShouldSetScreen(u32 battlerAtk, u32 battlerDef, u32 moveEffect);
-enum AIPivot ShouldPivot(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 move, u32 moveIndex);
+enum AIPivot ShouldPivot(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 IsRecycleEncouragedItem(u32 item);
 bool32 ShouldRestoreHpBerry(u32 battlerAtk, u32 item);
 bool32 IsStatBoostingBerry(u32 item);
@@ -138,6 +142,11 @@ bool32 AI_MoveMakesContact(u32 ability, u32 holdEffect, u32 move);
 bool32 ShouldUseZMove(u32 battlerAtk, u32 battlerDef, u32 chosenMove);
 u32 AI_GetBattlerAbility(u32 battler);
 bool32 CanEndureHit(u32 battler, u32 battlerTarget, u32 move);
+bool32 BattlerHasMaxHPProtection(u32 battler);
+bool32 ShouldLowerSpeed(u32 battlerAtk, u32 battlerDef, u32 move, s32 statDecreaseBy);
+bool32 ShouldLowerSpeedWithStatus(u32 battlerAtk, u32 battlerDef, u32 move, s32 statDecreaseBy);
+bool32 ShouldIncreaseSpeed(u32 battlerAtk, u32 battlerDef, u32 move, u32 statIncreaseBy);
+bool32 ShouldIncreaseSpeedWithStatusMove(u32 battlerAtk, u32 battlerDef, u32 move, u32 statIncreaseBy);
 
 // stat stage checks
 bool32 AnyStatIsRaised(u32 battlerId);
@@ -148,7 +157,6 @@ u32 CountPositiveStatStages(u32 battlerId);
 u32 CountNegativeStatStages(u32 battlerId);
 bool32 ShouldLowerAttack(u32 battlerAtk, u32 battlerDef, u32 defAbility);
 bool32 ShouldLowerDefense(u32 battlerAtk, u32 battlerDef, u32 defAbility);
-bool32 ShouldLowerSpeed(u32 battlerAtk, u32 battlerDef, u32 defAbility);
 bool32 ShouldLowerSpAtk(u32 battlerAtk, u32 battlerDef, u32 defAbility);
 bool32 ShouldLowerSpDef(u32 battlerAtk, u32 battlerDef, u32 defAbility);
 bool32 ShouldLowerAccuracy(u32 battlerAtk, u32 battlerDef, u32 defAbility);
@@ -171,6 +179,8 @@ u16 *GetMovesArray(u32 battler);
 bool32 IsConfusionMoveEffect(u32 moveEffect);
 bool32 HasMove(u32 battlerId, u32 move);
 bool32 HasOnlyMovesWithCategory(u32 battlerId, u32 category, bool32 onlyOffensive);
+bool32 HasSpecialBestMove(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext);
+bool32 HasPhysicalBestMove(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext calcContext);
 bool32 HasMoveWithCategory(u32 battler, u32 category);
 bool32 HasMoveWithType(u32 battler, u32 type);
 bool32 HasMoveEffect(u32 battlerId, u32 moveEffect);
@@ -207,6 +217,7 @@ bool32 ShouldFakeOut(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 HasThawingMove(u32 battler);
 bool32 IsStatRaisingEffect(u32 effect);
 bool32 IsStatLoweringEffect(u32 effect);
+bool32 IsStatLoweringSecondaryEffect(u32 battlerAtk, u32 battlerDef, u32 move);
 bool32 IsSelfStatLoweringEffect(u32 effect);
 bool32 IsSwitchOutEffect(u32 effect);
 bool32 IsAttackBoostMoveEffect(u32 effect);
@@ -237,7 +248,7 @@ bool32 AI_CanGiveFrostbite(u32 battlerAtk, u32 battlerDef, u32 defAbility, u32 b
 bool32 AI_CanBeInfatuated(u32 battlerAtk, u32 battlerDef, u32 defAbility);
 bool32 AnyPartyMemberStatused(u32 battlerId, bool32 checkSoundproof);
 u32 ShouldTryToFlinch(u32 battlerAtk, u32 battlerDef, u32 atkAbility, u32 defAbility, u32 move);
-bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef, u32 move);
+bool32 ShouldTrap(u32 battlerAtk, u32 battlerDef);
 bool32 IsWakeupTurn(u32 battler);
 bool32 AI_IsBattlerAsleepOrComatose(u32 battlerId);
 

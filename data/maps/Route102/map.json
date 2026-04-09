@@ -20,7 +20,7 @@
     },
     {
       "map": "MAP_OLDALE_TOWN",
-      "offset": 0,
+      "offset": -4,
       "direction": "right"
     }
   ],

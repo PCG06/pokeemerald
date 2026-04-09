@@ -4329,6 +4329,8 @@ static void HandleTurnActionSelectionState(void)
                 sBattler_AI = battler;
                 BattleAI_SetupAIData(0xF, sBattler_AI);
                 AI_DATA->shouldConsiderExplosion = AI_RandLessThan(GetAIExplosionChanceFromHP(AI_DATA->hpPercents[battler]));
+                AI_DATA->hasFastKill = FALSE;
+                AI_DATA->hasSlowKill = FALSE;
 
                 // Setup switching data
                 AI_DATA->mostSuitableMonId[battler] = GetMostSuitableMonToSwitchInto(battler, SWITCH_MID_BATTLE);
@@ -4867,7 +4869,7 @@ void SwapTurnOrder(u8 id1, u8 id2)
 }
 
 // For AI, so it doesn't 'cheat' by knowing player's ability
-u32 GetBattlerTotalSpeedStatArgs(u32 battler, u32 ability, u32 holdEffect)
+u32 GetBattlerTotalSpeedStatArgs(u32 battler, u32 ability, u32 holdEffect, s32 speedStatModifier)
 {
     u32 speed = gBattleMons[battler].speed;
 
@@ -4901,8 +4903,8 @@ u32 GetBattlerTotalSpeedStatArgs(u32 battler, u32 ability, u32 holdEffect)
         speed = (speed * 150) / 100;
 
     // stat stages
-    speed *= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED]][0];
-    speed /= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED]][1];
+    speed *= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED] + speedStatModifier][0];
+    speed /= gStatStageRatios[gBattleMons[battler].statStages[STAT_SPEED] + speedStatModifier][1];
 
     // player's badge boost
     if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_FRONTIER))
@@ -4944,7 +4946,7 @@ u32 GetBattlerTotalSpeedStat(u32 battler)
 {
     u32 ability = GetBattlerAbility(battler);
     u32 holdEffect = GetBattlerHoldEffect(battler, TRUE);
-    return GetBattlerTotalSpeedStatArgs(battler, ability, holdEffect);
+    return GetBattlerTotalSpeedStatArgs(battler, ability, holdEffect, 0);
 }
 
 s8 GetChosenMovePriority(u32 battler)

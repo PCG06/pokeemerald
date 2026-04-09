@@ -157,7 +157,7 @@ static bool32 AI_DoesChoiceEffectBlockMove(u32 battler, u32 move)
     return FALSE;
 }
 
-static inline bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32 isBattlerFirst)
+bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32 isBattlerFirst)
 {
     // Player's best move deals 0 damage
     if (hitsToKOAI == 0 && hitsToKOPlayer > 0)
@@ -183,6 +183,71 @@ static inline bool32 CanBattlerWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool32
             return TRUE;
     }
     return FALSE;
+}
+
+bool32 CanAIWin1V1(u32 battlerAtk, u32 battlerDef)
+{
+    //Variable initialization
+    u16 aiMoveEffect;
+    s32 i, damageDealt = 0, maxDamageDealt = 0, damageTaken = 0, maxDamageTaken = 0, maxDamageTakenPriority = 0;
+    u32 aiMove, playerMove, bestPlayerMove = MOVE_NONE, bestPlayerPriorityMove = MOVE_NONE;
+    u32 hitsToKoAI = 0, hitsToKoAIPriority = 0, hitsToKoPlayer = 0;
+    bool32 canBattlerWin1v1 = FALSE, isBattlerFirst, isBattlerFirstPriority;
+
+    // Get max damage mon could take
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        playerMove = gBattleMons[battlerDef].moves[i];
+        if (playerMove != MOVE_NONE 
+            && gMovesInfo[playerMove].category != DAMAGE_CATEGORY_STATUS 
+            && gMovesInfo[playerMove].effect != EFFECT_FOCUS_PUNCH
+            && gBattleMons[battlerDef].pp[i] > 0
+            && !MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, FALSE))
+        {
+            damageTaken = AI_GetDamage(battlerDef, battlerAtk, i, AI_DEFENDING_NORMAL, AI_DATA);
+            if (damageTaken > maxDamageTaken && !AI_DoesChoiceEffectBlockMove(battlerDef, playerMove))
+            {
+                maxDamageTaken = damageTaken;
+                bestPlayerMove = playerMove;
+            }
+            if (GetMovePriority(battlerDef, playerMove) > 0 && damageTaken > maxDamageTakenPriority && !AI_DoesChoiceEffectBlockMove(battlerDef, playerMove))
+            {
+                maxDamageTakenPriority = damageTaken;
+                bestPlayerPriorityMove = playerMove;
+            }
+        }
+    }
+
+    hitsToKoAI = GetNoOfHitsToKOBattlerDmg(maxDamageTaken, battlerAtk);
+    hitsToKoAIPriority = GetNoOfHitsToKOBattlerDmg(maxDamageTakenPriority, battlerAtk);
+
+    for (i = 0; i < MAX_MON_MOVES; i++)
+    {
+        aiMove = gBattleMons[battlerAtk].moves[i];
+        aiMoveEffect = gMovesInfo[aiMove].effect;
+        if (aiMove != MOVE_NONE && gBattleMons[battlerAtk].pp[i] > 0)
+        {
+            // Only check damage if it's a damaging move (if the damaging move is explosion, only if it can be used)
+            if (gMovesInfo[aiMove].category != DAMAGE_CATEGORY_STATUS
+                && !AI_DoesChoiceEffectBlockMove(battlerAtk, aiMove)
+                && (aiMoveEffect != EFFECT_EXPLOSION || (aiMoveEffect == EFFECT_EXPLOSION && AI_DATA->shouldConsiderExplosion == TRUE)))
+            {
+                // Get maximum damage mon can deal
+                damageDealt = AI_GetDamage(battlerAtk, battlerDef, i, AI_ATTACKING_ON_FIELD, AI_DATA);
+                if (damageDealt > maxDamageDealt)
+                    maxDamageDealt = damageDealt;
+                
+                if (!canBattlerWin1v1) // Once we can win a 1v1 we don't need to track this, but want to run the rest of the function to keep the runtime the same regardless of when we find the winning move
+                {
+                    hitsToKoPlayer = GetNoOfHitsToKOBattlerDmg(damageDealt, battlerDef);
+                    isBattlerFirst = AI_IsFaster(battlerAtk, battlerDef, aiMove, bestPlayerMove, CONSIDER_PRIORITY);
+                    isBattlerFirstPriority = AI_IsFaster(battlerAtk, battlerDef, aiMove, bestPlayerPriorityMove, CONSIDER_PRIORITY);
+                    canBattlerWin1v1 = CanBattlerWin1v1(hitsToKoAI, hitsToKoPlayer, isBattlerFirst) && CanBattlerWin1v1(hitsToKoAIPriority, hitsToKoPlayer, isBattlerFirstPriority);
+                }
+            }
+        }
+    }
+    return canBattlerWin1v1;
 }
 
 // Note that as many return statements as possible are INTENTIONALLY put after all of the loops;
@@ -245,10 +310,9 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
         if (aiMove != MOVE_NONE && gBattleMons[battler].pp[i] > 0)
         {
             // Check if mon has an "important" status move
-            if (aiMoveEffect == EFFECT_REFLECT || aiMoveEffect == EFFECT_LIGHT_SCREEN
-            || aiMoveEffect == EFFECT_SPIKES || aiMoveEffect == EFFECT_TOXIC_SPIKES || aiMoveEffect == EFFECT_STEALTH_ROCK || aiMoveEffect == EFFECT_STICKY_WEB || aiMoveEffect == EFFECT_LEECH_SEED
-            || aiMoveEffect == EFFECT_SLEEP || aiMoveEffect == EFFECT_YAWN || aiMoveEffect == EFFECT_TOXIC || aiMoveEffect == EFFECT_WILL_O_WISP || aiMoveEffect == EFFECT_PARALYZE
-            || aiMoveEffect == EFFECT_TRICK || aiMoveEffect == EFFECT_TRICK_ROOM || aiMoveEffect== EFFECT_WONDER_ROOM || aiMoveEffect ==  EFFECT_PSYCHO_SHIFT || aiMoveEffect == EFFECT_FIRST_TURN_ONLY
+            if (aiMoveEffect == EFFECT_REFLECT || aiMoveEffect == EFFECT_LIGHT_SCREEN || EFFECT_AURORA_VEIL
+            || aiMoveEffect == EFFECT_SPIKES || aiMoveEffect == EFFECT_TOXIC_SPIKES || aiMoveEffect == EFFECT_STEALTH_ROCK || aiMoveEffect == EFFECT_STICKY_WEB
+            || aiMoveEffect == EFFECT_TAILWIND || aiMoveEffect == EFFECT_TRICK_ROOM 
             )
             {
                 hasStatusMove = TRUE;
@@ -417,9 +481,13 @@ static bool32 ShouldSwitchIfAllMovesBad(u32 battler)
                 return FALSE;
         }
     }
-    if (AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE && RandomPercentage(RNG_AI_SWITCH_ALL_MOVES_BAD, 50)) // Good candidate mon, send that in if you win 50/50
-        return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-
+    if (AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE) // Good candidate mon, send that in if you win 50/50
+    {
+        if (RandomPercentage(RNG_AI_SWITCH_ALL_MOVES_BAD, 50))
+            return SetSwitchinAndSwitch(battler, PARTY_SIZE);
+        else
+            AI_DATA->FailedAllMovesBadSwitch = TRUE;
+    }
     return FALSE;
 }
 
@@ -874,9 +942,13 @@ static bool32 ShouldSwitchIfEncored(u32 battler)
         return FALSE;
 
     // Switch out 50% of the time otherwise
-    else if (RandomPercentage(RNG_AI_SWITCH_ENCORE, 50) && AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE)
-        return SetSwitchinAndSwitch(battler, PARTY_SIZE);
-
+    else if (AI_DATA->mostSuitableMonId[battler] != PARTY_SIZE)
+    {
+        if (RandomPercentage(RNG_AI_SWITCH_ENCORE, 50))
+            return SetSwitchinAndSwitch(battler, PARTY_SIZE);
+        else
+            AI_DATA->FailedEncoreSwitch = TRUE;
+    }
     return FALSE;
 }
 
@@ -955,11 +1027,15 @@ static bool32 ShouldSwitchIfAttackingStatsLowered(u32 battler)
 bool32 ShouldSwitch(u32 battler)
 {
     u32 battlerIn1, battlerIn2;
+    u32 opposingBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler)));
     s32 firstId;
     s32 lastId; // + 1
     struct Pokemon *party;
     s32 i;
     s32 availableToSwitch;
+    u32 canAIWin1V1 = CanAIWin1V1(battler, opposingBattler);
+    AI_DATA->FailedEncoreSwitch = FALSE;
+    AI_DATA->FailedAllMovesBadSwitch = FALSE;
 
     if (gBattleMons[battler].status2 & (STATUS2_WRAPPED | STATUS2_ESCAPE_PREVENTION))
         return FALSE;
@@ -1026,7 +1102,10 @@ bool32 ShouldSwitch(u32 battler)
     if ((AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING) && (CanMonSurviveHazardSwitchin(battler) == FALSE))
         return FALSE;
     if (FindMonThatAbsorbsOpponentsMove(battler))
-        return TRUE;
+    {
+        if (!canAIWin1V1)
+            return TRUE;
+    }
     if (ShouldSwitchIfTruant(battler))
         return TRUE;
     if (ShouldSwitchIfAllMovesBad(battler))
@@ -1038,11 +1117,17 @@ bool32 ShouldSwitch(u32 battler)
     if (ShouldSwitchIfHasBadOdds(battler))
         return TRUE;
     if (ShouldSwitchIfEncored(battler))
-        return TRUE;
+    {
+        if (!canAIWin1V1)
+            return TRUE;
+    }
     if (ShouldSwitchIfBadChoiceLock(battler))
         return TRUE;
     if (ShouldSwitchIfAttackingStatsLowered(battler))
-        return TRUE;
+    {
+        if (!canAIWin1V1)
+            return TRUE;
+    }
 
     // Removing switch capabilites under specific conditions
     if (AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING)
@@ -1059,6 +1144,9 @@ bool32 ShouldSwitchIfAllScoresBad(u32 battler)
 {
     u32 i, score;
     u32 opposingBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler)));
+
+    if (AI_DATA->FailedAllMovesBadSwitch || AI_DATA->FailedEncoreSwitch)
+        return FALSE;
     if (!(AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_SMART_SWITCHING))
         return FALSE;
 
@@ -1954,12 +2042,11 @@ static inline bool32 CanSwitchinWin1v1(u32 hitsToKOAI, u32 hitsToKOPlayer, bool3
 static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, u32 battler, u32 opposingBattler, u32 battlerIn1, u32 battlerIn2, enum SwitchType switchType)
 {
     int revengeKillerId = PARTY_SIZE, slowRevengeKillerId = PARTY_SIZE, fastThreatenId = PARTY_SIZE, slowThreatenId = PARTY_SIZE, damageMonId = PARTY_SIZE, generic1v1MonId = PARTY_SIZE;;
-    int batonPassId = PARTY_SIZE, typeMatchupId = PARTY_SIZE, typeMatchupEffectiveId = PARTY_SIZE, defensiveMonId = PARTY_SIZE, aceMonId = PARTY_SIZE, trapperId = PARTY_SIZE;
+    int batonPassId = PARTY_SIZE, defensiveMonId = PARTY_SIZE, aceMonId = PARTY_SIZE, trapperId = PARTY_SIZE;
     int i, j, aliveCount = 0, bits = 0, aceMonCount = 0;
     s32 defensiveMonHitKOThreshold = 3; // 3HKO threshold that candidate defensive mons must exceed
     s32 playerMonHP = gBattleMons[opposingBattler].hp, maxDamageDealt = 0, damageDealt = 0;
     u32 aiMove, hitsToKOAI, hitsToKOPlayer, hitsToKOAIPriority, bestPlayerMove = MOVE_NONE, bestPlayerPriorityMove = MOVE_NONE, maxHitsToKO = 0;
-    u32 bestResist = UQ_4_12(2.0), bestResistEffective = UQ_4_12(2.0), typeMatchup; // 2.0 is the default "Neutral" matchup from GetBattleMonTypeMatchup
     bool32 isFreeSwitch = IsFreeSwitch(switchType, battlerIn1, opposingBattler), isSwitchinFirst, isSwitchinFirstPriority, canSwitchinWin1v1;
     u32 storeCurrBattlerPartyIndex = gBattlerPartyIndexes[battler]; //Rage Fist fix 
 
@@ -1997,7 +2084,6 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
         // Get max number of hits for player to KO AI mon and type matchup for defensive switching
         hitsToKOAI = GetSwitchinHitsToKO(GetMaxDamagePlayerCouldDealToSwitchin(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, &bestPlayerMove), battler);
         hitsToKOAIPriority = GetSwitchinHitsToKO(GetMaxPriorityDamagePlayerCouldDealToSwitchin(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, &bestPlayerPriorityMove), battler);
-        typeMatchup = GetBattleMonTypeMatchup(gBattleMons[opposingBattler], AI_DATA->switchinCandidate.battleMon);
 
         // Check through current mon's moves
         for (j = 0; j < MAX_MON_MOVES; j++)
@@ -2023,16 +2109,6 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
                     bits |= 1u << i;
             }
 
-            // Check that good type matchups get at least two turns and set best type matchup mon
-            if (typeMatchup < bestResist)
-            {
-                if (canSwitchinWin1v1)
-                {
-                    bestResist = typeMatchup;
-                    typeMatchupId = i;
-                }
-            }
-
             // Track max hits to KO and set defensive mon
             if (hitsToKOAI > maxHitsToKO && (canSwitchinWin1v1 || AI_THINKING_STRUCT->aiFlags[battler] & AI_FLAG_STALL))
             {
@@ -2047,17 +2123,6 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
             // Check for mon with resistance and super effective move for best type matchup mon with effective move
             if (aiMove != MOVE_NONE && gMovesInfo[aiMove].power != 0)
             {
-                if (typeMatchup < bestResistEffective)
-                {
-                    if (AI_GetMoveEffectiveness(aiMove, battler, opposingBattler) >= UQ_4_12(2.0))
-                    {
-                        if (canSwitchinWin1v1)
-                        {
-                            bestResistEffective = typeMatchup;
-                            typeMatchupEffectiveId = i;
-                        }
-                    }
-                }
 
                 // Ignore self-destruction moves to prevent silly bad odds chains
                 if (gMovesInfo[aiMove].effect == EFFECT_EXPLOSION)
@@ -2066,7 +2131,7 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
                 // Check that mon isn't one shot and set best damage mon
                 if (damageDealt > maxDamageDealt)
                 {
-                    if((isFreeSwitch && hitsToKOAI > 1) || hitsToKOAI > 2) // This is a "default", we have uniquely low standards
+                    if(isSwitchinFirst || hitsToKOAI > 1) // This is a "default", we have uniquely low standards
                     {
                         maxDamageDealt = damageDealt;
                         damageMonId = i;
@@ -2119,8 +2184,6 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
         else if (slowRevengeKillerId != PARTY_SIZE)     return slowRevengeKillerId;
         else if (fastThreatenId != PARTY_SIZE)          return fastThreatenId;
         else if (slowThreatenId != PARTY_SIZE)          return slowThreatenId;
-        else if (typeMatchupEffectiveId != PARTY_SIZE)  return typeMatchupEffectiveId;
-        else if (typeMatchupId != PARTY_SIZE)           return typeMatchupId;
         else if (batonPassId != PARTY_SIZE)             return batonPassId;
         else if (generic1v1MonId != PARTY_SIZE)         return generic1v1MonId;
         else if (damageMonId != PARTY_SIZE)             return damageMonId;
@@ -2129,8 +2192,6 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
     {
         // Return Trapper > Type Matchup > Best Defensive > Baton Pass > Generic mon that can 1v1
         if (trapperId != PARTY_SIZE)                    return trapperId;
-        else if (typeMatchupEffectiveId != PARTY_SIZE)  return typeMatchupEffectiveId;
-        else if (typeMatchupId != PARTY_SIZE)           return typeMatchupId;
         else if (defensiveMonId != PARTY_SIZE)          return defensiveMonId;
         else if (batonPassId != PARTY_SIZE)             return batonPassId;
         else if (generic1v1MonId != PARTY_SIZE)         return generic1v1MonId;

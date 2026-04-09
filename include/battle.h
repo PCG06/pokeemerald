@@ -381,7 +381,11 @@ struct AiLogicData
     u8 ejectPackSwitch:1; // Tracks whether current switch out was from Eject Pack
     u8 shouldConsiderExplosion:1;
     u8 switchInCalc:1;
-    u8 padding:3;
+    u8 hasFastKill:1;
+    u8 hasSlowKill:1;
+    u8 FailedEncoreSwitch:1;
+    u8 FailedAllMovesBadSwitch:1;
+    u8 padding:1;
     u8 shouldSwitch; // Stores result of ShouldSwitch, which decides whether a mon should be switched out
     u8 aiCalcInProgress:1;
     u8 resistBerryAffected[MAX_BATTLERS_COUNT][MAX_BATTLERS_COUNT][MAX_MON_MOVES]; // attacker, target, moveIndex
