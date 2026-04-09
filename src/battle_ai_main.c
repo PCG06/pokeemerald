@@ -3284,7 +3284,7 @@ static void AI_CompareDamagingMoves(u32 battlerAtk, u32 battlerDef)
             // only if 2 moves that OHKO
             // 5. Guaranteed KO
         // 6. Significantly more damage than another move (minimum roll of one move higher than highest roll of another)
-        // 8. Better effect
+        // 7. Better effect
 
         // Current move requires the least hits to KO. Compare with other moves.
         if (leastHits == noOfHits[currId])
@@ -4878,6 +4878,12 @@ static u32 AI_CalcMoveEffectScore(u32 battlerAtk, u32 battlerDef, u32 move)
                     break;
                 case MOVE_EFFECT_CLEAR_SMOG:
                     score += AI_TryToClearStats(battlerAtk, battlerDef, FALSE);
+                    break;
+                case MOVE_EFFECT_BUG_BITE:   // And pluck
+                    if (gBattleMons[battlerDef].status2 & STATUS2_SUBSTITUTE || aiData->abilities[battlerDef] == ABILITY_STICKY_HOLD)
+                        break;
+                    else if (ItemId_GetPocket(aiData->items[battlerDef]) == POCKET_BERRIES)
+                        ADJUST_SCORE(WEAK_EFFECT);
                     break;
                 case MOVE_EFFECT_SMACK_DOWN:
                     if (!IsBattlerGrounded(battlerDef) && HasDamagingMoveOfType(battlerAtk, TYPE_GROUND) && !CanTargetFaintAi(battlerDef, battlerAtk))

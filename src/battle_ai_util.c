@@ -2358,13 +2358,10 @@ bool32 HasSpecialBestMove(u32 battlerAtk, u32 battlerDef, enum DamageCalcContext
         {
             break;
         }
-        else
+        else if (GetBattleMoveCategory(atkBestMoves[i]) == DAMAGE_CATEGORY_PHYSICAL)
         {
-        if (GetBattleMoveCategory(atkBestMoves[i]) == DAMAGE_CATEGORY_PHYSICAL)
-            {
-                bestMoveIsSpecial = FALSE;
-                break;
-            }
+            bestMoveIsSpecial = FALSE;
+            break;
         }
     }
     return bestMoveIsSpecial;

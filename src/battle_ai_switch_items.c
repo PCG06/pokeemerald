@@ -247,7 +247,6 @@ bool32 CanAIWin1V1(u32 battlerAtk, u32 battlerDef)
             }
         }
     }
-    DebugPrintf("Can AI win 1v1:%d", canBattlerWin1v1);
     return canBattlerWin1v1;
 }
 
