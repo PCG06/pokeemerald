@@ -1,10 +1,101 @@
 raw `
 ArtisanCave_B1F_MapScripts::
+	map_script MAP_SCRIPT_ON_RESUME, ArtisanCave_B1F_OnResume
 	map_script MAP_SCRIPT_ON_TRANSITION, ArtisanCave_B1F_OnTransition
 	.byte 0
 
+ArtisanCave_B1F_OnResume:
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, ArtisanCave_B1F_EventScript_TryRemoveMiraidon
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, ArtisanCave_B1F_EventScript_TryRemoveKoraidon
+	end
+
+ArtisanCave_B1F_EventScript_TryRemoveMiraidon::
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
+
+ArtisanCave_B1F_EventScript_TryRemoveKoraidon::
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
+
+
 ArtisanCave_B1F_OnTransition:
 	setflag FLAG_LANDMARK_ARTISAN_CAVE
+	call_if_unset FLAG_DEFEATED_MIRAIDON, ArtisanCave_B1F_EventScript_ShowMiraidon
+	call_if_unset FLAG_DEFEATED_KORAIDON, ArtisanCave_B1F_EventScript_ShowKoraidon
+	end
+
+ArtisanCave_B1F_EventScript_ShowMiraidon::
+	clearflag FLAG_HIDE_MIRAIDON
+	return
+
+ArtisanCave_B1F_EventScript_ShowKoraidon::
+	clearflag FLAG_HIDE_KORAIDON
+	return
+
+ArtisanCave_B1F_EventScript_Miraidon::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_MIRAIDON, CRY_MODE_ENCOUNTER
+	delay 40
+	waitmoncry
+	setwildbattle SPECIES_MIRAIDON, 70
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	special BattleSetup_StartLegendaryBattle
+	waitstate
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, ArtisanCave_B1F_EventScript_DefeatedMiraidon
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, ArtisanCave_B1F_EventScript_RanFromMiraidon
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, ArtisanCave_B1F_EventScript_RanFromMiraidon
+	setflag FLAG_DEFEATED_MIRAIDON
+	release
+	end
+
+ArtisanCave_B1F_EventScript_DefeatedMiraidon::
+	setflag FLAG_DEFEATED_MIRAIDON
+	goto Common_EventScript_RemoveStaticPokemon
+	end
+
+ArtisanCave_B1F_EventScript_RanFromMiraidon::
+	setvar VAR_0x8004, SPECIES_MIRAIDON
+	goto Common_EventScript_LegendaryFlewAway
+	end
+
+
+ArtisanCave_B1F_EventScript_Koraidon::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_KORAIDON, CRY_MODE_ENCOUNTER
+	delay 40
+	waitmoncry
+	setwildbattle SPECIES_KORAIDON, 70
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	special BattleSetup_StartLegendaryBattle
+	waitstate
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, ArtisanCave_B1F_EventScript_DefeatedKoraidon
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, ArtisanCave_B1F_EventScript_RanFromKoraidon
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, ArtisanCave_B1F_EventScript_RanFromKoraidon
+	setflag FLAG_DEFEATED_KORAIDON
+	release
+	end
+
+ArtisanCave_B1F_EventScript_DefeatedKoraidon::
+	setflag FLAG_DEFEATED_KORAIDON
+	goto Common_EventScript_RemoveStaticPokemon
+	end
+
+ArtisanCave_B1F_EventScript_RanFromKoraidon::
+	setvar VAR_0x8004, SPECIES_KORAIDON
+	goto Common_EventScript_LegendaryFlewAway
 	end
 
 `
+

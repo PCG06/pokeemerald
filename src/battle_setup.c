@@ -631,12 +631,17 @@ void BattleSetup_StartLegendaryBattle(void)
     case SPECIES_DEOXYS_SPEED:
         CreateBattleStartTask(B_TRANSITION_BLUR, MUS_RG_VS_DEOXYS);
         break;
-    case SPECIES_LUGIA:
-    case SPECIES_HO_OH:
     case SPECIES_RESHIRAM:
     case SPECIES_ZEKROM:
+    case SPECIES_KORAIDON:
+    case SPECIES_MIRAIDON:
+    case SPECIES_ZACIAN:
+    case SPECIES_ZAMAZENTA:
     case SPECIES_MEWTWO:
         CreateBattleStartTask(B_TRANSITION_BLUR, MUS_RG_VS_LEGEND);
+        break;
+    case SPECIES_HO_OH:
+        CreateBattleStartTask(B_TRANSITION_BLUR, MUS_HG_VS_HO_OH);
         break;
     case SPECIES_MEW:
         CreateBattleStartTask(B_TRANSITION_GRID_SQUARES, MUS_VS_MEW);
@@ -651,6 +656,7 @@ void BattleSetup_StartLegendaryBattle(void)
     case SPECIES_ARCEUS:
         CreateBattleStartTask(B_TRANSITION_BLUR, MUS_DP_VS_ARCEUS);
         break; 
+    case SPECIES_LUGIA:
     case SPECIES_XERNEAS_ACTIVE:
         CreateBattleStartTask(B_TRANSITION_BLUR, MUS_HG_VS_LUGIA);
         break; 
