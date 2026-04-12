@@ -4520,6 +4520,16 @@
       "secondary_tileset": "gTileset_LugiaMovieAltar",
       "border_filepath": "data/layouts/SpearPillar/border.bin",
       "blockdata_filepath": "data/layouts/SpearPillar/map.bin"
+    },
+    {
+      "id": "LAYOUT_SLUMBERING_WEALD",
+      "name": "SlumberingWeald_Layout",
+      "width": 30,
+      "height": 30,
+      "primary_tileset": "gTileset_General",
+      "secondary_tileset": "gTileset_Cave",
+      "border_filepath": "data/layouts/SlumberingWeald/border.bin",
+      "blockdata_filepath": "data/layouts/SlumberingWeald/map.bin"
     }
   ]
 }

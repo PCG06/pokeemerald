@@ -1284,14 +1284,14 @@
 #define FLAG_DEFEATED_ARCEUS                                        0x4CE 
 #define FLAG_HIDE_XERNEAS                                           0x4CF 
 #define FLAG_DEFEATED_XERNEAS                                       0x4D0 
-#define FLAG_UNUSED_0x4D1                                           0x4D1 // Unused Flag
-#define FLAG_UNUSED_0x4D2                                           0x4D2 // Unused Flag
-#define FLAG_UNUSED_0x4D3                                           0x4D3 // Unused Flag
-#define FLAG_UNUSED_0x4D4                                           0x4D4 // Unused Flag
-#define FLAG_UNUSED_0x4D5                                           0x4D5 // Unused Flag
-#define FLAG_UNUSED_0x4D6                                           0x4D6 // Unused Flag
-#define FLAG_UNUSED_0x4D7                                           0x4D7 // Unused Flag
-#define FLAG_UNUSED_0x4D8                                           0x4D8 // Unused Flag
+#define FLAG_HIDE_ZACIAN                                            0x4D1 
+#define FLAG_DEFEATED_ZACIAN                                        0x4D2 
+#define FLAG_HIDE_ZAMAZENTA                                         0x4D3 
+#define FLAG_DEFEATED_ZAMAZENTA                                     0x4D4 
+#define FLAG_HIDE_MIRAIDON                                          0x4D5 
+#define FLAG_DEFEATED_MIRAIDON                                      0x4D6 
+#define FLAG_HIDE_KORAIDON                                          0x4D7 
+#define FLAG_DEFEATED_KORAIDON                                      0x4D8 
 #define FLAG_UNUSED_0x4D9                                           0x4D9 // Unused Flag
 #define FLAG_UNUSED_0x4DA                                           0x4DA // Unused Flag
 #define FLAG_UNUSED_0x4DB                                           0x4DB // Unused Flag

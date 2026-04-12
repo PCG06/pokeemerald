@@ -594,7 +594,8 @@
     "NavelRock_Bottom",
     "TrainerHill_Elevator",
     "HallofOrigin",
-    "SpearPillar"
+    "SpearPillar",
+    "SlumberingWeald"
   ],
   "gMapGroup_IndoorRoute104Prototype": [
     "Route104_Prototype",

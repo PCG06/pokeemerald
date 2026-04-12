@@ -4,11 +4,15 @@
 #include "caps.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
+#include "constants/game_settings.h"
 
 
 u32 GetCurrentLevelCap(void)
 {
-    static const u32 sLevelCapFlagMap[][2] =
+    if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_VANILLA_MODE)
+        return MAX_LEVEL;
+    
+    static const u32 sLevelCapFlagMapNormalMode[][2] =
     {
         {FLAG_BADGE01_GET, 16},
         {FLAG_DEFEATED_RIVAL_RUSTBORO, 20},
@@ -32,10 +36,21 @@ u32 GetCurrentLevelCap(void)
 
     if (B_LEVEL_CAP_TYPE == LEVEL_CAP_FLAG_LIST)
     {
-        for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMap); i++)
+        if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
         {
-            if (!FlagGet(sLevelCapFlagMap[i][0]))
-                return sLevelCapFlagMap[i][1];
+            for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMapHardMode); i++)
+            {
+                if (!FlagGet(sLevelCapFlagMapHardMode[i][0]))
+                    return sLevelCapFlagMapHardMode[i][1];
+            }
+        }
+        else
+        {
+            for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMapNormalMode); i++)
+            {
+                if (!FlagGet(sLevelCapFlagMapNormalMode[i][0]))
+                    return sLevelCapFlagMapNormalMode[i][1];
+            }
         }
     }
     else if (B_LEVEL_CAP_TYPE == LEVEL_CAP_VARIABLE)
