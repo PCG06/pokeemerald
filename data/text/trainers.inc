@@ -1,15 +1,15 @@
 Route102_Text_CalvinIntro:
-	.string "If you have Pokémon with you, then\n"
-	.string "you're an official Pokémon trainer!\l"
-	.string "You can't say no to my challenge!$"
+	.string "I reset 200 times for this pack,\n"
+	.string "this HAS to be the run!$"
 
 Route102_Text_CalvinDefeated:
 	.string "Arrgh, I lost…\n"
-	.string "I should have trained mine more…$"
+	.string "This doesn't count as an attempt,\l"
+	.string "right?$"
 
 Route102_Text_CalvinPostBattle:
-	.string "Listen, you. If you're strong,\n"
-	.string "you should have told me before!$"
+	.string "I knew 28 atk wasn't enough.\n"
+	.string "Or maybe I needed Slowpoke…$"
 
 Route102_Text_CalvinRegister:
 	.string "I've been working hard at this since\n"
