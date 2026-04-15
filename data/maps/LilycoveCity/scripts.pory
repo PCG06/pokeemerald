@@ -540,7 +540,6 @@ script LilycoveCity_EventScript_DawnExit{
 	removeobject(22)
 	setflag(FLAG_DAWN_LILYCOVE)
 	setvar(VAR_FOUGHT_DAWN_LILYCOVE, 1)
-	delay(30)
 	savebgm(MUS_DUMMY)
 	fadedefaultbgm
 	releaseall
