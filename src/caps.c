@@ -11,13 +11,13 @@ u32 GetCurrentLevelCap(void)
 {
     if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_VANILLA_MODE)
         return MAX_LEVEL;
-    
+
     static const u32 sLevelCapFlagMapNormalMode[][2] =
     {
         {FLAG_BADGE01_GET, 15},
         {FLAG_DEFEATED_RIVAL_RUSTBORO, 20},
         {FLAG_BADGE02_GET, 25},
-        {FLAG_HIDE_ROUTE_110_TEAM_AQUA, 30},
+        {FLAG_RIVAL_110, 30},
         {FLAG_BADGE03_GET, 34},
         {FLAG_DEFEATED_EVIL_TEAM_MT_CHIMNEY, 44},
         {FLAG_BADGE04_GET, 47},
@@ -25,7 +25,7 @@ u32 GetCurrentLevelCap(void)
         {FLAG_BADGE05_GET, 59},
         {FLAG_RECEIVED_HM_FLY, 64},
         {FLAG_BADGE06_GET, 68},
-        {FLAG_DAWN_LILYCOVE, 71},
+        {FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE, 71},
         {FLAG_BADGE07_GET, 76},
         {FLAG_KYOGRE_ESCAPED_SEAFLOOR_CAVERN, 80},
         {FLAG_BADGE08_GET, 82},
@@ -38,7 +38,7 @@ u32 GetCurrentLevelCap(void)
         {FLAG_BADGE01_GET, 16},
         {FLAG_DEFEATED_RIVAL_RUSTBORO, 20},
         {FLAG_BADGE02_GET, 25},
-        {FLAG_HIDE_ROUTE_110_TEAM_AQUA, 30},
+        {FLAG_RIVAL_110, 30},
         {FLAG_BADGE03_GET, 34},
         {FLAG_DEFEATED_EVIL_TEAM_MT_CHIMNEY, 44},
         {FLAG_BADGE04_GET, 47},
@@ -46,7 +46,7 @@ u32 GetCurrentLevelCap(void)
         {FLAG_BADGE05_GET, 59},
         {FLAG_RECEIVED_HM_FLY, 64},
         {FLAG_BADGE06_GET, 68},
-        {FLAG_DAWN_LILYCOVE, 71},
+        {FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE, 71},
         {FLAG_BADGE07_GET, 76},
         {FLAG_KYOGRE_ESCAPED_SEAFLOOR_CAVERN, 80},
         {FLAG_BADGE08_GET, 82},
