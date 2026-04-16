@@ -22024,18 +22024,17 @@ static const struct TrainerMon sParty_Brawly1Vanilla[] = {
 
 static const struct TrainerMon sParty_Brawly1Hard[] = {
     {
-            //hp, atk, def, speed, spatk, spdef
-    .iv = TRAINER_PARTY_IVS(31, 31, 30, 30, 30, 30),
-    .lvl = 23,
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
+    .lvl = 25,
     .species = SPECIES_PIKACHU_LIBRE,
     .nature = NATURE_TIMID,
     .heldItem = ITEM_LIGHT_BALL,
     .ability = ABILITY_LIGHTNING_ROD,
-    .moves = {MOVE_FAKE_OUT, MOVE_ELECTROWEB, MOVE_HIDDEN_POWER, MOVE_DRAINING_KISS}
+    .moves = {MOVE_FAKE_OUT, MOVE_THUNDERBOLT, MOVE_AURA_SPHERE, MOVE_DRAINING_KISS}
     },
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 24,
+    .lvl = 25,
     .species = SPECIES_SANDSLASH_ALOLA,
     .nature = NATURE_JOLLY,
     .heldItem = ITEM_CHOPLE_BERRY,
@@ -22058,7 +22057,16 @@ static const struct TrainerMon sParty_Brawly1Hard[] = {
     .nature = NATURE_ADAMANT,
     .heldItem = ITEM_EVIOLITE,
     .ability = ABILITY_IRON_FIST,
-    .moves = {MOVE_MACH_PUNCH, MOVE_FIRE_PUNCH, MOVE_LOW_SWEEP, MOVE_THUNDER_PUNCH}
+    .moves = {MOVE_MACH_PUNCH, MOVE_FIRE_PUNCH, MOVE_DRAIN_PUNCH, MOVE_THUNDER_PUNCH}
+    },
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
+    .lvl = 25,
+    .species = SPECIES_GRAPPLOCT,
+    .nature = NATURE_ADAMANT,
+    .heldItem = ITEM_SITRUS_BERRY,
+    .ability = ABILITY_TECHNICIAN,
+    .moves = {MOVE_OCTOLOCK, MOVE_LOW_SWEEP, MOVE_JET_PUNCH, MOVE_BULK_UP}
     },
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
@@ -22067,7 +22075,7 @@ static const struct TrainerMon sParty_Brawly1Hard[] = {
     .heldItem = ITEM_FLAME_ORB,
     .nature = NATURE_ADAMANT,
     .ability = ABILITY_GUTS,
-    .moves = {MOVE_LOW_SWEEP, MOVE_ROCK_TOMB, MOVE_KNOCK_OFF, MOVE_FAKE_OUT},
+    .moves = {MOVE_REVERSAL, MOVE_ROCK_SLIDE, MOVE_KNOCK_OFF, MOVE_BULLET_PUNCH},
     }
 };
 
