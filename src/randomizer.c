@@ -7,11 +7,13 @@
 #include "item.h"
 #include "event_data.h"
 #include "field_control_avatar.h"
+#include "constants/game_settings.h"
 #include "pokemon.h"
 #include "script.h"
 #include "data.h"
 #include "data/randomizer/special_form_tables.h"
 #include "data/randomizer/ability_whitelist.h"
+#include "data/randomizer/hm_ability_whitelist.h"
 
 
 const u16 gStarterAndGiftMonTable[MY_STARTER_AND_GIFT_MON_COUNT] =
@@ -1155,7 +1157,10 @@ u16 RandomizeAbility(u16 species, u8 abilityNum, u16 originalAbility)
         struct Sfc32State state = RandomizerRandSeed(RANDOMIZER_REASON_ABILITIES, seed, species);
 
         // Randomize abilities
-        return sRandomizerAbilityWhitelist[RandomizerNextRange(&state, ABILITY_WHITELIST_SIZE)];
+        if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
+            return sHardModeRandomizerAbilityWhitelist[RandomizerNextRange(&state, HARD_MODE_ABILITY_WHITELIST_SIZE)];
+        else
+            return sRandomizerAbilityWhitelist[RandomizerNextRange(&state, ABILITY_WHITELIST_SIZE)];
     }
 
     return originalAbility;

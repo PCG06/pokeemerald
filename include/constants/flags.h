@@ -1268,22 +1268,22 @@
 #define FLAG_RECEIVED_NECROZMA_FUSION                               0x4BE
 #define FLAG_HIDE_HEATRAN                                           0x4BF
 #define FLAG_DEFEATED_HEATRAN                                       0x4C0
-#define FLAG_UNUSED_0x4C1                                           0x4C1 // Unused Flag
-#define FLAG_UNUSED_0x4C2                                           0x4C2 // Unused Flag
-#define FLAG_UNUSED_0x4C3                                           0x4C3 // Unused Flag
-#define FLAG_UNUSED_0x4C4                                           0x4C4 // Unused Flag
-#define FLAG_UNUSED_0x4C5                                           0x4C5 // Unused Flag
-#define FLAG_UNUSED_0x4C6                                           0x4C6 // Unused Flag
-#define FLAG_UNUSED_0x4C7                                           0x4C7 // Unused Flag
-#define FLAG_UNUSED_0x4C8                                           0x4C8 // Unused Flag
-#define FLAG_UNUSED_0x4C9                                           0x4C9 // Unused Flag
-#define FLAG_UNUSED_0x4CA                                           0x4CA // Unused Flag
-#define FLAG_UNUSED_0x4CB                                           0x4CB // Unused Flag
-#define FLAG_UNUSED_0x4CC                                           0x4CC // Unused Flag
-#define FLAG_UNUSED_0x4CD                                           0x4CD // Unused Flag
-#define FLAG_UNUSED_0x4CE                                           0x4CE // Unused Flag
-#define FLAG_UNUSED_0x4CF                                           0x4CF // Unused Flag
-#define FLAG_UNUSED_0x4D0                                           0x4D0 // Unused Flag
+#define FLAG_HIDE_TERAPAGOS                                         0x4C1 
+#define FLAG_DEFEATED_TERAPAGOS                                     0x4C2 
+#define FLAG_HIDE_GIRATINA                                          0x4C3 
+#define FLAG_DEFEATED_GIRATINA                                      0x4C4 
+#define FLAG_HIDE_YVELTAL                                           0x4C5
+#define FLAG_DEFEATED_YVELTAL                                       0x4C6
+#define FLAG_HIDE_ZYGARDE                                           0x4C7
+#define FLAG_DEFEATED_ZYGARDE                                       0x4C8
+#define FLAG_HIDE_PALKIA                                            0x4C9 
+#define FLAG_DEFEATED_PALKIA                                        0x4CA 
+#define FLAG_HIDE_DIALGA                                            0x4CB 
+#define FLAG_DEFEATED_DIALGA                                        0x4CC 
+#define FLAG_HIDE_ARCEUS                                            0x4CD 
+#define FLAG_DEFEATED_ARCEUS                                        0x4CE 
+#define FLAG_HIDE_XERNEAS                                           0x4CF 
+#define FLAG_DEFEATED_XERNEAS                                       0x4D0 
 #define FLAG_UNUSED_0x4D1                                           0x4D1 // Unused Flag
 #define FLAG_UNUSED_0x4D2                                           0x4D2 // Unused Flag
 #define FLAG_UNUSED_0x4D3                                           0x4D3 // Unused Flag

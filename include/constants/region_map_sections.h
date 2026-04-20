@@ -219,7 +219,10 @@
 #define MAPSEC_GRASSY_SLAB                  0xD7
 #define MAPSEC_HOT_HOUSE                    0xD8
 #define MAPSEC_TRICK_HOUSE                  0xD9
-#define MAPSEC_NONE                         0xDA
+#define MAPSEC_DISTORTION_WORLD             0xDA
+#define MAPSEC_SPEAR_PILLAR                 0xDB
+#define MAPSEC_HALL_OF_ORIGIN               0xDC
+#define MAPSEC_NONE                         0xDD
 
 #define METLOC_SPECIAL_EGG                  0xFD
 #define METLOC_IN_GAME_TRADE                0xFE

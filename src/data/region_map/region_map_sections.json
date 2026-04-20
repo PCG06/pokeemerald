@@ -1750,6 +1750,30 @@
       "y": 7,
       "width": 1,
       "height": 1
+    },
+    {
+      "map_section": "MAPSEC_DISTORTION_WORLD",
+      "name": "DISTORTION WORLD",
+      "x": 8,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "map_section": "MAPSEC_SPEAR_PILLAR",
+      "name": "SPEAR PILLAR",
+      "x": 8,
+      "y": 7,
+      "width": 1,
+      "height": 1
+    },
+    {
+      "map_section": "MAPSEC_HALL_OF_ORIGIN",
+      "name": "HALL OF ORIGIN",
+      "x": 8,
+      "y": 7,
+      "width": 1,
+      "height": 1
     }
   ]
 }

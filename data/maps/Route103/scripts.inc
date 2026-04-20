@@ -37,9 +37,9 @@ Route103_OnLoad:
 # 19 "data/maps/Route103/scripts.pory"
 Route103_EventScript_OpenAlteringCave::
 # 20 "data/maps/Route103/scripts.pory"
-	setmetatile 45, 5, METATILE_General_CaveEntrance_Top, TRUE
+	setmetatile 45, 25, METATILE_General_CaveEntrance_Top, TRUE
 # 21 "data/maps/Route103/scripts.pory"
-	setmetatile 45, 6, METATILE_General_CaveEntrance_Bottom, FALSE
+	setmetatile 45, 26, METATILE_General_CaveEntrance_Bottom, FALSE
 # 22 "data/maps/Route103/scripts.pory"
 	return
 # 23 "data/maps/Route103/scripts.pory"
@@ -47,9 +47,9 @@ Route103_EventScript_OpenAlteringCave::
 # 24 "data/maps/Route103/scripts.pory"
 Route103_CloseLakeEntrance::
 # 25 "data/maps/Route103/scripts.pory"
-	setmetatile 34, 7, METATILE_General_RockWall_RockBase, TRUE
+	setmetatile 34, 27, METATILE_General_RockWall_RockBase, TRUE
 # 26 "data/maps/Route103/scripts.pory"
-	setmetatile 34, 8, METATILE_General_RockWall_SandBase, TRUE
+	setmetatile 34, 28, METATILE_General_RockWall_SandBase, TRUE
 # 27 "data/maps/Route103/scripts.pory"
 	return
 # 28 "data/maps/Route103/scripts.pory"

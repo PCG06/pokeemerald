@@ -437,7 +437,8 @@
     "FloatingSlab",
     "RockySlab",
     "GrassySlab",
-    "FieryPath_BackRoom"
+    "FieryPath_BackRoom",
+    "DistortionWorld"
   ],
   "gMapGroup_IndoorDynamic": [
     "SecretBase_RedCave1",
@@ -591,7 +592,9 @@
     "NavelRock_Down10",
     "NavelRock_Down11",
     "NavelRock_Bottom",
-    "TrainerHill_Elevator"
+    "TrainerHill_Elevator",
+    "HallofOrigin",
+    "SpearPillar"
   ],
   "gMapGroup_IndoorRoute104Prototype": [
     "Route104_Prototype",

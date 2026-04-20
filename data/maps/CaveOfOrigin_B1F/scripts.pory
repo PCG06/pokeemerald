@@ -119,4 +119,53 @@ CaveOfOrigin_B1F_Text_WellHeadToSkyPillar:
 	.string "{PLAYER}{KUN}, there's not a moment to lose!\n"
 	.string "We'll head to the Sky Pillar right away!$"
 
+CaveOfOrigin_B1F_OnResume:
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, CaveOfOrigin_B1F_EventScript_TryRemoveTerapagos
+	end
+
+CaveOfOrigin_B1F_EventScript_TryRemoveTerapagos::
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_ne VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
+
+CaveOfOrigin_B1F_OnTransition:
+	call_if_unset FLAG_DEFEATED_TERAPAGOS, CaveOfOrigin_B1F_EventScript_ShowTerapagos
+	end
+
+CaveOfOrigin_B1F_EventScript_ShowTerapagos::
+	clearflag FLAG_HIDE_TERAPAGOS
+	return
+
+CaveOfOrigin_B1F_EventScript_Terapagos::
+	lock
+	faceplayer
+	waitse
+	playmoncry SPECIES_TERAPAGOS, CRY_MODE_ENCOUNTER
+	delay 40
+	waitmoncry
+	setwildbattle SPECIES_TERAPAGOS, 70
+	setflag FLAG_SYS_CTRL_OBJ_DELETE
+	special StartRegiBattle
+	waitstate
+	clearflag FLAG_SYS_CTRL_OBJ_DELETE
+	specialvar VAR_RESULT, GetBattleOutcome
+	goto_if_eq VAR_RESULT, B_OUTCOME_WON, CaveOfOrigin_B1F_EventScript_DefeatedTerapagos
+	goto_if_eq VAR_RESULT, B_OUTCOME_RAN, CaveOfOrigin_B1F_EventScript_RanFromTerapagos
+	goto_if_eq VAR_RESULT, B_OUTCOME_PLAYER_TELEPORTED, CaveOfOrigin_B1F_EventScript_RanFromTerapagos
+	goto_if_eq VAR_RESULT, B_OUTCOME_CAUGHT, Common_EventScript_RemoveStaticPokemon
+	setflag FLAG_DEFEATED_TERAPAGOS
+	release
+	end
+
+CaveOfOrigin_B1F_EventScript_DefeatedTerapagos::
+	setflag FLAG_DEFEATED_TERAPAGOS
+	goto Common_EventScript_RemoveStaticPokemon
+	end
+
+CaveOfOrigin_B1F_EventScript_RanFromTerapagos::
+	setvar VAR_0x8004, SPECIES_TERAPAGOS
+	goto Common_EventScript_LegendaryFlewAway
+	end
+
 `

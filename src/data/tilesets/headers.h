@@ -825,3 +825,69 @@ const struct Tileset gTileset_UnionRoom =
     .metatileAttributes = gMetatileAttributes_UnionRoom,
     .callback = NULL,
 };
+
+const struct Tileset gTileset_AutumnRuins =
+{
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_AutumnRuins,
+    .palettes = gTilesetPalettes_AutumnRuins,
+    .metatiles = gMetatiles_AutumnRuins,
+    .metatileAttributes = gMetatileAttributes_AutumnRuins,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_LugiaMovieAltar =
+{
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_LugiaMovieAltar,
+    .palettes = gTilesetPalettes_LugiaMovieAltar,
+    .metatiles = gMetatiles_LugiaMovieAltar,
+    .metatileAttributes = gMetatileAttributes_LugiaMovieAltar,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_DesertPyramidExterior =
+{
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_DesertPyramidExterior,
+    .palettes = gTilesetPalettes_DesertPyramidExterior,
+    .metatiles = gMetatiles_DesertPyramidExterior,
+    .metatileAttributes = gMetatileAttributes_DesertPyramidExterior,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_SnowRecolor =
+{
+    .isCompressed = TRUE,
+    .isSecondary = FALSE,
+    .tiles = gTilesetTiles_SnowRecolor,
+    .palettes = gTilesetPalettes_SnowRecolor,
+    .metatiles = gMetatiles_SnowRecolor,
+    .metatileAttributes = gMetatileAttributes_SnowRecolor,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_PyramidInterior =
+{
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_PyramidInterior,
+    .palettes = gTilesetPalettes_PyramidInterior,
+    .metatiles = gMetatiles_PyramidInterior,
+    .metatileAttributes = gMetatileAttributes_PyramidInterior,
+    .callback = NULL,
+};
+
+const struct Tileset gTileset_DistortionWorld =
+{
+    .isCompressed = TRUE,
+    .isSecondary = TRUE,
+    .tiles = gTilesetTiles_DistortionWorld,
+    .palettes = gTilesetPalettes_DistortionWorld,
+    .metatiles = gMetatiles_DistortionWorld,
+    .metatileAttributes = gMetatileAttributes_DistortionWorld,
+    .callback = NULL,
+};

@@ -440,6 +440,14 @@ extern const u8 gText_Speed[];
 extern const u8 gText_Dash[];
 extern const u8 gText_Plus[];
 extern const u8 gText_Nickname[];
+extern const u8 gText_Mode[];
+extern const u8 gText_setHP[];
+extern const u8 gText_BurnMenu[];
+extern const u8 gText_FrostbiteMenu[];
+extern const u8 gText_ParalyzeMenu[];
+extern const u8 gText_PoisonMenu[];
+extern const u8 gText_ToxicMenu[];
+extern const u8 gText_SleepMenu[];
 extern const u8 gText_StatEditor[];
 
 //Pokédex text

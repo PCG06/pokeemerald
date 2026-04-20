@@ -1457,3 +1457,38 @@ AI_SINGLE_BATTLE_TEST("EFFECT_EXPLOSION and EFFECT_SUPER_FANG should be ignored 
         }
     }
 }
+
+AI_SINGLE_BATTLE_TEST("Retaliate sees damage correctly for post ko switch in")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_CHECK_VIABILITY | AI_FLAG_TRY_TO_FAINT | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_GABITE) { Level(50); Speed(2);}
+        OPPONENT(SPECIES_ZIGZAGOON) { Level(1); Speed(3); HP(1); Moves(MOVE_TACKLE); }
+        OPPONENT(SPECIES_GROUDON) { Level(85); Speed(3); Moves(MOVE_PRECIPICE_BLADES); }
+        OPPONENT(SPECIES_STOUTLAND) { Level(50); Speed(3); Moves(MOVE_RETALIATE); }
+    } WHEN {
+        TURN { MOVE(player, MOVE_TACKLE); EXPECT_SEND_OUT(opponent, 2); }
+    }
+}
+
+AI_DOUBLE_BATTLE_TEST("ABILITY_PARENTAL_BOND - AI should not calc parental bond extra hit in double battles (hits timeout, but .elf shows correct data)")
+{
+    GIVEN {
+        AI_FLAGS(AI_FLAG_CHECK_BAD_MOVE | AI_FLAG_TRY_TO_FAINT | AI_FLAG_CHECK_VIABILITY | AI_FLAG_SMART_SWITCHING | AI_FLAG_SMART_MON_CHOICES | AI_FLAG_OMNISCIENT);
+        PLAYER(SPECIES_SCYTHER){ Level(76); Moves(MOVE_BUG_BITE); Ability(ABILITY_TECHNICIAN); Nature(NATURE_ADAMANT); Item(ITEM_CHOICE_SCARF); Speed(295); }
+        PLAYER(SPECIES_ROTOM_FAN){ Level(76); Moves(MOVE_VOLT_SWITCH); Ability(ABILITY_MOTOR_DRIVE); Speed(159); HP(135); }
+        PLAYER(SPECIES_GRIMMSNARL){ Level(76); Moves(MOVE_FAKE_OUT); Nature(NATURE_IMPISH); Ability(ABILITY_INFILTRATOR); Speed(116); HP(77); }
+        OPPONENT(SPECIES_TAPU_LELE){ Level(76); Nature(NATURE_TIMID); Moves(MOVE_PSYCHIC, MOVE_THUNDERBOLT); Ability(ABILITY_PSYCHIC_SURGE); Speed(189); }
+        OPPONENT(SPECIES_IRON_LEAVES){ Level(76); Nature(NATURE_JOLLY); Moves(MOVE_PSYBLADE); Speed(206); }
+        OPPONENT(SPECIES_FARIGIRAF){ Level(76); Nature(NATURE_MODEST); Moves(MOVE_DAZZLING_GLEAM); Ability(ABILITY_PARENTAL_BOND); Speed(119); }
+        OPPONENT(SPECIES_ALAKAZAM){ Level(76); Nature(NATURE_TIMID); Moves(MOVE_FOCUS_BLAST); Speed(231); }
+    } WHEN {
+        TURN {
+            MOVE(playerLeft, MOVE_BUG_BITE, target:opponentRight);
+            SWITCH(playerRight, 2);
+            EXPECT_MOVE(opponentLeft, MOVE_PSYCHIC, target:playerRight);
+            EXPECT_MOVE(opponentRight, MOVE_PSYBLADE, target:playerRight);
+            EXPECT_SEND_OUT(opponentRight, 3);
+        }
+    }
+}
