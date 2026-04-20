@@ -511,30 +511,12 @@ Route103_EventScript_Andrew::
 # 256 "data/maps/Route103/scripts.pory"
 	msgbox Route103_Text_YouAgreeGoodRodIsGood, MSGBOX_YESNO
 # 257 "data/maps/Route103/scripts.pory"
-	goto_if_eq VAR_RESULT, YES, Route103_EventScript_ReceiveGoodRod
+	goto_if_eq VAR_RESULT, YES, Route103_EventScript_DeclineGoodRod
 # 258 "data/maps/Route103/scripts.pory"
 	goto_if_eq VAR_RESULT, NO, Route103_EventScript_DeclineGoodRod
 # 259 "data/maps/Route103/scripts.pory"
 	end
 # 260 "data/maps/Route103/scripts.pory"
-
-# 261 "data/maps/Route103/scripts.pory"
-Route103_EventScript_ReceiveGoodRod::
-# 262 "data/maps/Route103/scripts.pory"
-	msgbox Route103_Text_IdenticalMindsTakeThis, MSGBOX_DEFAULT
-# 263 "data/maps/Route103/scripts.pory"
-	giveitem ITEM_GOOD_ROD
-# 264 "data/maps/Route103/scripts.pory"
-	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
-# 265 "data/maps/Route103/scripts.pory"
-	setflag FLAG_RECEIVED_GOOD_ROD
-# 266 "data/maps/Route103/scripts.pory"
-	msgbox Route103_Text_TryYourLuckFishing, MSGBOX_DEFAULT
-# 267 "data/maps/Route103/scripts.pory"
-	release
-# 268 "data/maps/Route103/scripts.pory"
-	end
-# 269 "data/maps/Route103/scripts.pory"
 
 # 270 "data/maps/Route103/scripts.pory"
 Route103_EventScript_DeclineGoodRod::
@@ -780,35 +762,16 @@ Route103_Text_YouAgreeGoodRodIsGood:
 	.string "Wouldn't you agree?$"
 # 391 "data/maps/Route103/scripts.pory"
 
-# 392 "data/maps/Route103/scripts.pory"
-Route103_Text_IdenticalMindsTakeThis:
-# 393 "data/maps/Route103/scripts.pory"
-	.string "Hmm!\n"
-# 394 "data/maps/Route103/scripts.pory"
-	.string "We're of identical minds!\p"
-# 395 "data/maps/Route103/scripts.pory"
-	.string "Hmm!\n"
-# 396 "data/maps/Route103/scripts.pory"
-	.string "Take this Good Rod!$"
-# 397 "data/maps/Route103/scripts.pory"
-
-# 398 "data/maps/Route103/scripts.pory"
-Route103_Text_TryYourLuckFishing:
-# 399 "data/maps/Route103/scripts.pory"
-	.string "Wherever there's water, try your luck\n"
-# 400 "data/maps/Route103/scripts.pory"
-	.string "at fishing.$"
-# 401 "data/maps/Route103/scripts.pory"
-
 # 402 "data/maps/Route103/scripts.pory"
 Route103_Text_DontYouLikeToFish:
 # 403 "data/maps/Route103/scripts.pory"
-	.string "Don't you like to fish?$"
+	.string "You have a Super Rod?!\n"
 # 404 "data/maps/Route103/scripts.pory"
+	.string "I'm so jealous.$"
 
 # 405 "data/maps/Route103/scripts.pory"
 Route103_Text_TryCatchingMonWithGoodRod:
 # 406 "data/maps/Route103/scripts.pory"
-	.string "Try catching all sorts of Pokémon\n"
+	.string "You can't catch any Pokémon\n"
 # 407 "data/maps/Route103/scripts.pory"
-	.string "with your Good Rod.$"
+	.string "with a Good Rod these days.$"
