@@ -257,22 +257,26 @@ static u8 ChooseWildMonIndex_Fishing(u8 rod)
 
     if (LURE_STEP_COUNT != 0 && (Random() % 10 < 2))
         swap = TRUE;
-
+    switch(rod)
+    {
+    case SUPER_ROD:
         if (rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_0)
             wildMonIndex = 0;
-        if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_0 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_1)
+        else if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_0 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_1)
             wildMonIndex = 1;
-        if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_1 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_2)
+        else if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_1 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_2)
             wildMonIndex = 2;
-        if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_2 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_3)
+        else if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_2 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_3)
             wildMonIndex = 3;
-        if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_3 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_4)
+        else if (rand >= ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_3 && rand < ENCOUNTER_CHANCE_FISHING_MONS_SUPER_ROD_SLOT_4)
             wildMonIndex = 4;
         else
             wildMonIndex = 5;
 
         if (swap)
             wildMonIndex = 5 - wildMonIndex;
+        break;
+    }
     return wildMonIndex;
 }
 
@@ -1185,4 +1189,3 @@ bool32 MapHasNoEncounterData(void)
 {
     return (GetCurrentMapWildMonHeaderId() == HEADER_NONE);
 }
-
