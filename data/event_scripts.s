@@ -1201,3 +1201,5 @@ EventScript_VsSeekerChargingDone::
 	.include "data/maps/HallofOrigin/scripts.inc"
 
 	.include "data/maps/SpearPillar/scripts.inc"
+
+	.include "data/maps/SlumberingWeald/scripts.inc"

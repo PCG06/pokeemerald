@@ -2281,6 +2281,11 @@ static s32 AI_CheckBadMove(u32 battlerAtk, u32 battlerDef, u32 move, s32 score)
             {
                 ADJUST_SCORE(-10);
             }
+            else if ((AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_POWERFUL_STATUS))
+            {
+                if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM) // Trick Room Up, prevent reversing it
+                    ADJUST_SCORE(-10);
+            }
             else if (!(AI_THINKING_STRUCT->aiFlags[battlerAtk] & AI_FLAG_POWERFUL_STATUS))
             {
                 if (gFieldStatuses & STATUS_FIELD_TRICK_ROOM) // Trick Room Up

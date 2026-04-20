@@ -4,16 +4,20 @@
 #include "caps.h"
 #include "pokemon.h"
 #include "pokemon_storage_system.h"
+#include "constants/game_settings.h"
 
 
 u32 GetCurrentLevelCap(void)
 {
-    static const u32 sLevelCapFlagMap[][2] =
+    if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) == GAME_SETTING_DIFFICULTY_VANILLA_MODE)
+        return MAX_LEVEL;
+
+    static const u32 sLevelCapFlagMapNormalMode[][2] =
     {
-        {FLAG_BADGE01_GET, 16},
+        {FLAG_BADGE01_GET, 15},
         {FLAG_DEFEATED_RIVAL_RUSTBORO, 20},
         {FLAG_BADGE02_GET, 25},
-        {FLAG_RIVAL_110,   30},
+        {FLAG_RIVAL_110, 30},
         {FLAG_BADGE03_GET, 34},
         {FLAG_DEFEATED_EVIL_TEAM_MT_CHIMNEY, 44},
         {FLAG_BADGE04_GET, 47},
@@ -28,14 +32,45 @@ u32 GetCurrentLevelCap(void)
         {FLAG_IS_CHAMPION, 85},
     };
 
+    static const u32 sLevelCapFlagMapHardMode[][2] =
+    {
+        {FLAG_BADGE01_GET, 16},
+        {FLAG_DEFEATED_RIVAL_RUSTBORO, 20},
+        {FLAG_BADGE02_GET, 25},
+        {FLAG_RIVAL_110, 30},
+        {FLAG_BADGE03_GET, 34},
+        {FLAG_DEFEATED_EVIL_TEAM_MT_CHIMNEY, 44},
+        {FLAG_BADGE04_GET, 47},
+        {FLAG_BADGE05_GET, 56,
+        {FLAG_RECEIVED_HM_FLY, 64},
+        {FLAG_BADGE06_GET, 68},
+        {FLAG_TEAM_AQUA_ESCAPED_IN_SUBMARINE, 71},
+        {FLAG_BADGE07_GET, 76},
+        {FLAG_KYOGRE_ESCAPED_SEAFLOOR_CAVERN, 80},
+        {FLAG_BADGE08_GET, 82},
+        {FLAG_DEFEATED_WALLY_VICTORY_ROAD, 84},
+        {FLAG_IS_CHAMPION, 85},
+    };
+
     u32 i;
 
     if (B_LEVEL_CAP_TYPE == LEVEL_CAP_FLAG_LIST)
     {
-        for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMap); i++)
+        if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
         {
-            if (!FlagGet(sLevelCapFlagMap[i][0]))
-                return sLevelCapFlagMap[i][1];
+            for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMapHardMode); i++)
+            {
+                if (!FlagGet(sLevelCapFlagMapHardMode[i][0]))
+                    return sLevelCapFlagMapHardMode[i][1];
+            }
+        }
+        else
+        {
+            for (i = 0; i < ARRAY_COUNT(sLevelCapFlagMapNormalMode); i++)
+            {
+                if (!FlagGet(sLevelCapFlagMapNormalMode[i][0]))
+                    return sLevelCapFlagMapNormalMode[i][1];
+            }
         }
     }
     else if (B_LEVEL_CAP_TYPE == LEVEL_CAP_VARIABLE)

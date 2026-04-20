@@ -1774,6 +1774,14 @@
       "y": 7,
       "width": 1,
       "height": 1
+    },
+    {
+      "map_section": "MAPSEC_SLUMBERING_WEALD",
+      "name": "SLUMBERING WEALD",
+      "x": 8,
+      "y": 7,
+      "width": 1,
+      "height": 1
     }
   ]
 }
