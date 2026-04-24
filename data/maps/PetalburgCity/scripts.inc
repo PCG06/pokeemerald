@@ -1367,17 +1367,17 @@ PetalburgCity_EventScript_GymBoy::
 # 684 "data/maps/PetalburgCity/scripts.pory"
 
 # 685 "data/maps/PetalburgCity/scripts.pory"
-PetalburgCity_EventScript_OldRodFisherman::
+PetalburgCity_EventScript_SuperRodFisherman::
 # 686 "data/maps/PetalburgCity/scripts.pory"
 	lock
 # 687 "data/maps/PetalburgCity/scripts.pory"
 	faceplayer
 # 688 "data/maps/PetalburgCity/scripts.pory"
-	goto_if_set FLAG_RECEIVED_OLD_ROD, PetalburgCity_EventScript_HowsFishing
+	goto_if_set FLAG_RECEIVED_SUPER_ROD, PetalburgCity_EventScript_HowsFishing
 # 689 "data/maps/PetalburgCity/scripts.pory"
 	msgbox PetalburgCity_Text_GettingItchToFish, MSGBOX_YESNO
 # 690 "data/maps/PetalburgCity/scripts.pory"
-	goto_if_eq VAR_RESULT, YES, PetalburgCity_EventScript_GiveOldRod
+	goto_if_eq VAR_RESULT, YES, PetalburgCity_EventScript_GiveSuperRod
 # 691 "data/maps/PetalburgCity/scripts.pory"
 	goto_if_eq VAR_RESULT, NO, PetalburgCity_EventScript_NotGettingItchToFish
 # 692 "data/maps/PetalburgCity/scripts.pory"
@@ -1385,15 +1385,15 @@ PetalburgCity_EventScript_OldRodFisherman::
 # 693 "data/maps/PetalburgCity/scripts.pory"
 
 # 694 "data/maps/PetalburgCity/scripts.pory"
-PetalburgCity_EventScript_GiveOldRod::
+PetalburgCity_EventScript_GiveSuperRod::
 # 695 "data/maps/PetalburgCity/scripts.pory"
 	msgbox PetalburgCity_Text_GiveYouOneOfMyRods, MSGBOX_DEFAULT
 # 696 "data/maps/PetalburgCity/scripts.pory"
-	giveitem ITEM_OLD_ROD
+	giveitem ITEM_SUPER_ROD
 # 697 "data/maps/PetalburgCity/scripts.pory"
 	goto_if_eq VAR_RESULT, FALSE, Common_EventScript_ShowBagIsFull
 # 698 "data/maps/PetalburgCity/scripts.pory"
-	setflag FLAG_RECEIVED_OLD_ROD
+	setflag FLAG_RECEIVED_SUPER_ROD
 # 699 "data/maps/PetalburgCity/scripts.pory"
 	msgbox PetalburgCity_Text_ThrowInFishingAdvice, MSGBOX_DEFAULT
 # 700 "data/maps/PetalburgCity/scripts.pory"
