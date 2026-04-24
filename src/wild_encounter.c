@@ -467,6 +467,8 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum 
     switch (area)
     {
     case WILD_AREA_LAND:
+        if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) < GAME_SETTING_DIFFICULTY_HARD_MODE)
+        {
         if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_STEEL, ABILITY_MAGNET_PULL, &wildMonIndex, LAND_WILD_COUNT))
             break;
         if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_STATIC, &wildMonIndex, LAND_WILD_COUNT))
@@ -479,10 +481,12 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum 
             break;
         if (OW_STORM_DRAIN >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_WATER, ABILITY_STORM_DRAIN, &wildMonIndex, LAND_WILD_COUNT))
             break;
-
+        }
         wildMonIndex = ChooseWildMonIndex_Land();
         break;
     case WILD_AREA_WATER:
+        if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) < GAME_SETTING_DIFFICULTY_HARD_MODE)
+        {
         if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_STEEL, ABILITY_MAGNET_PULL, &wildMonIndex, WATER_WILD_COUNT))
             break;
         if (TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_ELECTRIC, ABILITY_STATIC, &wildMonIndex, WATER_WILD_COUNT))
@@ -495,7 +499,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, enum 
             break;
         if (OW_STORM_DRAIN >= GEN_8 && TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildMonInfo->wildPokemon, TYPE_WATER, ABILITY_STORM_DRAIN, &wildMonIndex, WATER_WILD_COUNT))
             break;
-
+        }
         wildMonIndex = ChooseWildMonIndex_WaterRock();
         break;
     case WILD_AREA_ROCKS:
