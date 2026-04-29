@@ -414,7 +414,7 @@ static const struct TrainerMon sParty_GruntWeatherInst3[] = {
 static const struct TrainerMon sParty_GruntMuseum1[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 32,
+    .lvl = 30,
     .species = SPECIES_LOKIX,
     .heldItem = ITEM_MUSCLE_BAND,
     .nature = NATURE_ADAMANT,
@@ -435,7 +435,7 @@ static const struct TrainerMon sParty_GruntMuseum1[] = {
 static const struct TrainerMon sParty_GruntMuseum2[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 32,
+    .lvl = 30,
     .species = SPECIES_GOLISOPOD,
     .heldItem = ITEM_MUSCLE_BAND,
     .nature = NATURE_ADAMANT,
@@ -18791,7 +18791,7 @@ static const struct TrainerMon sParty_MattWeatherInstHard[] = {
 static const struct TrainerMon sParty_GruntMuseum1Vanilla[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 32,
+    .lvl = 30,
     .species = SPECIES_LOKIX,
     .heldItem = ITEM_MUSCLE_BAND,
     .nature = NATURE_ADAMANT,
@@ -18812,7 +18812,7 @@ static const struct TrainerMon sParty_GruntMuseum1Vanilla[] = {
 static const struct TrainerMon sParty_GruntMuseum1Hard[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 32,
+    .lvl = 30,
     .species = SPECIES_LOKIX,
     .heldItem = ITEM_MUSCLE_BAND,
     .nature = NATURE_ADAMANT,
@@ -18827,13 +18827,22 @@ static const struct TrainerMon sParty_GruntMuseum1Hard[] = {
     .nature = NATURE_JOLLY,
     .ability = ABILITY_INTIMIDATE,
     .moves = {MOVE_BARB_BARRAGE, MOVE_WATERFALL, MOVE_AQUA_JET, MOVE_REVENGE}
+    },
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
+    .lvl = 30,
+    .species = SPECIES_KLAWF,
+    .heldItem = ITEM_PASSHO_BERRY,
+    .nature = NATURE_JOLLY,
+    .ability = ABILITY_ANGER_SHELL,
+    .moves = { MOVE_ROCK_SLIDE, MOVE_HIGH_HORSEPOWER, MOVE_X_SCISSOR, MOVE_BRICK_BREAK }
     }
 };
 
 static const struct TrainerMon sParty_GruntMuseum2Vanilla[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 32,
+    .lvl = 30,
     .species = SPECIES_GOLISOPOD,
     .heldItem = ITEM_MUSCLE_BAND,
     .nature = NATURE_ADAMANT,
@@ -18854,7 +18863,7 @@ static const struct TrainerMon sParty_GruntMuseum2Vanilla[] = {
 static const struct TrainerMon sParty_GruntMuseum2Hard[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 32,
+    .lvl = 30,
     .species = SPECIES_GOLISOPOD,
     .heldItem = ITEM_MUSCLE_BAND,
     .nature = NATURE_ADAMANT,
@@ -18864,11 +18873,11 @@ static const struct TrainerMon sParty_GruntMuseum2Hard[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
     .lvl = 30,
-    .species = SPECIES_PALPITOAD,
-    .heldItem = ITEM_EVIOLITE,
-    .nature = NATURE_TIMID,
-    .ability = ABILITY_WATER_ABSORB,
-    .moves = {MOVE_BUBBLE_BEAM, MOVE_ICY_WIND, MOVE_MUD_BOMB, MOVE_UPROAR}
+    .species = SPECIES_GASTRODON,
+    .nature = NATURE_MODEST,
+    .ability = ABILITY_STORM_DRAIN,
+    .heldItem = ITEM_RINDO_BERRY,
+    .moves = {MOVE_SCALD, MOVE_EARTH_POWER, MOVE_SLUDGE_BOMB, MOVE_RECOVER}
     },
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
