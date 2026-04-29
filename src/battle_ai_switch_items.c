@@ -1528,6 +1528,27 @@ static u32 GetSwitchinHazardsDamage(u32 battler, struct BattlePokemon *battleMon
     return hazardDamage;
 }
 
+static s32 GetSwitchInTerrainImpact(u16 heldItemEffect)
+{
+    s32 terrainImpact = 0, maxHP = AI_DATA->switchinCandidate.battleMon.maxHP, ability = AI_DATA->switchinCandidate.battleMon.ability;
+    if (gFieldStatuses & STATUS_FIELD_GRASSY_TERRAIN)
+    {
+        // make sure switch-in candidate isn't grounded
+            // air balloon = false, flying type = false, levitate = false
+            // iron ball or gravity would force those to be true
+        bool32 isAirborne = heldItemEffect == HOLD_EFFECT_AIR_BALLOON || ability == ABILITY_LEVITATE || AI_DATA->switchinCandidate.battleMon.types[0] == TYPE_FLYING || AI_DATA->switchinCandidate.battleMon.types[1] == TYPE_FLYING;
+        if (heldItemEffect == HOLD_EFFECT_IRON_BALL || (gFieldStatuses & STATUS_FIELD_GRAVITY) || !isAirborne)
+        {
+            terrainImpact = maxHP / 16;
+            if (terrainImpact == 0)
+                terrainImpact = 1;
+        }
+        
+    }
+
+    return terrainImpact;
+}
+
 // Gets damage / healing from weather
 static s32 GetSwitchinWeatherImpact(void)
 {
@@ -1627,10 +1648,9 @@ static u32 GetSwitchinRecurringHealing(void)
 }
 
 // Gets one turn of recurring damage
-static u32 GetSwitchinRecurringDamage(void)
+static u32 GetSwitchinRecurringDamage(u16 holdEffect)
 {
     u32 passiveDamage = 0, maxHP = AI_DATA->switchinCandidate.battleMon.maxHP, ability = AI_DATA->switchinCandidate.battleMon.ability;
-    u32 holdEffect = ItemId_GetHoldEffect(AI_DATA->switchinCandidate.battleMon.item);
 
     // Items
     if (ability != ABILITY_MAGIC_GUARD && ability != ABILITY_KLUTZ)
@@ -1732,23 +1752,25 @@ static u32 GetSwitchinStatusDamage(u32 battler)
 }
 
 // Gets number of hits to KO factoring in hazards, healing held items, status, and weather
-static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
+static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler, bool32 isFreeSwitch)
 {
     u32 startingHP = AI_DATA->switchinCandidate.battleMon.hp - GetSwitchinHazardsDamage(battler, &AI_DATA->switchinCandidate.battleMon);
+    u16 heldItemEffect = ItemId_GetHoldEffect(AI_DATA->switchinCandidate.battleMon.item);
     s32 weatherImpact = GetSwitchinWeatherImpact(); // Signed to handle both damage and healing in the same value
-    u32 recurringDamage = GetSwitchinRecurringDamage();
+    s32 terrainImpact = GetSwitchInTerrainImpact(heldItemEffect);
+    u32 recurringHeldItemDamage = GetSwitchinRecurringDamage(heldItemEffect);
     u32 recurringHealing = GetSwitchinRecurringHealing();
     u32 statusDamage = GetSwitchinStatusDamage(battler);
     u32 hitsToKO = 0;
-    u16 maxHP = AI_DATA->switchinCandidate.battleMon.maxHP, item = AI_DATA->switchinCandidate.battleMon.item, heldItemEffect = ItemId_GetHoldEffect(item);
-    u8 weatherDuration = gWishFutureKnock.weatherDuration, holdEffectParam = ItemId_GetHoldEffectParam(item);
+    u16 maxHP = AI_DATA->switchinCandidate.battleMon.maxHP, item = AI_DATA->switchinCandidate.battleMon.item;
+    u8 weatherDuration = gWishFutureKnock.weatherDuration, terrainDuration = gFieldTimers.terrainTimer, holdEffectParam = ItemId_GetHoldEffectParam(item);
     u32 opposingBattler = GetBattlerAtPosition(BATTLE_OPPOSITE(GetBattlerPosition(battler)));
     u32 opposingAbility = gBattleMons[opposingBattler].ability, ability = AI_DATA->switchinCandidate.battleMon.ability;
     bool32 usedSingleUseHealingItem = FALSE, opponentCanBreakMold = IsMoldBreakerTypeAbility(opposingBattler, opposingAbility);
     s32 currentHP = startingHP, singleUseItemHeal = 0;
 
     // No damage being dealt
-    if ((damageTaken + statusDamage + recurringDamage <= recurringHealing) || damageTaken + statusDamage + recurringDamage == 0)
+    if ((damageTaken + statusDamage + recurringHeldItemDamage <= recurringHealing) || damageTaken + statusDamage + recurringHeldItemDamage == 0)
         return hitsToKO;
 
     // Mon fainted to hazards
@@ -1761,6 +1783,10 @@ static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
         // Remove weather damage when it would run out
         if (weatherImpact != 0 && weatherDuration == 0)
             weatherImpact = 0;
+    
+        // likewise for terrain
+        if (terrainImpact != 0 && terrainDuration == 0)
+            terrainImpact = 0;
 
         // Take attack damage for the turn
         currentHP = currentHP - damageTaken;
@@ -1769,13 +1795,16 @@ static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
         if (damageTaken >= maxHP && startingHP == maxHP && (heldItemEffect == HOLD_EFFECT_FOCUS_SASH || (!opponentCanBreakMold && B_STURDY >= GEN_5 && ability == ABILITY_STURDY)) && hitsToKO < 1)
             currentHP = 1;
 
-        // If mon is still alive, apply weather impact first, as it might KO the mon before it can heal with its item (order is weather -> item -> status)
+        // If mon is still alive, apply terrain and weather impact first, as it might KO the mon before it can heal with its item (order is terrain -> weather -> item -> status)
+        if (currentHP > 0)
+            currentHP = currentHP + terrainImpact;
+
         if (currentHP > 0)
             currentHP = currentHP - weatherImpact;
 
         // Check if we're at a single use healing item threshold
         if (currentHP > 0 && AI_DATA->switchinCandidate.battleMon.ability != ABILITY_KLUTZ && usedSingleUseHealingItem == FALSE
-         && !(opposingAbility == ABILITY_UNNERVE && GetPocketByItemId(item) == POCKET_BERRIES))
+            && !(opposingAbility == ABILITY_UNNERVE && GetPocketByItemId(item) == POCKET_BERRIES))
         {
             switch (heldItemEffect)
             {
@@ -1816,9 +1845,21 @@ static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
             }
         }
 
-        // Healing from items occurs before status so we can do the rest in one line
-        if (currentHP > 0)
-            currentHP = currentHP + recurringHealing - recurringDamage - statusDamage;
+        // Healing/damage from items occurs before status so we can do the rest in one block
+        if (currentHP > 0) {
+            // handle life orb chip first, since this happens at time of move execution - exclude life orb damage if it's the switch turn of a mid-battle switch
+            if (heldItemEffect == HOLD_EFFECT_LIFE_ORB && (hitsToKO > 0 || (hitsToKO == 0 && isFreeSwitch)))
+                currentHP = currentHP - recurringHeldItemDamage;
+        
+            // then, if still alive, handle other damaging held item cases (black sludge/sticky barb), recurring healing, and status damage
+            if (currentHP > 0) {
+                if (heldItemEffect != HOLD_EFFECT_LIFE_ORB)
+                    currentHP = currentHP - recurringHeldItemDamage;
+            
+                // then do all healing/status damage for the turn cleanup
+                currentHP = currentHP + recurringHealing - statusDamage;
+            }
+        }
 
         // Recalculate toxic damage if needed
         if (AI_DATA->switchinCandidate.battleMon.status1 & STATUS1_TOXIC_POISON)
@@ -1827,6 +1868,10 @@ static u32 GetSwitchinHitsToKO(s32 damageTaken, u32 battler)
         // Reduce weather duration
         if (weatherDuration != 0)
             weatherDuration--;
+
+        // and terrain duration
+        if (terrainDuration != 0)
+            terrainDuration--;
 
         hitsToKO++;
     }
@@ -2082,8 +2127,8 @@ static u32 GetBestMonIntegrated(struct Pokemon *party, int firstId, int lastId, 
         AI_DATA->switchInCalc = TRUE;
 
         // Get max number of hits for player to KO AI mon and type matchup for defensive switching
-        hitsToKOAI = GetSwitchinHitsToKO(GetMaxDamagePlayerCouldDealToSwitchin(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, &bestPlayerMove), battler);
-        hitsToKOAIPriority = GetSwitchinHitsToKO(GetMaxPriorityDamagePlayerCouldDealToSwitchin(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, &bestPlayerPriorityMove), battler);
+        hitsToKOAI = GetSwitchinHitsToKO(GetMaxDamagePlayerCouldDealToSwitchin(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, &bestPlayerMove), battler, isFreeSwitch);
+        hitsToKOAIPriority = GetSwitchinHitsToKO(GetMaxPriorityDamagePlayerCouldDealToSwitchin(battler, opposingBattler, AI_DATA->switchinCandidate.battleMon, &bestPlayerPriorityMove), battler, isFreeSwitch);
 
         // Check through current mon's moves
         for (j = 0; j < MAX_MON_MOVES; j++)
