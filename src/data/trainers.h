@@ -308,7 +308,7 @@
             sParty_GruntMuseum1Hard,    // hard mode party
             sParty_GruntMuseum1Hard,    // HOF mode party (same as hard mode)
         },
-        .additionalPartySizes = {2, 2, 2, 2},
+        .additionalPartySizes = {2, 2, 3, 3},
     },
 
     [TRAINER_GRUNT_MUSEUM_2] =
@@ -3621,7 +3621,7 @@
             sParty_Brawly1Hard,    // hard mode party
             sParty_Brawly1Hard,    // HOF mode party (same as hard mode)
         },
-        .additionalPartySizes = {4, 5, 5, 5},
+        .additionalPartySizes = {4, 5, 6, 6},
     },
 
     [TRAINER_WATTSON_1] =
@@ -4205,7 +4205,7 @@
             sParty_Isabel1Hard,    // hard mode party
             sParty_Isabel1Hard,    // HOF mode party (same as hard mode)
         },
-        .additionalPartySizes = {2, 2, 2, 2},
+        .additionalPartySizes = {2, 2, 3, 3},
     },
 
 
@@ -9339,7 +9339,7 @@
             sParty_KalebHard,    // hard mode party
             sParty_KalebHard,    // HOF mode party (same as hard mode)
         },
-        .additionalPartySizes = {2, 2, 2, 2},
+        .additionalPartySizes = {2, 2, 3, 3},
     },
 
     [TRAINER_JOSEPH] =
