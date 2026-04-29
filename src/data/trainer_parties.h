@@ -6443,7 +6443,7 @@ static const struct TrainerMon sParty_Bethany[] = {
 static const struct TrainerMon sParty_Isabel1Vanilla[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 203,
+    .lvl = 30,
     .species = SPECIES_PLUSLE,
     .heldItem = ITEM_MAGNET,
     .nature = NATURE_TIMID,
@@ -6452,7 +6452,7 @@ static const struct TrainerMon sParty_Isabel1Vanilla[] = {
     },
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 202,
+    .lvl = 30,
     .species = SPECIES_MANTINE,
     .heldItem = ITEM_SITRUS_BERRY,
     .nature = NATURE_CALM,
@@ -6485,7 +6485,7 @@ static const struct TrainerMon sParty_Isabel1[] = {
 static const struct TrainerMon sParty_Isabel1Hard[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 203,
+    .lvl = 30,
     .species = SPECIES_PLUSLE,
     .heldItem = ITEM_MAGNET,
     .nature = NATURE_TIMID,
@@ -6494,12 +6494,21 @@ static const struct TrainerMon sParty_Isabel1Hard[] = {
     },
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 202,
+    .lvl = 30,
     .species = SPECIES_MANTINE,
     .heldItem = ITEM_WACAN_BERRY,
     .nature = NATURE_CALM,
     .ability = ABILITY_WATER_ABSORB,
     .moves = {MOVE_BUBBLE_BEAM, MOVE_ICY_WIND, MOVE_AIR_SLASH, MOVE_ROOST}
+    },
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
+    .lvl = 30,
+    .species = SPECIES_GLACEON,
+    .heldItem = ITEM_NEVERMELTICE,
+    .nature = NATURE_TIMID,
+    .ability = ABILITY_ICE_BODY,
+    .moves = {MOVE_FREEZE_DRY, MOVE_SHADOW_BALL, MOVE_ALLURING_VOICE, MOVE_ICE_BEAM}
     },
 };
 
@@ -13127,7 +13136,7 @@ static const struct TrainerMon sParty_Chandler[] = {
 static const struct TrainerMon sParty_KalebVanilla[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 203,
+    .lvl = 30,
     .species = SPECIES_MINUN,
     .heldItem = ITEM_MAGNET,
     .nature = NATURE_JOLLY,
@@ -13136,7 +13145,7 @@ static const struct TrainerMon sParty_KalebVanilla[] = {
     },
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 202,
+    .lvl = 30,
     .species = SPECIES_RHYDON,
     .heldItem = ITEM_EVIOLITE,
     .nature = NATURE_IMPISH,
@@ -13169,7 +13178,7 @@ static const struct TrainerMon sParty_Kaleb[] = {
 static const struct TrainerMon sParty_KalebHard[] = {
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 203,
+    .lvl = 30,
     .species = SPECIES_MINUN,
     .heldItem = ITEM_MAGNET,
     .nature = NATURE_JOLLY,
@@ -13178,12 +13187,21 @@ static const struct TrainerMon sParty_KalebHard[] = {
     },
     {
     .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
-    .lvl = 202,
+    .lvl = 30,
     .species = SPECIES_RHYDON,
     .heldItem = ITEM_EVIOLITE,
     .nature = NATURE_IMPISH,
     .ability = ABILITY_LIGHTNING_ROD,
     .moves = {MOVE_ROCK_TOMB, MOVE_BULLDOZE, MOVE_BRICK_BREAK, MOVE_CUT}
+    },
+    {
+    .iv = TRAINER_PARTY_IVS(31, 31, 31, 31, 31, 31),
+    .lvl = 30,
+    .species = SPECIES_MEOWSTIC_M,
+    .heldItem = ITEM_WISE_GLASSES,
+    .nature = NATURE_TIMID,
+    .ability = ABILITY_FELINE_PROWESS,
+    .moves = {MOVE_PSYSHOCK, MOVE_DARK_PULSE, MOVE_ENERGY_BALL, MOVE_NASTY_PLOT}
     },
 };
 
