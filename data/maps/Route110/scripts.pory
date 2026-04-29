@@ -405,7 +405,8 @@ Route110_EventScript_PlayBrendanMusic::
 	return
 
 Route110_EventScript_MayBattle::
-	msgbox Route110_Text_MayLetsBattle, MSGBOX_DEFAULT
+	setvar VAR_LAST_TALKED, LOCALID_RIVAL
+	setflag FLAG_HACKY_DOUBLE_BATTLE
 	switch VAR_STARTER_MON
 	case 0, Route110_EventScript_MayBattleTreecko
 	case 1, Route110_EventScript_MayBattleTorchic
@@ -413,21 +414,19 @@ Route110_EventScript_MayBattle::
 	end
 
 Route110_EventScript_MayBattleTreecko::
-	trainerbattle_no_intro TRAINER_MAY_ROUTE_110_TREECKO, Route110_Text_MayDefeated
-	goto Route110_EventScript_MayDefeated
+	trainerbattle_double TRAINER_MAY_ROUTE_110_TREECKO, Route110_Text_MayLetsBattle, Route110_Text_MayDefeated, Route110_Text_MayDefeated, Route110_EventScript_MayDefeated
 	end
 
 Route110_EventScript_MayBattleTorchic::
-	trainerbattle_no_intro TRAINER_MAY_ROUTE_110_TORCHIC, Route110_Text_MayDefeated
-	goto Route110_EventScript_MayDefeated
+	trainerbattle_double TRAINER_MAY_ROUTE_110_TORCHIC, Route110_Text_MayLetsBattle, Route110_Text_MayDefeated, Route110_Text_MayDefeated, Route110_EventScript_MayDefeated
 	end
 
 Route110_EventScript_MayBattleMudkip::
-	trainerbattle_no_intro TRAINER_MAY_ROUTE_110_MUDKIP, Route110_Text_MayDefeated
-	goto Route110_EventScript_MayDefeated
+	trainerbattle_double TRAINER_MAY_ROUTE_110_MUDKIP, Route110_Text_MayLetsBattle, Route110_Text_MayDefeated, Route110_Text_MayDefeated, Route110_EventScript_MayDefeated
 	end
 
 Route110_EventScript_MayDefeated::
+	clearflag FLAG_HACKY_DOUBLE_BATTLE
 	msgbox Route110_Text_MayTakeThis, MSGBOX_DEFAULT
 	call Route110_EventScript_GiveFly
 	msgbox Route110_Text_RivalThatsNotAll, MSGBOX_DEFAULT
@@ -437,7 +436,8 @@ Route110_EventScript_MayDefeated::
 	end
 
 Route110_EventScript_BrendanBattle::
-	msgbox Route110_Text_BrendanLetsBattle, MSGBOX_DEFAULT
+	setvar VAR_LAST_TALKED, LOCALID_RIVAL
+	setflag FLAG_HACKY_DOUBLE_BATTLE
 	switch VAR_STARTER_MON
 	case 0, Route110_EventScript_BrendanBattleTreecko
 	case 1, Route110_EventScript_BrendanBattleTorchic
@@ -445,21 +445,19 @@ Route110_EventScript_BrendanBattle::
 	end
 
 Route110_EventScript_BrendanBattleTreecko::
-	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_110_TREECKO, Route110_Text_BrendanDefeated
-	goto Route110_EventScript_BrendanDefeated
+	trainerbattle_double TRAINER_BRENDAN_ROUTE_110_TREECKO, Route110_Text_BrendanLetsBattle, Route110_Text_BrendanDefeated, Route110_Text_BrendanDefeated, Route110_EventScript_BrendanDefeated
 	end
 
 Route110_EventScript_BrendanBattleTorchic::
-	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_110_TORCHIC, Route110_Text_BrendanDefeated
-	goto Route110_EventScript_BrendanDefeated
+	trainerbattle_double TRAINER_BRENDAN_ROUTE_110_TORCHIC, Route110_Text_BrendanLetsBattle, Route110_Text_BrendanDefeated, Route110_Text_BrendanDefeated, Route110_EventScript_BrendanDefeated
 	end
 
 Route110_EventScript_BrendanBattleMudkip::
-	trainerbattle_no_intro TRAINER_BRENDAN_ROUTE_110_MUDKIP, Route110_Text_BrendanDefeated
-	goto Route110_EventScript_BrendanDefeated
+	trainerbattle_double TRAINER_BRENDAN_ROUTE_110_MUDKIP, Route110_Text_BrendanLetsBattle, Route110_Text_BrendanDefeated, Route110_Text_BrendanDefeated, Route110_EventScript_BrendanDefeated
 	end
 
 Route110_EventScript_BrendanDefeated::
+	clearflag FLAG_HACKY_DOUBLE_BATTLE
 	msgbox Route110_Text_BrendanTakeThis, MSGBOX_DEFAULT
 	call Route110_EventScript_GiveFly
 	msgbox Route110_Text_RivalThatsNotAll, MSGBOX_DEFAULT
