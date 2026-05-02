@@ -60,6 +60,7 @@
 #include "constants/item_effects.h"
 #include "constants/map_types.h"
 #include "constants/moves.h"
+#include "constants/game_settings.h"
 #include "constants/party_menu.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
@@ -9096,7 +9097,7 @@ static bool32 TryDefogClear(u32 battlerAtk, bool32 clear)
             gBattlescriptCurrInstr = BattleScript_FogEnded_Ret;
             return TRUE;
         }
-        if (B_DEFOG_EFFECT_CLEARING >= GEN_8 && (gFieldStatuses & STATUS_FIELD_TERRAIN_ANY))
+        if (B_DEFOG_EFFECT_CLEARING >= GEN_8 && (gFieldStatuses & STATUS_FIELD_TERRAIN_ANY) && VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) < GAME_SETTING_DIFFICULTY_HARD_MODE)
         {
             RemoveAllTerrains();
             BattleScriptPushCursor();
@@ -16775,6 +16776,8 @@ void BS_SetRemoveTerrain(void)
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_PSYCHIC;
         break;
     case EFFECT_HIT_SET_REMOVE_TERRAIN:
+        if (VarGet(VAR_GAME_SETTING_DIFFICULTY_MODE) >= GAME_SETTING_DIFFICULTY_HARD_MODE)
+            break;
         switch (gMovesInfo[gCurrentMove].argument)
         {
         case ARG_SET_PSYCHIC_TERRAIN: // Genesis Supernova
