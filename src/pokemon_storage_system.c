@@ -69,6 +69,7 @@ enum {
     OPTION_WITHDRAW,
 #endif
     OPTION_MOVE_ITEMS,
+    OPTION_RETURN_ITEMS,
     OPTION_EXIT,
     OPTIONS_COUNT
 };
@@ -106,6 +107,8 @@ enum {
     MSG_ITEM_IS_HELD,
     MSG_CHANGED_TO_ITEM,
     MSG_CANT_STORE_MAIL,
+    MSG_RETURN_ITEMS,
+    MSG_ITEMS_RETURNED,
 };
 
 // IDs for how to resolve variables in the above messages
@@ -584,6 +587,7 @@ static void Task_HandleWallpapers(u8);
 static void Task_NameBox(u8);
 static void Task_PrintCantStoreMail(u8);
 static void Task_HandleMovingMonFromParty(u8);
+static void Task_ReturnAllItems(u8);
 
 // Input handlers
 static u8 InBoxInput_Normal(void);
@@ -706,6 +710,7 @@ static void GiveItemToMon(u8, u8);
 static void MoveItemFromMonToBag(u8, u8);
 static void MoveItemFromCursorToBag(void);
 static void MoveHeldItemWithPartyMenu(void);
+static void ReturnAllHeldItems(void);
 static bool8 IsItemIconAnimActive(void);
 static bool8 IsMovingItem(void);
 static const u8 *GetMovingItemName(void);
@@ -861,6 +866,7 @@ struct {
     [OPTION_DEPOSIT]    = {COMPOUND_STRING("Deposit Pokémon"),  COMPOUND_STRING("Store Pokémon in your party in Boxes.")},
     [OPTION_MOVE_MONS]  = {COMPOUND_STRING("Move Pokémon"),     COMPOUND_STRING("Organize the Pokémon in Boxes and\nin your party.")},
     [OPTION_MOVE_ITEMS] = {COMPOUND_STRING("Move Items"),       COMPOUND_STRING("Move items held by any Pokémon\nin a Box or your party.")},
+    [OPTION_RETURN_ITEMS] = {COMPOUND_STRING("Return All Items"), COMPOUND_STRING("Return all items held by Pokémon in\nyour Box and your party.")},
     [OPTION_EXIT]       = {COMPOUND_STRING("See Ya!"),          COMPOUND_STRING("Return to the previous menu.")}
 };
 
@@ -870,7 +876,7 @@ static const struct WindowTemplate sWindowTemplate_MainMenu =
     .tilemapLeft = 1,
     .tilemapTop = 1,
     .width = 17,
-    .height = 10,
+    .height = 12,
     .paletteNum = 15,
     .baseBlock = 0x1,
 };
@@ -1073,6 +1079,8 @@ static const struct StorageMessage sMessages[] =
     [MSG_ITEM_IS_HELD]         = {COMPOUND_STRING("{DYNAMIC 0} is now held."),   MSG_VAR_ITEM_NAME},
     [MSG_CHANGED_TO_ITEM]      = {COMPOUND_STRING("Changed to {DYNAMIC 0}."),    MSG_VAR_ITEM_NAME},
     [MSG_CANT_STORE_MAIL]      = {COMPOUND_STRING("Mail can't be stored!"),      MSG_VAR_NONE},
+    [MSG_RETURN_ITEMS]         = {COMPOUND_STRING("Return all items?"),          MSG_VAR_NONE},
+    [MSG_ITEMS_RETURNED]       = {COMPOUND_STRING("Items have been returned."),          MSG_VAR_NONE},
 };
 
 static const struct WindowTemplate sYesNoWindowTemplate =
@@ -1560,6 +1568,7 @@ static void Task_PCMainMenu(u8 taskId)
             RemoveWindow(task->tWindowId);
             DestroyTask(taskId);
             break;
+        case OPTION_RETURN_ITEMS:
         default:
             if (task->tInput == OPTION_WITHDRAW && CountPartyMons() == PARTY_SIZE)
             {
@@ -2257,6 +2266,12 @@ enum {
 
 static void Task_PokeStorageMain(u8 taskId)
 {
+    if (sStorage->state == MSTATE_HANDLE_INPUT
+     && sStorage->boxOption == OPTION_RETURN_ITEMS)
+    {
+        SetPokeStorageTask(Task_ReturnAllItems);
+        return;
+    }
     switch (sStorage->state)
     {
     case MSTATE_HANDLE_INPUT:
@@ -3334,6 +3349,83 @@ static void Task_HandleMovingMonFromParty(u8 taskId)
             SetPokeStorageTask(Task_PokeStorageMain);
         }
         break;
+    }
+}
+
+static void Task_ReturnAllItems(u8 taskId)
+{
+    switch (sStorage->state)
+    {
+    case 0:
+        PrintMessage(MSG_RETURN_ITEMS);
+        ShowYesNoWindow(0);
+        sStorage->state++;
+        break;
+    case 1:
+        switch (Menu_ProcessInputNoWrapClearOnChoose())
+        {
+        case MENU_B_PRESSED:
+        case 1: // No
+            ClearBottomWindow();
+            PlaySE(SE_PC_OFF);
+            sStorage->state = 2;
+            break;
+        case 0: // Yes
+            ClearBottomWindow();
+            ReturnAllHeldItems();
+            PrintMessage(MSG_ITEMS_RETURNED);
+            sStorage->state = 4;
+            break;
+        }
+        break;
+    case 2:
+        ComputerScreenCloseEffect(20, 0, 0);
+        sStorage->state++;
+        break;
+    case 3:
+        if (!IsComputerScreenCloseEffectActive())
+        {
+            UpdateBoxToSendMons();
+            gPlayerPartyCount = CalculatePlayerPartyCount();
+            sStorage->screenChangeType = SCREEN_CHANGE_EXIT_BOX;
+            SetPokeStorageTask(Task_ChangeScreen);
+        }
+        break;
+    case 4:
+        if (JOY_NEW(A_BUTTON | B_BUTTON | DPAD_ANY))
+        {
+            ClearBottomWindow();
+            PlaySE(SE_PC_OFF);
+            sStorage->state = 2;
+        }
+        break;
+    }
+}
+
+static void ReturnAllHeldItems(void)
+{
+    u16 i, j;
+    u16 itemId;
+    u16 noneId = ITEM_NONE;
+
+    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
+    {
+        for (j = 0; j < IN_BOX_COUNT; j++)
+        {
+            if (GetBoxMonDataAt(i, j, MON_DATA_SANITY_HAS_SPECIES)
+            && !GetBoxMonDataAt(i, j, MON_DATA_MARKINGS))
+            {
+                itemId = GetBoxMonDataAt(i, j, MON_DATA_HELD_ITEM);
+                if (itemId != ITEM_NONE)
+                {
+                    if (AddBagItem(itemId, 1))
+                    {
+                        SetBoxMonDataAt(i, j, MON_DATA_HELD_ITEM, &noneId);
+                        SetMonFormPSS(&gPokemonStoragePtr->boxes[i][j]);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -6926,7 +7018,8 @@ void SetMonFormPSS(struct BoxPokemon *boxMon)
     if (targetSpecies != SPECIES_NONE)
     {
         SetBoxMonData(boxMon, MON_DATA_SPECIES, &targetSpecies);
-        UpdateSpeciesSpritePSS(boxMon);
+        if (sStorage->boxOption != OPTION_RETURN_ITEMS)
+            UpdateSpeciesSpritePSS(boxMon);
     }
 }
 
