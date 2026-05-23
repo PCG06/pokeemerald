@@ -3439,7 +3439,7 @@ static void ReturnAllHeldItems(bool8 includeParty)
             }
         }
     }
-else
+    else
     {
         for (i = 0; i < PARTY_SIZE; i++)
         {
