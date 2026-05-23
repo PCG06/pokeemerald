@@ -3426,29 +3426,33 @@ static void ReturnAllHeldItems(bool8 includeParty)
             for (j = 0; j < IN_BOX_COUNT; j++)
             {
                 struct BoxPokemon *boxMon = GetBoxedMonPtr(i, j);
-                if (!GetBoxMonData(boxMon, MON_DATA_SANITY_HAS_SPECIES))
-                    continue;
-                if (GetBoxMonData(boxMon, MON_DATA_MARKINGS))
-                    continue;
-
-                itemId = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM);
-                if (itemId != ITEM_NONE && AddBagItem(itemId, 1))
-                    SetBoxMonData(boxMon, MON_DATA_HELD_ITEM, &noneId);
+                if (GetBoxMonDataAt(i, j, MON_DATA_SANITY_HAS_SPECIES)
+                && !GetBoxMonDataAt(i, j, MON_DATA_MARKINGS))
+                {
+                    itemId = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM);
+                    if (itemId != ITEM_NONE && AddBagItem(itemId, 1))
+                    {
+                        SetBoxMonData(boxMon, MON_DATA_HELD_ITEM, &noneId);
+                        SetMonFormPSS(&gPokemonStoragePtr->boxes[i][j]);
+                    }
+                }
             }
         }
     }
-    else
+else
     {
         for (i = 0; i < PARTY_SIZE; i++)
         {
-            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
-                continue;
-            if (GetMonData(&gPlayerParty[i], MON_DATA_MARKINGS))
-                continue;
-
-            itemId = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
-            if (itemId != ITEM_NONE && AddBagItem(itemId, 1))
-                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &noneId);
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE
+            && !GetMonData(&gPlayerParty[i], MON_DATA_MARKINGS))
+            {
+                itemId = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
+                if (itemId != ITEM_NONE && AddBagItem(itemId, 1))
+                {
+                    SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &noneId);
+                    SetMonFormPSS(&gPlayerParty[i].box);
+                }
+            }
         }
     }
 }
