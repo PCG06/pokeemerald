@@ -164,6 +164,8 @@ enum {
     MENU_POKECENTER,
     MENU_MACHINE,
     MENU_SIMPLE,
+    MENU_RETURN_BOX,
+    MENU_RETURN_PARTY,
 };
 #define MENU_WALLPAPER_SETS_START MENU_SCENERY_1
 #define MENU_WALLPAPERS_START MENU_FOREST
@@ -710,7 +712,7 @@ static void GiveItemToMon(u8, u8);
 static void MoveItemFromMonToBag(u8, u8);
 static void MoveItemFromCursorToBag(void);
 static void MoveHeldItemWithPartyMenu(void);
-static void ReturnAllHeldItems(void);
+static void ReturnAllHeldItems(bool8 includeParty);
 static bool8 IsItemIconAnimActive(void);
 static bool8 IsMovingItem(void);
 static const u8 *GetMovingItemName(void);
@@ -1080,7 +1082,7 @@ static const struct StorageMessage sMessages[] =
     [MSG_CHANGED_TO_ITEM]      = {COMPOUND_STRING("Changed to {DYNAMIC 0}."),    MSG_VAR_ITEM_NAME},
     [MSG_CANT_STORE_MAIL]      = {COMPOUND_STRING("Mail can't be stored!"),      MSG_VAR_NONE},
     [MSG_RETURN_ITEMS]         = {COMPOUND_STRING("Return all items?"),          MSG_VAR_NONE},
-    [MSG_ITEMS_RETURNED]       = {COMPOUND_STRING("Items have been returned."),          MSG_VAR_NONE},
+    [MSG_ITEMS_RETURNED]       = {COMPOUND_STRING("Items have been returned."),  MSG_VAR_NONE},
 };
 
 static const struct WindowTemplate sYesNoWindowTemplate =
@@ -3358,21 +3360,31 @@ static void Task_ReturnAllItems(u8 taskId)
     {
     case 0:
         PrintMessage(MSG_RETURN_ITEMS);
-        ShowYesNoWindow(0);
+        InitMenu();
+        SetMenuText(MENU_RETURN_BOX);
+        SetMenuText(MENU_RETURN_PARTY);
+        SetMenuText(MENU_CANCEL);
+        AddMenu();
         sStorage->state++;
         break;
     case 1:
-        switch (Menu_ProcessInputNoWrapClearOnChoose())
+        switch (HandleMenuInput())
         {
         case MENU_B_PRESSED:
-        case 1: // No
+        case MENU_CANCEL:
             ClearBottomWindow();
             PlaySE(SE_PC_OFF);
             sStorage->state = 2;
             break;
-        case 0: // Yes
+        case MENU_RETURN_BOX:
             ClearBottomWindow();
-            ReturnAllHeldItems();
+            ReturnAllHeldItems(FALSE);
+            PrintMessage(MSG_ITEMS_RETURNED);
+            sStorage->state = 4;
+            break;
+        case MENU_RETURN_PARTY:
+            ClearBottomWindow();
+            ReturnAllHeldItems(TRUE);
             PrintMessage(MSG_ITEMS_RETURNED);
             sStorage->state = 4;
             break;
@@ -3402,29 +3414,41 @@ static void Task_ReturnAllItems(u8 taskId)
     }
 }
 
-static void ReturnAllHeldItems(void)
+static void ReturnAllHeldItems(bool8 includeParty)
 {
     u16 i, j;
     u16 itemId;
     u16 noneId = ITEM_NONE;
-
-    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
+    if (!includeParty)
     {
-        for (j = 0; j < IN_BOX_COUNT; j++)
+        for (i = 0; i < TOTAL_BOXES_COUNT; i++)
         {
-            if (GetBoxMonDataAt(i, j, MON_DATA_SANITY_HAS_SPECIES)
-            && !GetBoxMonDataAt(i, j, MON_DATA_MARKINGS))
+            for (j = 0; j < IN_BOX_COUNT; j++)
             {
-                itemId = GetBoxMonDataAt(i, j, MON_DATA_HELD_ITEM);
-                if (itemId != ITEM_NONE)
-                {
-                    if (AddBagItem(itemId, 1))
-                    {
-                        SetBoxMonDataAt(i, j, MON_DATA_HELD_ITEM, &noneId);
-                        SetMonFormPSS(&gPokemonStoragePtr->boxes[i][j]);
-                    }
-                }
+                struct BoxPokemon *boxMon = GetBoxedMonPtr(i, j);
+                if (!GetBoxMonData(boxMon, MON_DATA_SANITY_HAS_SPECIES))
+                    continue;
+                if (GetBoxMonData(boxMon, MON_DATA_MARKINGS))
+                    continue;
+
+                itemId = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM);
+                if (itemId != ITEM_NONE && AddBagItem(itemId, 1))
+                    SetBoxMonData(boxMon, MON_DATA_HELD_ITEM, &noneId);
             }
+        }
+    }
+    else
+    {
+        for (i = 0; i < PARTY_SIZE; i++)
+        {
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
+                continue;
+            if (GetMonData(&gPlayerParty[i], MON_DATA_MARKINGS))
+                continue;
+
+            itemId = GetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM);
+            if (itemId != ITEM_NONE && AddBagItem(itemId, 1))
+                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &noneId);
         }
     }
 }
@@ -8145,6 +8169,8 @@ static const u8 *const sMenuTexts[] =
     [MENU_POKECENTER] = COMPOUND_STRING("POKéCENTER"),
     [MENU_MACHINE]    = COMPOUND_STRING("MACHINE"),
     [MENU_SIMPLE]     = COMPOUND_STRING("SIMPLE"),
+    [MENU_RETURN_BOX]  = COMPOUND_STRING("Box"),
+    [MENU_RETURN_PARTY]  = COMPOUND_STRING("Party"),
 };
 
 static void SetMenuText(u8 textId)
