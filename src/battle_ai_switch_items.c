@@ -215,7 +215,7 @@ bool32 CanAIWin1V1(u32 battlerAtk, u32 battlerDef)
             && gMovesInfo[playerMove].category != DAMAGE_CATEGORY_STATUS 
             && gMovesInfo[playerMove].effect != EFFECT_FOCUS_PUNCH
             && gBattleMons[battlerDef].pp[i] > 0
-            && !MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, FALSE))
+            && !MatchesSelfKillOrSuperfang(gMovesInfo[playerMove].effect, FALSE))
         {
             damageTaken = AI_GetDamage(battlerDef, battlerAtk, i, AI_DEFENDING_NORMAL, AI_DATA);
             if (damageTaken > maxDamageTaken && !AI_DoesChoiceEffectBlockMove(battlerDef, playerMove))
@@ -297,7 +297,7 @@ static bool32 ShouldSwitchIfHasBadOdds(u32 battler)
             && gMovesInfo[playerMove].category != DAMAGE_CATEGORY_STATUS 
             && gMovesInfo[playerMove].effect != EFFECT_FOCUS_PUNCH
             && gBattleMons[opposingBattler].pp[i] > 0
-            && !MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, FALSE))
+            && !MatchesSelfKillOrSuperfang(gMovesInfo[playerMove].effect, FALSE))
         {
             damageTaken = AI_GetDamage(opposingBattler, battler, i, AI_DEFENDING_NORMAL, AI_DATA);
             if (damageTaken > maxDamageTaken && !AI_DoesChoiceEffectBlockMove(opposingBattler, playerMove))
@@ -1852,7 +1852,7 @@ static s32 GetMaxDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposingBattle
             }
             if (damageTaken > maxDamageTaken)
             {
-                if (!MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, TRUE))
+                if (!MatchesSelfKillOrSuperfang(gMovesInfo[playerMove].effect, TRUE))
                 {
                     maxDamageTaken = damageTaken;
                     *bestPlayerMove = playerMove;
@@ -1888,7 +1888,7 @@ static s32 GetMaxPriorityDamagePlayerCouldDealToSwitchin(u32 battler, u32 opposi
             }
             if (damageTaken > maxDamageTaken)
             {
-                if (!MatchesExplosionOrSuperfang(gMovesInfo[playerMove].effect, TRUE))
+                if (!MatchesSelfKillOrSuperfang(gMovesInfo[playerMove].effect, TRUE))
                 {
                     maxDamageTaken = damageTaken;
                     *bestPlayerPriorityMove = playerMove;
