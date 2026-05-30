@@ -62,16 +62,6 @@ bool32 AI_IsSlower(u32 battlerAi, u32 battlerDef, u32 aiMove, u32 playerMove, en
     return (AI_WhoStrikesFirst(battlerAi, battlerDef, aiMove, playerMove, considerPriority) == AI_IS_SLOWER);
 }
 
-bool32 AI_IsPartyMonFaster(u32 battlerAi, u32 battlerDef, struct BattlePokemon switchinCandidate, u32 aiMove, u32 playerMove, enum ConsiderPriority considerPriority)
-{
-    return (AI_WhoStrikesFirstPartyMon(battlerAi, battlerDef, switchinCandidate, aiMove, playerMove, considerPriority) == AI_IS_FASTER);
-}
-
-bool32 AI_IsPartyMonSlower(u32 battlerAi, u32 battlerDef, struct BattlePokemon switchinCandidate, u32 aiMove, u32 playerMove, enum ConsiderPriority considerPriority)
-{
-    return (AI_WhoStrikesFirstPartyMon(battlerAi, battlerDef, switchinCandidate, aiMove, playerMove, considerPriority) == AI_IS_SLOWER);
-}
-
 u32 GetAIChosenMove(u32 battlerId)
 {
     return (gBattleMons[battlerId].moves[gBattleStruct->aiMoveOrAction[battlerId]]);
@@ -3944,9 +3934,24 @@ void FreeRestoreBattleMons(struct BattlePokemon *savedBattleMons)
     Free(savedBattleMons);
 }
 
-u32 AI_GetSwitchinWeather(struct BattlePokemon battleMon)
+#define SIZE_G_AI_LOGIC_DATA (sizeof(struct AiLogicData))
+
+struct AiLogicData *AllocSaveAiLogicData(void)
 {
-    u32 ability = battleMon.ability;
+    struct AiLogicData *savedAiLogicData = Alloc(SIZE_G_AI_LOGIC_DATA);
+    memcpy(savedAiLogicData, AI_DATA, SIZE_G_AI_LOGIC_DATA);
+    return savedAiLogicData;
+}
+
+void FreeRestoreAiLogicData(struct AiLogicData *savedAiLogicData)
+{
+    memcpy(AI_DATA, savedAiLogicData, SIZE_G_AI_LOGIC_DATA);
+    Free(savedAiLogicData);
+}
+
+u32 AI_GetSwitchinWeather(u32 battler)
+{
+    u32 ability = gBattleMons[battler].ability;
     // Forced weather behaviour
     if (!AI_WeatherHasEffect(AI_DATA))
         return B_WEATHER_NONE;
@@ -3971,54 +3976,7 @@ u32 AI_GetSwitchinWeather(struct BattlePokemon battleMon)
     }    
 }
 
-// party logic
-s32 AI_CalcPartyMonDamage(u32 move, u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, enum DamageCalcContext calcContext)
-{
-    struct SimulatedDamage dmg;
-    uq4_12_t effectiveness;
-    struct BattlePokemon *savedBattleMons = AllocSaveBattleMons();
-
-    if (calcContext == AI_ATTACKING_IN_SWITCHIN_CALC)
-    {
-        gBattleMons[battlerAtk] = switchinCandidate;
-        AI_THINKING_STRUCT->saved[battlerDef].saved = TRUE;
-        SetBattlerAiData(battlerAtk, AI_DATA); // set known opposing battler data
-        AI_THINKING_STRUCT->saved[battlerDef].saved = FALSE;
-    }
-    else if (calcContext == AI_DEFENDING_NORMAL)
-    {
-        gBattleMons[battlerDef] = switchinCandidate;
-        AI_THINKING_STRUCT->saved[battlerAtk].saved = TRUE;
-        SetBattlerAiData(battlerDef, AI_DATA); // set known opposing battler data
-        AI_THINKING_STRUCT->saved[battlerAtk].saved = FALSE;
-    }
-
-    dmg = AI_CalcDamage(move, battlerAtk, battlerDef, &effectiveness, FALSE, AI_GetSwitchinWeather(switchinCandidate));
-
-    // restores original gBattleMon struct
-    FreeRestoreBattleMons(savedBattleMons);
-
-    if (calcContext == AI_ATTACKING_IN_SWITCHIN_CALC)
-        SetBattlerAiData(battlerAtk, AI_DATA);
-
-    else if (calcContext == AI_DEFENDING_NORMAL)
-        SetBattlerAiData(battlerDef, AI_DATA);
-
-    return dmg.median;
-}
-
-u32 AI_WhoStrikesFirstPartyMon(u32 battlerAtk, u32 battlerDef, struct BattlePokemon switchinCandidate, u32 aiMoveConsidered, u32 playerMoveConsidered, enum ConsiderPriority considerPriority)
-{
-    struct BattlePokemon *savedBattleMons = AllocSaveBattleMons();
-    gBattleMons[battlerAtk] = switchinCandidate;
-
-    SetBattlerAiData(battlerAtk, AI_DATA);
-    u32 aiWhoStrikesFirst = AI_WhoStrikesFirst(battlerAtk, battlerDef, aiMoveConsidered, playerMoveConsidered, considerPriority);
-    FreeRestoreBattleMons(savedBattleMons);
-    SetBattlerAiData(battlerAtk, AI_DATA);
-
-    return aiWhoStrikesFirst;
-}
+// TODO - pull getswitchinfieldstatus/setbattlerfieldstatusforswtichin from upstream?
 
 s32 CountUsablePartyMons(u32 battlerId)
 {
