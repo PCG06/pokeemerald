@@ -211,6 +211,8 @@ enum Gender
 #define OPTIONS_SOUND_MONO 0
 #define OPTIONS_SOUND_STEREO 1
 
+#define OPTIONS_BATTLE_MUSIC_COUNT 10
+
 enum __attribute__((packed)) Direction
 {
     DIR_NONE,

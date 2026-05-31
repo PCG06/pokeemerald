@@ -61,6 +61,7 @@ enum
 enum
 {
     MENUITEM_SOUND_SOUNDMODE,
+    MENUITEM_SOUND_BATTLEMUSIC,
     MENUITEM_SOUND_BIKEMUSIC,
     MENUITEM_SOUND_SURFMUSIC,
     MENUITEM_SOUND_CANCEL,
@@ -181,6 +182,7 @@ static int ThreeOptions_ProcessInput(int selection);
 static int FourOptions_ProcessInput(int selection);
 static int UNUSED ElevenOptions_ProcessInput(int selection);
 static int Sound_ProcessInput(int selection);
+static int BattleMusic_ProcessInput(int selection);
 static int FrameType_ProcessInput(int selection);
 static const u8 *const OptionTextDescription(void);
 static const u8 *const OptionTextRight(u8 menuItem);
@@ -204,6 +206,7 @@ static void BagUse_DrawChoices(int selection, int y);
 static void QuickRun_DrawChoices(int selection, int y);
 static void MoveInfo_DrawChoices(int selection, int y);
 static void SoundMode_DrawChoices(int selection, int y);
+static void BattleMusic_DrawChoices(int selection, int y);
 static void BikeMusic_DrawChoices(int selection, int y);
 static void SurfMusic_DrawChoices(int selection, int y);
 static void DrawBgWindowFrames(void);
@@ -276,6 +279,7 @@ static const u8 gText_BattleTypeDouble[]        = _("DOUBLE");
 
 static const u8 gText_SoundMono[]               = _("MONO");
 static const u8 gText_SoundStereo[]             = _("STEREO");
+static const u8 gText_VSMusic[]                 = _("VS.");
 
 static const u8 sText_Desc_TextSpeedNormal[]    = _("Text prints over time.");
 static const u8 sText_Desc_TextSpeedInstant[]   = _("Text prints instantly.");
@@ -310,6 +314,7 @@ static const u8 sText_Desc_BattleSpeed_4x[]     = _("Battle animations will play
 
 static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
 static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
+static const u8 sText_Desc_BattleMusic[]        = _("Choose the battle theme to play during\na battle.");
 static const u8 sText_Desc_BikeMusicOn[]        = _("Bike theme music will play\nwhile cycling.");
 static const u8 sText_Desc_BikeMusicOff[]       = _("Normal route music continues\nwhile cycling.");
 static const u8 sText_Desc_SurfMusicOn[]        = _("Surf theme music will play\nwhile on water.");
@@ -344,6 +349,7 @@ static const MenuItemFunctions sItemFunctionsBattle[MENUITEM_BATTLE_COUNT] =
 static const MenuItemFunctions sItemFunctionsSound[MENUITEM_SOUND_COUNT] =
 {
     [MENUITEM_SOUND_SOUNDMODE]    = {SoundMode_DrawChoices,       Sound_ProcessInput},
+    [MENUITEM_SOUND_BATTLEMUSIC]  = {BattleMusic_DrawChoices,     BattleMusic_ProcessInput},
     [MENUITEM_SOUND_BIKEMUSIC]    = {BikeMusic_DrawChoices,       TwoOptions_ProcessInput},
     [MENUITEM_SOUND_SURFMUSIC]    = {SurfMusic_DrawChoices,       TwoOptions_ProcessInput},
     [MENUITEM_SOUND_CANCEL]       = {NULL, NULL},
@@ -374,10 +380,11 @@ static const u8 *const sOptionMenuItemsNamesBattle[MENUITEM_BATTLE_COUNT] =
 
 static const u8 *const sOptionMenuItemsNamesSound[MENUITEM_SOUND_COUNT] =
 {
-    [MENUITEM_SOUND_SOUNDMODE]  = COMPOUND_STRING("SOUND MODE"),
-    [MENUITEM_SOUND_BIKEMUSIC]  = COMPOUND_STRING("BIKE MUSIC"),
-    [MENUITEM_SOUND_SURFMUSIC]  = COMPOUND_STRING("SURF MUSIC"),
-    [MENUITEM_SOUND_CANCEL]     = gText_OptionMenuSave,
+    [MENUITEM_SOUND_SOUNDMODE]      = COMPOUND_STRING("SOUND MODE"),
+    [MENUITEM_SOUND_BATTLEMUSIC]    = COMPOUND_STRING("BATTLE MUSIC"),
+    [MENUITEM_SOUND_BIKEMUSIC]      = COMPOUND_STRING("BIKE MUSIC"),
+    [MENUITEM_SOUND_SURFMUSIC]      = COMPOUND_STRING("SURF MUSIC"),
+    [MENUITEM_SOUND_CANCEL]         = gText_OptionMenuSave,
 };
 
 static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT][3] =
@@ -406,6 +413,7 @@ static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][
 static const u8 *const sOptionMenuItemDescriptionsSound[MENUITEM_SOUND_COUNT][3] =
 {
     [MENUITEM_SOUND_SOUNDMODE]     = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,            sText_Empty},
+    [MENUITEM_SOUND_BATTLEMUSIC]   = {sText_Desc_BattleMusic,          sText_Empty,                       sText_Empty},
     [MENUITEM_SOUND_BIKEMUSIC]     = {sText_Desc_BikeMusicOn,          sText_Desc_BikeMusicOff,           sText_Empty},
     [MENUITEM_SOUND_SURFMUSIC]     = {sText_Desc_SurfMusicOn,          sText_Desc_SurfMusicOff,           sText_Empty},
     [MENUITEM_SOUND_CANCEL]        = {sText_Desc_Save,                 sText_Empty,                       sText_Empty},
@@ -437,6 +445,7 @@ static const u8 *const sOptionMenuItemDescriptionsDisabledBattle[MENUITEM_BATTLE
 static const u8 *const sOptionMenuItemDescriptionsDisabledSound[MENUITEM_SOUND_COUNT] =
 {
     [MENUITEM_SOUND_SOUNDMODE]   = sText_Empty,
+    [MENUITEM_SOUND_BATTLEMUSIC] = sText_Empty,
     [MENUITEM_SOUND_BIKEMUSIC]   = sText_Empty,
     [MENUITEM_SOUND_SURFMUSIC]   = sText_Empty,
     [MENUITEM_SOUND_CANCEL]      = sText_Empty,
@@ -493,6 +502,7 @@ static bool8 CheckConditions(int selection)
         switch(selection)
         {
         case MENUITEM_SOUND_SOUNDMODE:
+        case MENUITEM_SOUND_BATTLEMUSIC:
         case MENUITEM_SOUND_BIKEMUSIC:
         case MENUITEM_SOUND_SURFMUSIC:
         case MENUITEM_SOUND_CANCEL:
@@ -513,20 +523,29 @@ static const u8 *const OptionTextDescription(void)
     case MENU_BATTLE:
         if (menuItem >= MENUITEM_BATTLE_COUNT || !CheckConditions(menuItem))
             return sOptionMenuItemDescriptionsDisabledBattle[menuItem];
+
         selection = sOptions->sel_battle[menuItem];
         return sOptionMenuItemDescriptionsBattle[menuItem][selection];
     case MENU_SOUND:
         if (menuItem >= MENUITEM_SOUND_COUNT || !CheckConditions(menuItem))
             return sOptionMenuItemDescriptionsDisabledSound[menuItem];
-        selection = sOptions->sel_sound[menuItem];
+
+        if (menuItem == MENUITEM_SOUND_BATTLEMUSIC)
+            selection = 0;
+        else
+            selection = sOptions->sel_sound[menuItem];
+
         return sOptionMenuItemDescriptionsSound[menuItem][selection];
     default:
     case MENU_GENERAL:
         if (menuItem >= MENUITEM_GENERAL_COUNT || !CheckConditions(menuItem))
             return sOptionMenuItemDescriptionsDisabledGeneral[menuItem];
-        selection = sOptions->sel_general[menuItem];
+
         if (menuItem == MENUITEM_GENERAL_FRAMETYPE)
             selection = 0;
+        else
+            selection = sOptions->sel_general[menuItem];
+
         return sOptionMenuItemDescriptionsGeneral[menuItem][selection];
     }
 }
@@ -842,6 +861,7 @@ void CB2_InitOptionPlusMenu(void)
         sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO]      = gSaveBlock2Ptr->optionsShowBattleMoveInfoOff;
 
         sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE]       = gSaveBlock2Ptr->optionsSound;
+        sOptions->sel_sound[MENUITEM_SOUND_BATTLEMUSIC]     = gSaveBlock2Ptr->optionsBattleMusic;
         sOptions->sel_sound[MENUITEM_SOUND_BIKEMUSIC]       = gSaveBlock2Ptr->optionsBikeMusicOff;
         sOptions->sel_sound[MENUITEM_SOUND_SURFMUSIC]       = gSaveBlock2Ptr->optionsSurfMusicOff;
 
@@ -1079,6 +1099,7 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsShowBattleMoveInfoOff = sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO];
 
     gSaveBlock2Ptr->optionsSound            = sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE];
+    gSaveBlock2Ptr->optionsBattleMusic      = sOptions->sel_sound[MENUITEM_SOUND_BATTLEMUSIC];
     gSaveBlock2Ptr->optionsBikeMusicOff     = sOptions->sel_sound[MENUITEM_SOUND_BIKEMUSIC];
     gSaveBlock2Ptr->optionsSurfMusicOff     = sOptions->sel_sound[MENUITEM_SOUND_SURFMUSIC];
 
@@ -1232,6 +1253,25 @@ static int Sound_ProcessInput(int selection)
         SetPokemonCryStereo(selection);
     }
 
+    return selection;
+}
+
+static int BattleMusic_ProcessInput(int selection)
+{
+    if (JOY_NEW(DPAD_RIGHT))
+    {
+        if (selection < OPTIONS_BATTLE_MUSIC_COUNT - 1)
+            selection++;
+        else
+            selection = 0;
+    }
+    if (JOY_NEW(DPAD_LEFT))
+    {
+        if (selection != 0)
+            selection--;
+        else
+            selection = OPTIONS_BATTLE_MUSIC_COUNT - 1;
+    }
     return selection;
 }
 
@@ -1498,6 +1538,37 @@ static void SoundMode_DrawChoices(int selection, int y)
 
     DrawOptionMenuChoice(gText_SoundMono, 104, y, styles[0], active);
     DrawOptionMenuChoice(gText_SoundStereo, GetStringRightAlignXOffset(FONT_NORMAL, gText_SoundStereo, 198), y, styles[1], active);
+}
+
+static void BattleMusic_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_SOUND_BATTLEMUSIC);
+
+    static const u8 *const sBattleMusicNames[] = {
+        COMPOUND_STRING("DEFAULT"),
+        COMPOUND_STRING("RANDOM"),
+        COMPOUND_STRING("FRONTIER"),
+        COMPOUND_STRING("TRAINER"),
+        COMPOUND_STRING("RIVAL"),
+        COMPOUND_STRING("GYM LEADER"),
+        COMPOUND_STRING("ELITE FOUR"),
+        COMPOUND_STRING("CHAMPION"),
+        COMPOUND_STRING("AQUA/MAGMA"),
+        COMPOUND_STRING("WILD"),
+    };
+
+    if (selection >= OPTIONS_BATTLE_MUSIC_COUNT)
+        selection = 0;
+
+    if (selection > 1)
+    {
+        DrawOptionMenuChoice(gText_VSMusic, 118, y, 0, active);
+        DrawOptionMenuChoice(sBattleMusicNames[selection], 138, y, 1, active);
+    }
+    else
+    {
+        DrawOptionMenuChoice(sBattleMusicNames[selection], 130, y, 1, active);
+    }
 }
 
 static void BikeMusic_DrawChoices(int selection, int y)
