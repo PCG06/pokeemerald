@@ -1138,7 +1138,6 @@ bool32 ShouldSwitch(u32 battler)
         return TRUE;
     if (ShouldSwitchIfAttackingStatsLowered(battler))
     {
-        DebugPrintf("can win 1v1 = %d", canAIWin1V1);
         if (!canAIWin1V1)
             return TRUE;
     }
