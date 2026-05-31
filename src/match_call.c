@@ -27,6 +27,7 @@
 #include "task.h"
 #include "wild_encounter.h"
 #include "window.h"
+#include "field_name_box.h"
 #include "constants/abilities.h"
 #include "constants/battle_frontier.h"
 #include "constants/event_objects.h"
@@ -135,7 +136,7 @@ static u32 GetCurrentTotalMinutes(struct Time *);
 static u32 GetNumRegisteredTrainers(void);
 static u32 GetActiveMatchCallTrainerId(u32);
 static int GetTrainerMatchCallId(int);
-static u16 GetRematchTrainerLocation(int);
+static mapsec_u16_t GetRematchTrainerLocation(int);
 static bool32 TrainerIsEligibleForRematch(int);
 static void StartMatchCall(void);
 static void ExecuteMatchCall(u8);
@@ -1056,7 +1057,7 @@ static bool32 UpdateMatchCallMinutesCounter(void)
 static bool32 CheckMatchCallChance(void)
 {
     int callChance = 1;
-    if (!GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG) && GetMonAbility(&gPlayerParty[0]) == ABILITY_LIGHTNING_ROD)
+    if (!GetMonData(&gParties[B_TRAINER_PLAYER][0], MON_DATA_SANITY_IS_EGG) && GetMonAbility(&gParties[B_TRAINER_PLAYER][0]) == ABILITY_LIGHTNING_ROD)
         callChance = 2;
 
     if (Random() % 10 < callChance * 3)
@@ -1198,10 +1199,10 @@ static void StartMatchCall(void)
     CreateTask(ExecuteMatchCall, 1);
 }
 
-static const u16 sMatchCallWindow_Pal[] = INCBIN_U16("graphics/pokenav/match_call/window.gbapal");
-static const u8 sMatchCallWindow_Gfx[] = INCBIN_U8("graphics/pokenav/match_call/window.4bpp");
-static const u16 sPokenavIcon_Pal[] = INCBIN_U16("graphics/pokenav/match_call/nav_icon.gbapal");
-static const u32 sPokenavIcon_Gfx[] = INCBIN_U32("graphics/pokenav/match_call/nav_icon.4bpp.smol");
+static const u16 sMatchCallWindow_Pal[] = INCGFX_U16("graphics/pokenav/match_call/window.png", ".gbapal");
+static const u8 sMatchCallWindow_Gfx[] = INCGFX_U8("graphics/pokenav/match_call/window.png", ".4bpp");
+static const u16 sPokenavIcon_Pal[] = INCGFX_U16("graphics/pokenav/match_call/nav_icon.png", ".gbapal");
+static const u32 sPokenavIcon_Gfx[] = INCGFX_U32("graphics/pokenav/match_call/nav_icon.png", ".4bpp.smol");
 
 static const u8 sText_PokenavCallEllipsis[] = _("………………\p");
 
@@ -1324,9 +1325,13 @@ static bool32 MatchCall_PrintIntro(u8 taskId)
     {
         FillWindowPixelBuffer(tWindowId, PIXEL_FILL(8));
 
-        // Ready the message
+        // Ready the message (and the speaker's name if possible)
         if (!sMatchCallState.triggeredFromScript)
             SelectMatchCallMessage(sMatchCallState.trainerId, gStringVar4);
+
+        if (IsSpeakerBuffered(gStringVar4))
+            TrySpawnAndShowNamebox(gSpeakerName, NAME_BOX_BASE_TILE_NUM);
+
         InitMatchCallTextPrinter(tWindowId, gStringVar4);
         return TRUE;
     }
@@ -1351,9 +1356,9 @@ static bool32 MatchCall_PrintMessage(u8 taskId)
 static bool32 MatchCall_SlideWindowOut(u8 taskId)
 {
     s16 *data = gTasks[taskId].data;
-    if (ChangeBgY(0, 0x600, BG_COORD_SUB) <= -0x2000)
+    if (ChangeBgY(0, 0x600, BG_COORD_SUB) <= -0x4000)
     {
-        FillBgTilemapBufferRect_Palette0(0, 0, 0, 14, 30, 6);
+        FillBgTilemapBufferRect_Palette0(0, 0, 0, 12, 30, 8);
         DestroyTask(tIconTaskId);
         RemoveWindow(tWindowId);
         CopyBgTilemapBufferToVram(0);
@@ -1368,6 +1373,7 @@ static bool32 MatchCall_EndCall(u8 taskId)
     u8 playerObjectId;
     if (!IsDma3ManagerBusyWithBgCopy() && !IsSEPlaying())
     {
+        DestroyNamebox();
         ChangeBgY(0, 0, BG_COORD_SET);
         if (!sMatchCallState.triggeredFromScript)
         {
@@ -1407,10 +1413,36 @@ static void DrawMatchCallTextBoxBorder_Internal(u32 windowId, u32 tileOffset, u3
     FillBgTilemapBufferRect_Palette0(bg, ((paletteId << 12) & 0xF000) | (tileNum + 7), x + width, y + height, 1, 1);
 }
 
+static u8 GetMatchCallWindowId(void)
+{
+    if (!IsMatchCallTaskActive())
+        return WINDOW_NONE;
+
+    u32 taskId = FindTaskIdByFunc(ExecuteMatchCall);
+    return gTasks[taskId].tWindowId;
+}
+
+// redraw only the top-half
+void RedrawMatchCallTextBoxBorder(void)
+{
+    u32 windowId = GetMatchCallWindowId();
+    u32 bg = GetWindowAttribute(windowId, WINDOW_BG);
+    u32 x = GetWindowAttribute(windowId, WINDOW_TILEMAP_LEFT);
+    u32 y = GetWindowAttribute(windowId, WINDOW_TILEMAP_TOP);
+    u32 width = GetWindowAttribute(windowId, WINDOW_WIDTH);
+    u32 tileNum = TILE_MC_WINDOW + GetBgAttribute(bg, BG_ATTR_BASETILE);
+    u32 paletteId = 14;
+
+    FillBgTilemapBufferRect_Palette0(bg, ((paletteId << 12) & 0xF000) | (tileNum + 0), x - 1,     y - 1, 1,     1);
+    FillBgTilemapBufferRect_Palette0(bg, ((paletteId << 12) & 0xF000) | (tileNum + 1), x,         y - 1, width, 1);
+    FillBgTilemapBufferRect_Palette0(bg, ((paletteId << 12) & 0xF000) | (tileNum + 2), x + width, y - 1, 1,     1);
+}
+
 static void InitMatchCallTextPrinter(int windowId, const u8 *str)
 {
     struct TextPrinterTemplate printerTemplate;
     printerTemplate.currentChar = str;
+    printerTemplate.type = WINDOW_TEXT_PRINTER;
     printerTemplate.windowId = windowId;
     printerTemplate.fontId = FONT_NORMAL;
     printerTemplate.x = 32;
@@ -1419,10 +1451,10 @@ static void InitMatchCallTextPrinter(int windowId, const u8 *str)
     printerTemplate.currentY = 1;
     printerTemplate.letterSpacing = 0;
     printerTemplate.lineSpacing = 0;
-    printerTemplate.unk = 0;
-    printerTemplate.fgColor = TEXT_DYNAMIC_COLOR_1;
-    printerTemplate.bgColor = TEXT_COLOR_BLUE;
-    printerTemplate.shadowColor = TEXT_DYNAMIC_COLOR_5;
+    printerTemplate.color.accent = TEXT_COLOR_BLUE;
+    printerTemplate.color.foreground = TEXT_DYNAMIC_COLOR_1;
+    printerTemplate.color.background = TEXT_COLOR_BLUE;
+    printerTemplate.color.shadow = TEXT_DYNAMIC_COLOR_5;
     gTextFlags.useAlternateDownArrow = FALSE;
 
     AddTextPrinter(&printerTemplate, GetPlayerTextSpeedDelay(), NULL);
@@ -1436,7 +1468,7 @@ static bool32 RunMatchCallTextPrinter(int windowId)
         gTextFlags.canABSpeedUpPrint = FALSE;
 
     RunTextPrinters();
-    return IsTextPrinterActive(windowId);
+    return IsTextPrinterActiveOnWindow(windowId);
 }
 
 #define tTimer     data[0]
@@ -1471,7 +1503,7 @@ static bool32 TrainerIsEligibleForRematch(int matchCallId)
 #endif //FREE_MATCH_CALL
 }
 
-static u16 GetRematchTrainerLocation(int matchCallId)
+static mapsec_u16_t GetRematchTrainerLocation(int matchCallId)
 {
     const struct MapHeader *mapHeader = Overworld_GetMapHeaderByGroupAndId(gRematchTable[matchCallId].mapGroup, gRematchTable[matchCallId].mapNum);
     return mapHeader->regionMapSectionId;
@@ -1676,12 +1708,12 @@ static void PopulateMatchCallStringVar(int matchCallId, int funcId, u8 *destStr)
 
 static const struct MultiTrainerMatchCallText sMultiTrainerMatchCallTexts[] =
 {
-    { .trainerId = TRAINER_KIRA_AND_DAN_1, .text = gText_Kira },
-    { .trainerId = TRAINER_AMY_AND_LIV_1,  .text = gText_Amy },
-    { .trainerId = TRAINER_JOHN_AND_JAY_1, .text = gText_John },
-    { .trainerId = TRAINER_LILA_AND_ROY_1, .text = gText_Roy },
-    { .trainerId = TRAINER_GABBY_AND_TY_1, .text = gText_Gabby },
-    { .trainerId = TRAINER_ANNA_AND_MEG_1, .text = gText_Anna },
+    { .trainerId = TRAINER_KIRA_AND_DAN_1, .text = COMPOUND_STRING("KIRA") },
+    { .trainerId = TRAINER_AMY_AND_LIV_1,  .text = COMPOUND_STRING("AMY") },
+    { .trainerId = TRAINER_JOHN_AND_JAY_1, .text = COMPOUND_STRING("JOHN") },
+    { .trainerId = TRAINER_LILA_AND_ROY_1, .text = COMPOUND_STRING("ROY") },
+    { .trainerId = TRAINER_GABBY_AND_TY_1, .text = COMPOUND_STRING("GABBY") },
+    { .trainerId = TRAINER_ANNA_AND_MEG_1, .text = COMPOUND_STRING("ANNA") },
 };
 
 static void PopulateTrainerName(int matchCallId, u8 *destStr)
@@ -1751,7 +1783,7 @@ static u8 GetWaterEncounterSlot(void)
 
 static void PopulateSpeciesFromTrainerLocation(int matchCallId, u8 *destStr)
 {
-    u16 species[2];
+    enum Species species[2];
     int numSpecies;
     u8 slot;
     int i = 0;
@@ -1980,8 +2012,8 @@ void BufferPokedexRatingForMatchCall(u8 *destStr)
         return;
     }
 
-    numSeen = GetHoennPokedexCount(FLAG_GET_SEEN);
-    numCaught = GetHoennPokedexCount(FLAG_GET_CAUGHT);
+    numSeen = GetRegionalPokedexCount(FLAG_GET_SEEN);
+    numCaught = GetRegionalPokedexCount(FLAG_GET_CAUGHT);
     ConvertIntToDecimalStringN(gStringVar1, numSeen, STR_CONV_MODE_LEFT_ALIGN, 3);
     ConvertIntToDecimalStringN(gStringVar2, numCaught, STR_CONV_MODE_LEFT_ALIGN, 3);
     str = StringCopy(buffer, gBirchDexRatingText_AreYouCurious);
@@ -2014,4 +2046,36 @@ void LoadMatchCallWindowGfx(u32 windowId, u32 destOffset, u32 paletteId)
 void DrawMatchCallTextBoxBorder(u32 windowId, u32 tileOffset, u32 paletteId)
 {
     DrawMatchCallTextBoxBorder_Internal(windowId, tileOffset, paletteId);
+}
+
+u32 GetTrainerRematchStepCounter(void)
+{
+#if FREE_MATCH_CALL == FALSE
+    return gSaveBlock1Ptr->trainerRematchStepCounter;
+#else
+    return 0;
+#endif
+}
+
+void SetTrainerRematchStepCounter(u32 value)
+{
+#if FREE_MATCH_CALL == FALSE
+    gSaveBlock1Ptr->trainerRematchStepCounter = value;
+#endif
+}
+
+u32 GetActiveTrainerRematches(u32 matchCallId)
+{
+#if FREE_MATCH_CALL == FALSE
+    return gSaveBlock1Ptr->trainerRematches[matchCallId];
+#else
+    return 0;
+#endif
+}
+
+void SetActiveTrainerRematches(u32 matchCallId, u32 value)
+{
+#if FREE_MATCH_CALL == FALSE
+    gSaveBlock1Ptr->trainerRematches[matchCallId] = value;
+#endif
 }

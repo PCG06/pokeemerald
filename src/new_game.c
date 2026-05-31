@@ -1,4 +1,5 @@
 #include "global.h"
+#include "clock.h"
 #include "new_game.h"
 #include "random.h"
 #include "pokemon.h"
@@ -19,6 +20,7 @@
 #include "event_data.h"
 #include "money.h"
 #include "trainer_hill.h"
+#include "trainer_tower.h"
 #include "tv.h"
 #include "coins.h"
 #include "text.h"
@@ -39,6 +41,7 @@
 #include "pokemon_jump.h"
 #include "decoration_inventory.h"
 #include "secret_base.h"
+#include "string_util.h"
 #include "player_pc.h"
 #include "field_specials.h"
 #include "berry_powder.h"
@@ -50,6 +53,7 @@
 #include "follower_npc.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
+extern const u8 EventScript_ResetAllMapFlagsFrlg[];
 
 static void ClearFrontierRecord(void);
 static void WarpToTruck(void);
@@ -95,7 +99,7 @@ static void InitPlayerTrainerId(void)
 // L=A isnt set here for some reason.
 static void SetDefaultOptions(void)
 {
-    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_FAST;
+    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_NORMAL;
     gSaveBlock2Ptr->optionsAutoRunOff = FALSE;
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
@@ -104,7 +108,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsDisableMatchCall = FALSE;
     gSaveBlock2Ptr->optionsDisableBagUse = FALSE;
     gSaveBlock2Ptr->optionsQuickRunButton = OPTIONS_QUICK_RUN_R_BUTTON;
-    gSaveBlock2Ptr->optionsDoubleBattlesOff = TRUE;
+    gSaveBlock2Ptr->optionsBattlesType = OPTIONS_BATTLE_TYPE_SINGLES;
     gSaveBlock2Ptr->optionsShowBattleMoveInfoOff = FALSE;
     gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_MONO;
     gSaveBlock2Ptr->optionsBikeMusicOff = FALSE;
@@ -140,7 +144,10 @@ static void ClearFrontierRecord(void)
 
 static void WarpToTruck(void)
 {
-    SetWarpDestination(MAP_GROUP(MAP_INSIDE_OF_TRUCK), MAP_NUM(MAP_INSIDE_OF_TRUCK), WARP_ID_NONE, -1, -1);
+    if (IS_FRLG)
+        SetWarpDestination(MAP_GROUP(MAP_PALLET_TOWN_PLAYERS_HOUSE_2F), MAP_NUM(MAP_PALLET_TOWN_PLAYERS_HOUSE_2F), WARP_ID_NONE, 6, 6);
+    else
+        SetWarpDestination(MAP_GROUP(MAP_INSIDE_OF_TRUCK), MAP_NUM(MAP_INSIDE_OF_TRUCK), WARP_ID_NONE, -1, -1);
     WarpIntoMap();
 }
 
@@ -162,9 +169,15 @@ void ResetMenuAndMonGlobals(void)
 
 void NewGameInitData(void)
 {
+#if IS_FRLG
+    u8 rivalName[PLAYER_NAME_LENGTH + 1];
+#endif
     if (gSaveFileStatus == SAVE_STATUS_EMPTY || gSaveFileStatus == SAVE_STATUS_CORRUPT)
         RtcReset();
 
+#if IS_FRLG
+    StringCopy(rivalName, gSaveBlock1Ptr->rivalName);
+#endif
     gDifferentSaveFile = TRUE;
     gSaveBlock2Ptr->encryptionKey = 0;
     ZeroPlayerPartyMons();
@@ -192,7 +205,7 @@ void NewGameInitData(void)
     ClearPlayerLinkBattleRecords();
     InitSeedotSizeRecord();
     InitLotadSizeRecord();
-    gPlayerPartyCount = 0;
+    gPartiesCount[B_TRAINER_PLAYER] = 0;
     ZeroPlayerPartyMons();
     ResetPokemonStorageSystem();
     DeactivateAllRoamers();
@@ -206,8 +219,15 @@ void NewGameInitData(void)
     InitDewfordTrend();
     ResetFanClub();
     ResetLotteryCorner();
+    UpdateDailySeed();
     WarpToTruck();
-    RunScriptImmediately(EventScript_ResetAllMapFlags);
+    if (IS_FRLG)
+        RunScriptImmediately(EventScript_ResetAllMapFlagsFrlg);
+    else
+        RunScriptImmediately(EventScript_ResetAllMapFlags);
+#if IS_FRLG
+        StringCopy(gSaveBlock1Ptr->rivalName, rivalName);
+#endif
     ResetMiniGamesRecords();
     InitUnionRoomChatRegisteredTexts();
     InitLilycoveLady();
@@ -217,6 +237,7 @@ void NewGameInitData(void)
     ClearMysteryGift();
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
+    ResetTrainerTowerResults();
     ResetContestLinkResults();
     SetCurrentDifficultyLevel(DIFFICULTY_NORMAL);
     ResetItemFlags();

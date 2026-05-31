@@ -465,25 +465,26 @@ EventScript_EndRockClimb::
 	end
 
 Text_WantToRockClimb:
-    .string "The cliff is steep.\n"
-    .string "Would you like to use Rock Climb?$"
+	.string "The cliff is steep.\n"
+	.string "Would you like to use Rock Climb?$"
 
 Text_MonUsedRockClimb:
-    .string "{STR_VAR_1} used Rock Climb!$"
+	.string "{STR_VAR_1} used Rock Climb!$"
 
 Text_CantRockClimb:
     .string "The cliff is steep.\n"
     .string "A Pokémon may be able to climb it.$"
+
 EventScript_DisableAutoRun::
-    msgbox AutoRunDisabled MSGBOX_SIGN
+    msgbox Text_AutoRunDisabled MSGBOX_SIGN
     end
 
-AutoRunDisabled:
+Text_AutoRunDisabled:
     .string "Auto Run {COLOR RED}Disabled{COLOR DARK_GRAY}.$"
     
 EventScript_EnableAutoRun::
-    msgbox AutoRunEnabled MSGBOX_SIGN
+    msgbox Text_AutoRunEnabled MSGBOX_SIGN
     end
 
-AutoRunEnabled:
+Text_AutoRunEnabled:
     .string "Auto Run {COLOR GREEN}Enabled{COLOR DARK_GRAY}.$"

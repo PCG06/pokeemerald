@@ -33,7 +33,7 @@ enum
 // General options
 enum
 {
-    MENUITEM_GENERAL_INSTANTTEXT,
+    MENUITEM_GENERAL_TEXTSPEED,
     MENUITEM_GENERAL_BUTTONMODE,
     MENUITEM_GENERAL_FRAMETYPE,
     MENUITEM_GENERAL_FOLLOWERS,
@@ -49,9 +49,9 @@ enum
     MENUITEM_BATTLE_BATTLESCENE,
     MENUITEM_BATTLE_BATTLESTYLE,
     MENUITEM_BATTLE_BATTLESPEED,
+    MENUITEM_BATTLE_BATTLE_TYPE,
     MENUITEM_BATTLE_BAGUSE,
     MENUITEM_BATTLE_QUICKRUN,
-    MENUITEM_BATTLE_DOUBLEBATTLE,
     MENUITEM_BATTLE_MOVEINFO,
     MENUITEM_BATTLE_CANCEL,
     MENUITEM_BATTLE_COUNT,
@@ -188,9 +188,9 @@ static u8 MenuItemCount(void);
 static u8 MenuItemCancel(void);
 static void DrawDescriptionText(void);
 static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style, bool8 active);
-static void DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active);
+static void UNUSED DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active);
 static void ReDrawAll(void);
-static void InstantText_DrawChoices(int selection, int y);
+static void TextSpeed_DrawChoices(int selection, int y);
 static void ButtonMode_DrawChoices(int selection, int y);
 static void FrameType_DrawChoices(int selection, int y);
 static void Followers_DrawChoices(int selection, int y);
@@ -199,9 +199,9 @@ static void MatchCall_DrawChoices(int selection, int y);
 static void BattleScene_DrawChoices(int selection, int y);
 static void BattleStyle_DrawChoices(int selection, int y);
 static void BattleSpeed_DrawChoices(int selection, int y);
+static void BattleType_DrawChoices(int selection, int y);
 static void BagUse_DrawChoices(int selection, int y);
 static void QuickRun_DrawChoices(int selection, int y);
-static void DoubleBattle_DrawChoices(int selection, int y);
 static void MoveInfo_DrawChoices(int selection, int y);
 static void SoundMode_DrawChoices(int selection, int y);
 static void BikeMusic_DrawChoices(int selection, int y);
@@ -248,9 +248,79 @@ typedef struct {
     int (*processInput)(int selection);
 } MenuItemFunctions;
 
+// Descriptions
+static const u8 sText_Empty[]                   = _("");
+static const u8 gText_OptionMenuSave[]          = _("SAVE");
+static const u8 sText_Desc_Save[]               = _("Save your settings.");
+
+static const u8 gText_OptionOn[]                = _("ON");
+static const u8 gText_OptionOff[]               = _("OFF");
+
+static const u8 gText_TextSpeedNormal[]         = _("NORMAL");
+static const u8 gText_TextSpeedInstant[]        = _("INSTANT");
+static const u8 gText_ButtonTypeNormal[]        = _("NORMAL");
+static const u8 gText_ButtonTypeLR[]            = _("LR");
+static const u8 gText_ButtonTypeLEqualsA[]      = _("L=A");
+static const u8 gText_FrameType[]               = _("TYPE");
+static const u8 gText_FrameTypeNumber[]         = _("");
+static const u8 gText_BattleStyleShift[]        = _("SHIFT");
+static const u8 gText_BattleStyleSet[]          = _("SET");
+static const u8 gText_BattleSpeed1x[]           = _("1x");
+static const u8 gText_BattleSpeed2x[]           = _("2x");
+static const u8 gText_BattleSpeed3x[]           = _("3x");
+static const u8 gText_BattleSpeed4x[]           = _("4x");
+static const u8 gText_QuickRunOptionR[]         = _("R");
+static const u8 gText_QuickRunOptionBA[]        = _("B > A");
+static const u8 gText_BattleTypeSingle[]        = _("SINGLE");
+static const u8 gText_BattleTypeDouble[]        = _("DOUBLE");
+
+static const u8 gText_SoundMono[]               = _("MONO");
+static const u8 gText_SoundStereo[]             = _("STEREO");
+
+static const u8 sText_Desc_TextSpeedNormal[]    = _("Text prints over time.");
+static const u8 sText_Desc_TextSpeedInstant[]   = _("Text prints instantly.");
+static const u8 sText_Desc_ButtonMode[]         = _("All buttons work as normal.");
+static const u8 sText_Desc_ButtonMode_LR[]      = _("On some screens the L and R buttons\nact as left and right.");
+static const u8 sText_Desc_ButtonMode_LA[]      = _("The L button acts as another A\nbutton for one-handed play.");
+static const u8 sText_Desc_FrameType[]          = _("Choose the frame surrounding the\nwindows.");
+static const u8 sText_Desc_MatchCallOn[]        = _("TRAINERs will be able to call you,\noffering rematches and info.");
+static const u8 sText_Desc_MatchCallOff[]       = _("You will not receive calls.\nSpecial events will still occur.");
+static const u8 sText_Desc_FollowersOn[]        = _("Your first party POKéMON will\nfollow you in the overworld.");
+static const u8 sText_Desc_FollowersOff[]       = _("Following POKéMON will be disabled.\nYour POKéMON will not follow you.");
+static const u8 sText_Desc_AutoRunOn[]          = _("Enables auto running in the overworld.\nPress {B_BUTTON} to walk.");
+static const u8 sText_Desc_AutoRunOff[]         = _("Disabled auto running in the overworld.\nPress {B_BUTTON} to run.");
+
+static const u8 sText_Desc_BattleScene_On[]     = _("Show the POKéMON battle animations.");
+static const u8 sText_Desc_BattleScene_Off[]    = _("Skip the POKéMON battle animations.");
+static const u8 sText_Desc_BattleStyle_Shift[]  = _("Get the option to switch your\nPOKéMON after the enemies faints.");
+static const u8 sText_Desc_BattleStyle_Set[]    = _("No free switch after fainting the\nenemies POKéMON.");
+static const u8 sText_Desc_BagUse_On[]          = _("Enables the use of items from the\nbag.");
+static const u8 sText_Desc_BagUse_Off[]         = _("Disables the use of items from the\nbag.");
+static const u8 sText_Desc_QuickRunOptionR[]    = _("Run from wild battles by pressing\nthe {R_BUTTON} button.");
+static const u8 sText_Desc_QuickRunOptionBA[]   = _("Move the cursor to RUN by pressing\nthe {B_BUTTON} button.");
+static const u8 sText_Desc_QuickRunOptionOff[]  = _("Disables quick running from wild\nbattles.");
+static const u8 sText_Desc_SingleBattles[]      = _("All Trainer battles will be single\nbattles, unless forced.");
+static const u8 sText_Desc_DoubleBattles[]      = _("All Trainer battles will be double\nbattles.");
+static const u8 sText_Desc_MoveInfo_On[]        = _("Shows a window with information of\nmoves.");
+static const u8 sText_Desc_MoveInfo_Off[]       = _("Disables move information window.");
+static const u8 sText_Desc_BattleSpeed_1x[]     = _("Battle animations will play at default\nspeed.");
+static const u8 sText_Desc_BattleSpeed_2x[]     = _("Battle animations will play in 2x\n speed.");
+static const u8 sText_Desc_BattleSpeed_3x[]     = _("Battle animations will play in 3x\n speed.");
+static const u8 sText_Desc_BattleSpeed_4x[]     = _("Battle animations will play in 4x\n speed.");
+
+static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
+static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
+static const u8 sText_Desc_BikeMusicOn[]        = _("Bike theme music will play\nwhile cycling.");
+static const u8 sText_Desc_BikeMusicOff[]       = _("Normal route music continues\nwhile cycling.");
+static const u8 sText_Desc_SurfMusicOn[]        = _("Surf theme music will play\nwhile on water.");
+static const u8 sText_Desc_SurfMusicOff[]       = _("Normal water route music continues\nwhile surfing.");
+
+// Disabled Descriptions
+static const u8 sText_Desc_Disabled_AutoRun[]       = _("Only active if running shows are\nreceived.");
+
 static const MenuItemFunctions sItemFunctionsGeneral[MENUITEM_GENERAL_COUNT] =
 {
-    [MENUITEM_GENERAL_INSTANTTEXT]  = {InstantText_DrawChoices,   TwoOptions_ProcessInput},
+    [MENUITEM_GENERAL_TEXTSPEED]    = {TextSpeed_DrawChoices,   TwoOptions_ProcessInput},
     [MENUITEM_GENERAL_BUTTONMODE]   = {ButtonMode_DrawChoices,    ThreeOptions_ProcessInput},
     [MENUITEM_GENERAL_FRAMETYPE]    = {FrameType_DrawChoices,     FrameType_ProcessInput},
     [MENUITEM_GENERAL_FOLLOWERS]    = {Followers_DrawChoices,     TwoOptions_ProcessInput},
@@ -264,9 +334,9 @@ static const MenuItemFunctions sItemFunctionsBattle[MENUITEM_BATTLE_COUNT] =
     [MENUITEM_BATTLE_BATTLESCENE]  = {BattleScene_DrawChoices,    TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_BATTLESTYLE]  = {BattleStyle_DrawChoices,    TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_BATTLESPEED]  = {BattleSpeed_DrawChoices,    FourOptions_ProcessInput},
+    [MENUITEM_BATTLE_BATTLE_TYPE]  = {BattleType_DrawChoices,     TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_BAGUSE]       = {BagUse_DrawChoices,         TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_QUICKRUN]     = {QuickRun_DrawChoices,       ThreeOptions_ProcessInput},
-    [MENUITEM_BATTLE_DOUBLEBATTLE] = {DoubleBattle_DrawChoices,   TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_MOVEINFO]     = {MoveInfo_DrawChoices,       TwoOptions_ProcessInput},
     [MENUITEM_BATTLE_CANCEL]       = {NULL, NULL},
 };
@@ -281,33 +351,95 @@ static const MenuItemFunctions sItemFunctionsSound[MENUITEM_SOUND_COUNT] =
 
 static const u8 *const sOptionMenuItemsNamesGeneral[MENUITEM_GENERAL_COUNT] =
 {
-    [MENUITEM_GENERAL_INSTANTTEXT]  = gText_InstantText,
-    [MENUITEM_GENERAL_BUTTONMODE]   = gText_ButtonMode,
-    [MENUITEM_GENERAL_FRAMETYPE]    = gText_Frame,
-    [MENUITEM_GENERAL_FOLLOWERS]    = gText_Followers,
-    [MENUITEM_GENERAL_AUTORUN]      = gText_AutoRun,
-    [MENUITEM_GENERAL_MATCHCALL]    = gText_MatchCalls,
+    [MENUITEM_GENERAL_TEXTSPEED]    = COMPOUND_STRING("TEXT SPEED"),
+    [MENUITEM_GENERAL_BUTTONMODE]   = COMPOUND_STRING("BUTTON MODE"),
+    [MENUITEM_GENERAL_FRAMETYPE]    = COMPOUND_STRING("FRAME TYPE"),
+    [MENUITEM_GENERAL_FOLLOWERS]    = COMPOUND_STRING("FOLLOWERS"),
+    [MENUITEM_GENERAL_AUTORUN]      = COMPOUND_STRING("AUTO RUN"),
+    [MENUITEM_GENERAL_MATCHCALL]    = COMPOUND_STRING("MATCH CALL"),
     [MENUITEM_GENERAL_CANCEL]       = gText_OptionMenuSave,
 };
 
 static const u8 *const sOptionMenuItemsNamesBattle[MENUITEM_BATTLE_COUNT] =
 {
-    [MENUITEM_BATTLE_BATTLESCENE]   = gText_BattleScene,
-    [MENUITEM_BATTLE_BATTLESTYLE]   = gText_BattleStyle,
-    [MENUITEM_BATTLE_BATTLESPEED]   = gText_BattleSpeed,
-    [MENUITEM_BATTLE_BAGUSE]        = gText_BagUse,
-    [MENUITEM_BATTLE_QUICKRUN]      = gText_QuickRun,
-    [MENUITEM_BATTLE_DOUBLEBATTLE]  = gText_DoubleBattles,
-    [MENUITEM_BATTLE_MOVEINFO]      = gText_MoveInfo,
+    [MENUITEM_BATTLE_BATTLESCENE]   = COMPOUND_STRING("BATTLE SCENE"),
+    [MENUITEM_BATTLE_BATTLESTYLE]   = COMPOUND_STRING("BATTLE STYLE"),
+    [MENUITEM_BATTLE_BATTLESPEED]   = COMPOUND_STRING("BATTLE SPEED"),
+    [MENUITEM_BATTLE_BATTLE_TYPE]   = COMPOUND_STRING("BATTLE TYPE"),
+    [MENUITEM_BATTLE_BAGUSE]        = COMPOUND_STRING("BAG USE"),
+    [MENUITEM_BATTLE_QUICKRUN]      = COMPOUND_STRING("QUICK RUN"),
+    [MENUITEM_BATTLE_MOVEINFO]      = COMPOUND_STRING("MOVE INFO"),
     [MENUITEM_BATTLE_CANCEL]        = gText_OptionMenuSave,
 };
 
 static const u8 *const sOptionMenuItemsNamesSound[MENUITEM_SOUND_COUNT] =
 {
-    [MENUITEM_SOUND_SOUNDMODE]  = gText_Sound,
-    [MENUITEM_SOUND_BIKEMUSIC]  = gText_BikeMusic,
-    [MENUITEM_SOUND_SURFMUSIC]  = gText_SurfMusic,
+    [MENUITEM_SOUND_SOUNDMODE]  = COMPOUND_STRING("SOUND MODE"),
+    [MENUITEM_SOUND_BIKEMUSIC]  = COMPOUND_STRING("BIKE MUSIC"),
+    [MENUITEM_SOUND_SURFMUSIC]  = COMPOUND_STRING("SURF MUSIC"),
     [MENUITEM_SOUND_CANCEL]     = gText_OptionMenuSave,
+};
+
+static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT][3] =
+{
+    [MENUITEM_GENERAL_TEXTSPEED]   = {sText_Desc_TextSpeedNormal,      sText_Desc_TextSpeedInstant,     sText_Empty},
+    [MENUITEM_GENERAL_BUTTONMODE]  = {sText_Desc_ButtonMode,           sText_Desc_ButtonMode_LR,        sText_Desc_ButtonMode_LA},
+    [MENUITEM_GENERAL_FRAMETYPE]   = {sText_Desc_FrameType,            sText_Empty,                     sText_Empty},
+    [MENUITEM_GENERAL_FOLLOWERS]   = {sText_Desc_FollowersOn,          sText_Desc_FollowersOff,         sText_Empty},
+    [MENUITEM_GENERAL_AUTORUN]     = {sText_Desc_AutoRunOn,            sText_Desc_AutoRunOff,           sText_Empty},
+    [MENUITEM_GENERAL_MATCHCALL]   = {sText_Desc_MatchCallOn,          sText_Desc_MatchCallOff,         sText_Empty},
+    [MENUITEM_GENERAL_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                     sText_Empty},
+};
+
+static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][4] =
+{
+    [MENUITEM_BATTLE_BATTLESCENE]  = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off,       sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_BATTLESTYLE]  = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_BATTLESPEED]  = {sText_Desc_BattleSpeed_1x,       sText_Desc_BattleSpeed_2x,        sText_Desc_BattleSpeed_3x,      sText_Desc_BattleSpeed_4x},
+    [MENUITEM_BATTLE_BATTLE_TYPE]  = {sText_Desc_SingleBattles,        sText_Desc_DoubleBattles,         sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_BAGUSE]       = {sText_Desc_BagUse_On,            sText_Desc_BagUse_Off,            sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_QUICKRUN]     = {sText_Desc_QuickRunOptionR,      sText_Desc_QuickRunOptionBA,      sText_Desc_QuickRunOptionOff,   sText_Empty},
+    [MENUITEM_BATTLE_MOVEINFO]     = {sText_Desc_MoveInfo_On,          sText_Desc_MoveInfo_Off,          sText_Empty,                    sText_Empty},
+    [MENUITEM_BATTLE_CANCEL]       = {sText_Desc_Save,                 sText_Empty,                      sText_Empty,                    sText_Empty},
+};
+
+static const u8 *const sOptionMenuItemDescriptionsSound[MENUITEM_SOUND_COUNT][3] =
+{
+    [MENUITEM_SOUND_SOUNDMODE]     = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,            sText_Empty},
+    [MENUITEM_SOUND_BIKEMUSIC]     = {sText_Desc_BikeMusicOn,          sText_Desc_BikeMusicOff,           sText_Empty},
+    [MENUITEM_SOUND_SURFMUSIC]     = {sText_Desc_SurfMusicOn,          sText_Desc_SurfMusicOff,           sText_Empty},
+    [MENUITEM_SOUND_CANCEL]        = {sText_Desc_Save,                 sText_Empty,                       sText_Empty},
+};
+
+static const u8 *const sOptionMenuItemDescriptionsDisabledGeneral[MENUITEM_GENERAL_COUNT] =
+{
+    [MENUITEM_GENERAL_TEXTSPEED]   = sText_Empty,
+    [MENUITEM_GENERAL_BUTTONMODE]  = sText_Empty,
+    [MENUITEM_GENERAL_FRAMETYPE]   = sText_Empty,
+    [MENUITEM_GENERAL_FOLLOWERS]   = sText_Empty,
+    [MENUITEM_GENERAL_AUTORUN]     = sText_Desc_Disabled_AutoRun,
+    [MENUITEM_GENERAL_MATCHCALL]   = sText_Empty,
+    [MENUITEM_GENERAL_CANCEL]      = sText_Empty,
+};
+
+static const u8 *const sOptionMenuItemDescriptionsDisabledBattle[MENUITEM_BATTLE_COUNT] =
+{
+    [MENUITEM_BATTLE_BATTLESCENE]  = sText_Empty,
+    [MENUITEM_BATTLE_BATTLESTYLE]  = sText_Empty,
+    [MENUITEM_BATTLE_BATTLESPEED]  = sText_Empty,
+    [MENUITEM_BATTLE_BATTLE_TYPE]  = sText_Empty,
+    [MENUITEM_BATTLE_BAGUSE]       = sText_Empty,
+    [MENUITEM_BATTLE_QUICKRUN]     = sText_Empty,
+    [MENUITEM_BATTLE_MOVEINFO]     = sText_Empty,
+    [MENUITEM_BATTLE_CANCEL]       = sText_Empty,
+};
+
+static const u8 *const sOptionMenuItemDescriptionsDisabledSound[MENUITEM_SOUND_COUNT] =
+{
+    [MENUITEM_SOUND_SOUNDMODE]   = sText_Empty,
+    [MENUITEM_SOUND_BIKEMUSIC]   = sText_Empty,
+    [MENUITEM_SOUND_SURFMUSIC]   = sText_Empty,
+    [MENUITEM_SOUND_CANCEL]      = sText_Empty,
 };
 
 static const u8 *const OptionTextRight(u8 menuItem)
@@ -334,7 +466,7 @@ static bool8 CheckConditions(int selection)
         {
         case MENUITEM_GENERAL_AUTORUN:
             return FlagGet(FLAG_SYS_B_DASH);
-        case MENUITEM_GENERAL_INSTANTTEXT:
+        case MENUITEM_GENERAL_TEXTSPEED:
         case MENUITEM_GENERAL_BUTTONMODE:
         case MENUITEM_GENERAL_FRAMETYPE:
         case MENUITEM_GENERAL_FOLLOWERS:
@@ -349,9 +481,9 @@ static bool8 CheckConditions(int selection)
         case MENUITEM_BATTLE_BATTLESCENE:
         case MENUITEM_BATTLE_BATTLESTYLE:
         case MENUITEM_BATTLE_BATTLESPEED:
+        case MENUITEM_BATTLE_BATTLE_TYPE:
         case MENUITEM_BATTLE_BAGUSE:
         case MENUITEM_BATTLE_QUICKRUN:
-        case MENUITEM_BATTLE_DOUBLEBATTLE:
         case MENUITEM_BATTLE_MOVEINFO:
         case MENUITEM_BATTLE_CANCEL:
         case MENUITEM_BATTLE_COUNT:
@@ -370,114 +502,6 @@ static bool8 CheckConditions(int selection)
     }
     return FALSE;
 }
-
-// Descriptions
-static const u8 sText_Empty[]                   = _("");
-static const u8 sText_Desc_Save[]               = _("Save your settings.");
-
-static const u8 sText_Desc_InstantTextOn[]      = _("Instant text is enabled.");
-static const u8 sText_Desc_InstantTextOff[]     = _("Instant text is disabled.");
-static const u8 sText_Desc_ButtonMode[]         = _("All buttons work as normal.");
-static const u8 sText_Desc_ButtonMode_LR[]      = _("On some screens the L and R buttons\nact as left and right.");
-static const u8 sText_Desc_ButtonMode_LA[]      = _("The L button acts as another A\nbutton for one-handed play.");
-static const u8 sText_Desc_FrameType[]          = _("Choose the frame surrounding the\nwindows.");
-static const u8 sText_Desc_MatchCallOn[]        = _("TRAINERs will be able to call you,\noffering rematches and info.");
-static const u8 sText_Desc_MatchCallOff[]       = _("You will not receive calls.\nSpecial events will still occur.");
-static const u8 sText_Desc_FollowersOn[]        = _("Your first party POKéMON will\nfollow you in the overworld.");
-static const u8 sText_Desc_FollowersOff[]       = _("Following POKéMON will be disabled.\nYour POKéMON will not follow you.");
-static const u8 sText_Desc_AutoRunOn[]          = _("Enables auto running in the overworld.\nPress {B_BUTTON} to walk.");
-static const u8 sText_Desc_AutoRunOff[]         = _("Disabled auto running in the overworld.\nPress {B_BUTTON} to run.");
-
-static const u8 sText_Desc_BattleScene_On[]     = _("Show the POKéMON battle animations.");
-static const u8 sText_Desc_BattleScene_Off[]    = _("Skip the POKéMON battle animations.");
-static const u8 sText_Desc_BattleStyle_Shift[]  = _("Get the option to switch your\nPOKéMON after the enemies faints.");
-static const u8 sText_Desc_BattleStyle_Set[]    = _("No free switch after fainting the\nenemies POKéMON.");
-static const u8 sText_Desc_BagUse_On[]          = _("Enables the use of items from the\nbag.");
-static const u8 sText_Desc_BagUse_Off[]         = _("Disables the use of items from the\nbag.");
-static const u8 sText_Desc_QuickRunOptionR[]    = _("Run from wild battles by pressing\nthe {R_BUTTON} button.");
-static const u8 sText_Desc_QuickRunOptionBA[]   = _("Move the cursor to RUN by pressing\nthe {B_BUTTON} button.");
-static const u8 sText_Desc_QuickRunOptionOff[]  = _("Disables quick running from wild\nbattles.");
-static const u8 sText_Desc_DoubleBattles_On[]   = _("All Trainer battles will be double\nbattles.");
-static const u8 sText_Desc_DoubleBattles_Off[]  = _("All Trainer battles will be single\nbattles, unless forced.");
-static const u8 sText_Desc_MoveInfo_On[]        = _("Shows a window with information of\nmoves.");
-static const u8 sText_Desc_MoveInfo_Off[]       = _("Disables move information window.");
-static const u8 sText_Desc_BattleSpeed_1x[]     = _("Battle animations will play at default\nspeed.");
-static const u8 sText_Desc_BattleSpeed_2x[]     = _("Battle animations will play in 2x\n speed.");
-static const u8 sText_Desc_BattleSpeed_3x[]     = _("Battle animations will play in 3x\n speed.");
-static const u8 sText_Desc_BattleSpeed_4x[]     = _("Battle animations will play in 4x\n speed.");
-
-static const u8 sText_Desc_SoundMono[]          = _("Sound is the same in all speakers.\nRecommended for original hardware.");
-static const u8 sText_Desc_SoundStereo[]        = _("Play the left and right audio channel\nseperatly. Great with headphones.");
-static const u8 sText_Desc_BikeMusicOn[]        = _("Bike theme music will play\nwhile cycling.");
-static const u8 sText_Desc_BikeMusicOff[]       = _("Normal route music continues\nwhile cycling.");
-static const u8 sText_Desc_SurfMusicOn[]        = _("Surf theme music will play\nwhile on water.");
-static const u8 sText_Desc_SurfMusicOff[]       = _("Normal water route music continues\nwhile surfing.");
-
-static const u8 *const sOptionMenuItemDescriptionsGeneral[MENUITEM_GENERAL_COUNT][3] =
-{
-    [MENUITEM_GENERAL_INSTANTTEXT] = {sText_Desc_InstantTextOn,        sText_Desc_InstantTextOff,       sText_Empty},
-    [MENUITEM_GENERAL_BUTTONMODE]  = {sText_Desc_ButtonMode,           sText_Desc_ButtonMode_LR,        sText_Desc_ButtonMode_LA},
-    [MENUITEM_GENERAL_FRAMETYPE]   = {sText_Desc_FrameType,            sText_Empty,                     sText_Empty},
-    [MENUITEM_GENERAL_FOLLOWERS]   = {sText_Desc_FollowersOn,          sText_Desc_FollowersOff,         sText_Empty},
-    [MENUITEM_GENERAL_AUTORUN]     = {sText_Desc_AutoRunOn,            sText_Desc_AutoRunOff,           sText_Empty},
-    [MENUITEM_GENERAL_MATCHCALL]   = {sText_Desc_MatchCallOn,          sText_Desc_MatchCallOff,         sText_Empty},
-    [MENUITEM_GENERAL_CANCEL]      = {sText_Desc_Save,                 sText_Empty,                     sText_Empty},
-};
-
-static const u8 *const sOptionMenuItemDescriptionsBattle[MENUITEM_BATTLE_COUNT][4] =
-{
-    [MENUITEM_BATTLE_BATTLESCENE]  = {sText_Desc_BattleScene_On,       sText_Desc_BattleScene_Off,       sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_BATTLESTYLE]  = {sText_Desc_BattleStyle_Shift,    sText_Desc_BattleStyle_Set,       sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_BATTLESPEED]  = {sText_Desc_BattleSpeed_1x,       sText_Desc_BattleSpeed_2x,        sText_Desc_BattleSpeed_3x,      sText_Desc_BattleSpeed_4x},
-    [MENUITEM_BATTLE_BAGUSE]       = {sText_Desc_BagUse_On,            sText_Desc_BagUse_Off,            sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_QUICKRUN]     = {sText_Desc_QuickRunOptionR,      sText_Desc_QuickRunOptionBA,      sText_Desc_QuickRunOptionOff,   sText_Empty},
-    [MENUITEM_BATTLE_DOUBLEBATTLE] = {sText_Desc_DoubleBattles_On,    sText_Desc_DoubleBattles_Off,     sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_MOVEINFO]     = {sText_Desc_MoveInfo_On,          sText_Desc_MoveInfo_Off,          sText_Empty,                    sText_Empty},
-    [MENUITEM_BATTLE_CANCEL]       = {sText_Desc_Save,                 sText_Empty,                      sText_Empty,                    sText_Empty},
-};
-
-static const u8 *const sOptionMenuItemDescriptionsSound[MENUITEM_SOUND_COUNT][3] =
-{
-    [MENUITEM_SOUND_SOUNDMODE]     = {sText_Desc_SoundMono,            sText_Desc_SoundStereo,            sText_Empty},
-    [MENUITEM_SOUND_BIKEMUSIC]     = {sText_Desc_BikeMusicOn,          sText_Desc_BikeMusicOff,           sText_Empty},
-    [MENUITEM_SOUND_SURFMUSIC]     = {sText_Desc_SurfMusicOn,          sText_Desc_SurfMusicOff,           sText_Empty},
-    [MENUITEM_SOUND_CANCEL]        = {sText_Desc_Save,                 sText_Empty,                       sText_Empty},
-};
-
-// Disabled Descriptions
-static const u8 sText_Desc_Disabled_Textspeed[]     = _("Only active if xyz.");
-static const u8 sText_Desc_Disabled_AutoRun[]       = _("Only active if running shows are\nreceived.");
-
-static const u8 *const sOptionMenuItemDescriptionsDisabledGeneral[MENUITEM_GENERAL_COUNT] =
-{
-    [MENUITEM_GENERAL_INSTANTTEXT] = sText_Desc_Disabled_Textspeed,
-    [MENUITEM_GENERAL_BUTTONMODE]  = sText_Empty,
-    [MENUITEM_GENERAL_FRAMETYPE]   = sText_Empty,
-    [MENUITEM_GENERAL_FOLLOWERS]   = sText_Empty,
-    [MENUITEM_GENERAL_AUTORUN]     = sText_Desc_Disabled_AutoRun,
-    [MENUITEM_GENERAL_MATCHCALL]   = sText_Empty,
-    [MENUITEM_GENERAL_CANCEL]      = sText_Empty,
-};
-
-static const u8 *const sOptionMenuItemDescriptionsDisabledBattle[MENUITEM_BATTLE_COUNT] =
-{
-    [MENUITEM_BATTLE_BATTLESCENE] = sText_Empty,
-    [MENUITEM_BATTLE_BATTLESTYLE] = sText_Empty,
-    [MENUITEM_BATTLE_BATTLESPEED] = sText_Empty,
-    [MENUITEM_BATTLE_BAGUSE]      = sText_Empty,
-    [MENUITEM_BATTLE_QUICKRUN]    = sText_Empty,
-    [MENUITEM_BATTLE_DOUBLEBATTLE]  = sText_Empty,
-    [MENUITEM_BATTLE_MOVEINFO]    = sText_Empty,
-    [MENUITEM_BATTLE_CANCEL]      = sText_Empty,
-};
-
-static const u8 *const sOptionMenuItemDescriptionsDisabledSound[MENUITEM_SOUND_COUNT] =
-{
-    [MENUITEM_SOUND_SOUNDMODE]   = sText_Empty,
-    [MENUITEM_SOUND_BIKEMUSIC]   = sText_Empty,
-    [MENUITEM_SOUND_SURFMUSIC]   = sText_Empty,
-    [MENUITEM_SOUND_CANCEL]      = sText_Empty,
-};
 
 static const u8 *const OptionTextDescription(void)
 {
@@ -613,15 +637,19 @@ static void DrawDescriptionText(void)
 
 static void DrawLeftSideOptionText(int selection, int y)
 {
-    u8 color_yellow[3];
-    u8 color_gray[3];
+    u8 color_yellow[] =
+    {
+        TEXT_COLOR_TRANSPARENT,
+        TEXT_COLOR_WHITE,
+        TEXT_COLOR_OPTIONS_GRAY_FG,
+    };
 
-    color_yellow[0] = TEXT_COLOR_TRANSPARENT;
-    color_yellow[1] = TEXT_COLOR_WHITE;
-    color_yellow[2] = TEXT_COLOR_OPTIONS_GRAY_FG;
-    color_gray[0] = TEXT_COLOR_TRANSPARENT;
-    color_gray[1] = TEXT_COLOR_WHITE;
-    color_gray[2] = TEXT_COLOR_OPTIONS_GRAY_SHADOW;
+    u8 color_gray[] = 
+    {
+        TEXT_COLOR_TRANSPARENT,
+        TEXT_COLOR_WHITE,
+        TEXT_COLOR_OPTIONS_GRAY_SHADOW,
+    };
 
     if (CheckConditions(selection))
         AddTextPrinterParameterized4(WIN_OPTIONS, FONT_NORMAL, 8, y, 0, 0, color_yellow, TEXT_SKIP_DRAW, OptionTextRight(selection));
@@ -798,7 +826,7 @@ void CB2_InitOptionPlusMenu(void)
         gMain.state++;
         break;
     case 6:
-        sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT] = gSaveBlock2Ptr->optionsTextSpeed;
+        sOptions->sel_general[MENUITEM_GENERAL_TEXTSPEED] = gSaveBlock2Ptr->optionsTextSpeed;
         sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE]  = gSaveBlock2Ptr->optionsButtonMode;
         sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE]   = gSaveBlock2Ptr->optionsWindowFrameType;
         sOptions->sel_general[MENUITEM_GENERAL_FOLLOWERS]   = gSaveBlock2Ptr->optionsFollowersOff;
@@ -808,9 +836,9 @@ void CB2_InitOptionPlusMenu(void)
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE]   = gSaveBlock2Ptr->optionsBattleSceneOff;
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE]   = gSaveBlock2Ptr->optionsBattleStyle;
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLESPEED]   = gSaveBlock2Ptr->optionsBattleSpeed;
+        sOptions->sel_battle[MENUITEM_BATTLE_BATTLE_TYPE]   = gSaveBlock2Ptr->optionsBattlesType;
         sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE]        = gSaveBlock2Ptr->optionsDisableBagUse;
         sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN]      = gSaveBlock2Ptr->optionsQuickRunButton;
-        sOptions->sel_battle[MENUITEM_BATTLE_DOUBLEBATTLE]  = gSaveBlock2Ptr->optionsDoubleBattlesOff;
         sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO]      = gSaveBlock2Ptr->optionsShowBattleMoveInfoOff;
 
         sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE]       = gSaveBlock2Ptr->optionsSound;
@@ -1035,7 +1063,7 @@ static void Task_OptionMenuProcessInput(u8 taskId)
 
 static void Task_OptionMenuSave(u8 taskId)
 {
-    gSaveBlock2Ptr->optionsTextSpeed        = sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT];
+    gSaveBlock2Ptr->optionsTextSpeed        = sOptions->sel_general[MENUITEM_GENERAL_TEXTSPEED];
     gSaveBlock2Ptr->optionsButtonMode       = sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE];
     gSaveBlock2Ptr->optionsWindowFrameType  = sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE];
     gSaveBlock2Ptr->optionsFollowersOff     = sOptions->sel_general[MENUITEM_GENERAL_FOLLOWERS];
@@ -1045,9 +1073,9 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsBattleSceneOff   = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESCENE];
     gSaveBlock2Ptr->optionsBattleStyle      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESTYLE];
     gSaveBlock2Ptr->optionsBattleSpeed      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLESPEED];
+    gSaveBlock2Ptr->optionsBattlesType      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLE_TYPE];
     gSaveBlock2Ptr->optionsDisableBagUse    = sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE];
     gSaveBlock2Ptr->optionsQuickRunButton   = sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN];
-    gSaveBlock2Ptr->optionsDoubleBattlesOff = sOptions->sel_battle[MENUITEM_BATTLE_DOUBLEBATTLE];
     gSaveBlock2Ptr->optionsShowBattleMoveInfoOff = sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO];
 
     gSaveBlock2Ptr->optionsSound            = sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE];
@@ -1242,7 +1270,7 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style, bool8 act
     DrawRightSideChoiceText(text, x, y+1, choosen, active);
 }
 
-static void DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active)
+static void UNUSED DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active)
 {
     static const u8 choiceOrders[][3] =
     {
@@ -1294,14 +1322,14 @@ static void ReDrawAll(void)
 }
 
 // Process Input functions ****SPECIFIC****
-static void InstantText_DrawChoices(int selection, int y)
+static void TextSpeed_DrawChoices(int selection, int y)
 {
-    bool8 active = CheckConditions(MENUITEM_GENERAL_INSTANTTEXT);
+    bool8 active = CheckConditions(MENUITEM_GENERAL_TEXTSPEED);
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_TextSpeedNormal, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_TextSpeedInstant, GetStringRightAlignXOffset(FONT_NORMAL, gText_TextSpeedInstant, 198), y, styles[1], active);
 }
 
 static void ButtonMode_DrawChoices(int selection, int y)
@@ -1354,8 +1382,8 @@ static void Followers_DrawChoices(int selection, int y)
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(1, gText_OptionOff, 198), y, styles[1], active);
 }
 
 static void AutoRun_DrawChoices(int selection, int y)
@@ -1364,8 +1392,8 @@ static void AutoRun_DrawChoices(int selection, int y)
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(1, gText_OptionOff, 198), y, styles[1], active);
 }
 
 static void MatchCall_DrawChoices(int selection, int y)
@@ -1374,8 +1402,8 @@ static void MatchCall_DrawChoices(int selection, int y)
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(1, gText_OptionOff, 198), y, styles[1], active);
 }
 
 static void BattleScene_DrawChoices(int selection, int y)
@@ -1384,8 +1412,8 @@ static void BattleScene_DrawChoices(int selection, int y)
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_OptionOff, 198), y, styles[1], active);
 }
 
 static void BattleStyle_DrawChoices(int selection, int y)
@@ -1420,36 +1448,36 @@ static void BattleSpeed_DrawChoices(int selection, int y)
     DrawOptionMenuChoice(gText_BattleSpeed4x, 198 - width4x, y, styles[3], active);
 }
 
+static void BattleType_DrawChoices(int selection, int y)
+{
+    bool8 active = CheckConditions(MENUITEM_BATTLE_BATTLE_TYPE);
+    u8 styles[2] = {0};
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleTypeSingle, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_BattleTypeDouble, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleTypeDouble, 198), y, styles[1], active);
+}
+
 static void BagUse_DrawChoices(int selection, int y)
 {
     bool8 active = CheckConditions(MENUITEM_BATTLE_BAGUSE);
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_OptionOff, 198), y, styles[1], active);
 }
 
 static void QuickRun_DrawChoices(int selection, int y)
 {
     bool8 active = CheckConditions(MENUITEM_BATTLE_QUICKRUN);
     u8 styles[3] = {0};
-    int xMid = GetMiddleX(gText_QuickRunOptionR, gText_QuickRunOptionBA, gText_BattleSceneOff);
+    int xMid = GetMiddleX(gText_QuickRunOptionR, gText_QuickRunOptionBA, gText_OptionOff);
     styles[selection] = 1;
 
     DrawOptionMenuChoice(gText_QuickRunOptionR, 104, y, styles[0], active);
     DrawOptionMenuChoice(gText_QuickRunOptionBA, xMid, y, styles[1], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), y, styles[2], active);
-}
-
-static void DoubleBattle_DrawChoices(int selection, int y)
-{
-    bool8 active = CheckConditions(MENUITEM_BATTLE_DOUBLEBATTLE);
-    u8 styles[2] = {0};
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(1, gText_OptionOff, 198), y, styles[2], active);
 }
 
 static void MoveInfo_DrawChoices(int selection, int y)
@@ -1458,8 +1486,8 @@ static void MoveInfo_DrawChoices(int selection, int y)
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_OptionOff, 198), y, styles[1], active);
 }
 
 static void SoundMode_DrawChoices(int selection, int y)
@@ -1478,8 +1506,8 @@ static void BikeMusic_DrawChoices(int selection, int y)
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_OptionOff, 198), y, styles[1], active);
 }
 
 static void SurfMusic_DrawChoices(int selection, int y)
@@ -1488,8 +1516,8 @@ static void SurfMusic_DrawChoices(int selection, int y)
     u8 styles[2] = {0};
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0], active);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1], active);
+    DrawOptionMenuChoice(gText_OptionOn, 104, y, styles[0], active);
+    DrawOptionMenuChoice(gText_OptionOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_OptionOff, 198), y, styles[1], active);
 }
 
 // Background tilemap
