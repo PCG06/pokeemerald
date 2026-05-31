@@ -343,7 +343,7 @@ u32 GetPlayerTextScrollSpeed(void)
 
 bool32 IsPlayerTextSpeedInstant(void)
 {
-    return GetPlayerTextSpeed() == TRUE;
+    return GetPlayerTextSpeed() == OPTIONS_TEXT_SPEED_INSTANT;
 }
 
 void DeactivateAllTextPrinters(void)
