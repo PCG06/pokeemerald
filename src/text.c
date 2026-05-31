@@ -292,8 +292,8 @@ static const u8 sMenuCursorDimensions[][2] =
 // these three arrays are most for readability, ie instead of returning a magic number 8
 static const u8 sTextSpeedFrameDelays[] =
 {
-    [OPTIONS_TEXT_SPEED_NORMAL] = 8, 
-    [OPTIONS_TEXT_SPEED_INSTANT] = 4,
+    [OPTIONS_TEXT_SPEED_NORMAL] = 1, 
+    [OPTIONS_TEXT_SPEED_INSTANT] = 1,
 };
 
 static const u8 sTextSpeedModifiers[] =
