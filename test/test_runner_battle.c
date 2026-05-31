@@ -256,7 +256,7 @@ static void BattleTest_Run(void *data)
     memset(&DATA, 0, sizeof(DATA));
 
     DATA.recordedBattle.rngSeed = defaultSeed;
-    DATA.recordedBattle.textSpeed = TRUE; // Disables instant text
+    DATA.recordedBattle.textSpeed = OPTIONS_TEXT_SPEED_FAST;
     // Set battle flags and opponent ids.
     switch (test->type)
     {

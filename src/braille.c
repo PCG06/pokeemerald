@@ -8,6 +8,12 @@
 // For printing braille messages, see ScrCmd_braillemessage
 
 ALIGNED(4)
+static const u8 sScrollDistances[] = {
+    [OPTIONS_TEXT_SPEED_SLOW] = 1,
+    [OPTIONS_TEXT_SPEED_MID] = 2,
+    [OPTIONS_TEXT_SPEED_FAST] = 4,
+    [OPTIONS_TEXT_SPEED_FASTER] = 4,
+};
 static const u16 sFont_Braille[] = INCBIN_U16("graphics/fonts/braille.fwjpnfont");
 
 static void DecompressGlyph_Braille(u16);
@@ -159,15 +165,15 @@ u16 FontFunc_Braille(struct TextPrinter *textPrinter)
     case RENDER_STATE_SCROLL:
         if (textPrinter->scrollDistance)
         {
-            if (textPrinter->scrollDistance < 4)
+            if (textPrinter->scrollDistance < sScrollDistances[gSaveBlock2Ptr->optionsTextSpeed])
             {
                 ScrollWindow(textPrinter->printerTemplate.windowId, 0, textPrinter->scrollDistance, PIXEL_FILL(textPrinter->printerTemplate.bgColor));
                 textPrinter->scrollDistance = 0;
             }
             else
             {
-                ScrollWindow(textPrinter->printerTemplate.windowId, 0, 4, PIXEL_FILL(textPrinter->printerTemplate.bgColor));
-                textPrinter->scrollDistance -= 4;
+                ScrollWindow(textPrinter->printerTemplate.windowId, 0, sScrollDistances[gSaveBlock2Ptr->optionsTextSpeed], PIXEL_FILL(textPrinter->printerTemplate.bgColor));
+                textPrinter->scrollDistance -= sScrollDistances[gSaveBlock2Ptr->optionsTextSpeed];
             }
             CopyWindowToVram(textPrinter->printerTemplate.windowId, COPYWIN_GFX);
         }

@@ -75,6 +75,14 @@ static EWRAM_DATA void *sTempTileDataBuffer[0x20] = {NULL};
 
 const u16 gStandardMenuPalette[] = INCBIN_U16("graphics/interface/std_menu.gbapal");
 
+static const u8 sTextSpeedFrameDelays[] =
+{
+    [OPTIONS_TEXT_SPEED_SLOW] = 8,
+    [OPTIONS_TEXT_SPEED_MID]  = 4,
+    [OPTIONS_TEXT_SPEED_FAST] = 1,
+    [OPTIONS_TEXT_SPEED_FASTER] = 1
+};
+
 static const struct WindowTemplate sStandardTextBox_WindowTemplates[] =
 {
     {
@@ -585,12 +593,18 @@ void DisplayYesNoMenuWithDefault(u8 initialCursorPos)
 
 u32 GetPlayerTextSpeed(void)
 {
-    return gSaveBlock2Ptr->optionsInstantTextOff;
+    if (gTextFlags.forceMidTextSpeed)
+        return OPTIONS_TEXT_SPEED_MID;
+    return gSaveBlock2Ptr->optionsTextSpeed;
 }
 
 u8 GetPlayerTextSpeedDelay(void)
 {
-    return 1;
+    u32 speed;
+    if (gSaveBlock2Ptr->optionsTextSpeed > OPTIONS_TEXT_SPEED_FASTER)
+        gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_FAST;
+    speed = GetPlayerTextSpeed();
+    return sTextSpeedFrameDelays[speed];
 }
 
 u8 AddStartMenuWindow(u8 numActions)

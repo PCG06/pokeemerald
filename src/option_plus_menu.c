@@ -188,7 +188,7 @@ static u8 MenuItemCount(void);
 static u8 MenuItemCancel(void);
 static void DrawDescriptionText(void);
 static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style, bool8 active);
-static void UNUSED DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active);
+static void DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active);
 static void ReDrawAll(void);
 static void InstantText_DrawChoices(int selection, int y);
 static void ButtonMode_DrawChoices(int selection, int y);
@@ -798,7 +798,7 @@ void CB2_InitOptionPlusMenu(void)
         gMain.state++;
         break;
     case 6:
-        sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT] = gSaveBlock2Ptr->optionsInstantTextOff;
+        sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT] = gSaveBlock2Ptr->optionsTextSpeed;
         sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE]  = gSaveBlock2Ptr->optionsButtonMode;
         sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE]   = gSaveBlock2Ptr->optionsWindowFrameType;
         sOptions->sel_general[MENUITEM_GENERAL_FOLLOWERS]   = gSaveBlock2Ptr->optionsFollowersOff;
@@ -1035,7 +1035,7 @@ static void Task_OptionMenuProcessInput(u8 taskId)
 
 static void Task_OptionMenuSave(u8 taskId)
 {
-    gSaveBlock2Ptr->optionsInstantTextOff   = sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT];
+    gSaveBlock2Ptr->optionsTextSpeed        = sOptions->sel_general[MENUITEM_GENERAL_INSTANTTEXT];
     gSaveBlock2Ptr->optionsButtonMode       = sOptions->sel_general[MENUITEM_GENERAL_BUTTONMODE];
     gSaveBlock2Ptr->optionsWindowFrameType  = sOptions->sel_general[MENUITEM_GENERAL_FRAMETYPE];
     gSaveBlock2Ptr->optionsFollowersOff     = sOptions->sel_general[MENUITEM_GENERAL_FOLLOWERS];
@@ -1242,7 +1242,7 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style, bool8 act
     DrawRightSideChoiceText(text, x, y+1, choosen, active);
 }
 
-static void UNUSED DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active)
+static void DrawChoices_Options_Four(const u8 *const *const strings, int selection, int y, bool8 active)
 {
     static const u8 choiceOrders[][3] =
     {

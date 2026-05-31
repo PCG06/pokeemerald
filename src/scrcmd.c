@@ -1708,6 +1708,7 @@ bool8 ScrCmd_messageautoscroll(struct ScriptContext *ctx)
     if (msg == NULL)
         msg = (const u8 *)ctx->data[0];
     gTextFlags.autoScroll = TRUE;
+    gTextFlags.forceMidTextSpeed = TRUE;
     ShowFieldAutoScrollMessage(msg);
     return FALSE;
 }

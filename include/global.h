@@ -574,8 +574,8 @@ struct SaveBlock2
     /*0x10*/ u8 playTimeMinutes;
     /*0x11*/ u8 playTimeSeconds;
     /*0x12*/ u8 playTimeVBlanks;
-             u16 optionsInstantTextOff:1; // whether instant text is disabled
-             u8 optionsButtonMode;  // OPTIONS_BUTTON_MODE_[NORMAL/LR/L_EQUALS_A]
+    /*0x14*/ u16 optionsTextSpeed:3; // OPTIONS_TEXT_SPEED_[SLOW/MID/FAST/FASTER]
+    /*0x13*/ u8 optionsButtonMode;  // OPTIONS_BUTTON_MODE_[NORMAL/LR/L_EQUALS_A]
              u16 optionsWindowFrameType:5; // Specifies one of the 20 decorative borders for text boxes
              u16 optionsFollowersOff:1; // whether ow followers are disabled
              u16 optionsAutoRunOff:1; // whether auto running is disabled
