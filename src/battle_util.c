@@ -10689,7 +10689,7 @@ bool32 IsBattlerInvalidForSpreadMove(enum BattlerId battlerAtk, enum BattlerId b
 
 bool32 IsAllowedToUseBag(void)
 {
-    return gSaveBlock2Ptr->optionsDisableBagUse;
+    return !gSaveBlock2Ptr->optionsDisableBagUse;
 
     /*
     switch (VarGet(B_VAR_NO_BAG_USE))
