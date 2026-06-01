@@ -607,7 +607,7 @@ struct SaveBlock2
              u16 optionsBattlesType:1; // OPTIONS_BATTLE_TYPE[SINGLES/DOUBLES]
              u16 optionsDisableBagUse:1; // whether bag use is disabled in battle
              u16 optionsQuickRunButton:2; // OPTIONS_QUICK_RUN[R_BUTTON/B_BUTTON/OFF]
-             u16 optionsShowBattleMoveInfoOff:1; // whether to show battle move info
+             u16 optionsShowMoveInfoOff:1; // whether to show battle move info
              u16 optionsSound:1; // OPTIONS_SOUND_[MONO/STEREO]
              u16 optionsBattleMusic:4; // select one of 8 options (default, random, 6 tracks)
              u16 optionsBikeMusicOff:1; // whether cycling music is disabled

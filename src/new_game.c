@@ -96,21 +96,23 @@ static void InitPlayerTrainerId(void)
     SetTrainerId(trainerId, gSaveBlock2Ptr->playerTrainerId);
 }
 
-// L=A isnt set here for some reason.
 static void SetDefaultOptions(void)
 {
     gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_NORMAL;
-    gSaveBlock2Ptr->optionsAutoRunOff = FALSE;
+    gSaveBlock2Ptr->optionsButtonMode = OPTIONS_BUTTON_MODE_NORMAL;
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
-    gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
-    gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
-    gSaveBlock2Ptr->optionsBattleSpeed = OPTIONS_BATTLE_SPEED_1X;
+    gSaveBlock2Ptr->optionsFollowersOff = FALSE;
+    gSaveBlock2Ptr->optionsAutoRunOff = FALSE;
     gSaveBlock2Ptr->optionsDisableMatchCall = FALSE;
+    gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
+    gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
+    gSaveBlock2Ptr->optionsBattleSpeed = OPTIONS_BATTLE_SPEED_1X;
+    gSaveBlock2Ptr->optionsBattlesType = OPTIONS_BATTLE_TYPE_SINGLES;
     gSaveBlock2Ptr->optionsDisableBagUse = FALSE;
     gSaveBlock2Ptr->optionsQuickRunButton = OPTIONS_QUICK_RUN_R_BUTTON;
-    gSaveBlock2Ptr->optionsBattlesType = OPTIONS_BATTLE_TYPE_SINGLES;
-    gSaveBlock2Ptr->optionsShowBattleMoveInfoOff = FALSE;
+    gSaveBlock2Ptr->optionsShowMoveInfoOff = FALSE;
     gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_MONO;
+    gSaveBlock2Ptr->optionsBattleMusic = OPTIONS_BATTLE_MUSIC_DEFAULT;
     gSaveBlock2Ptr->optionsBikeMusicOff = FALSE;
     gSaveBlock2Ptr->optionsSurfMusicOff = FALSE;
     gSaveBlock2Ptr->regionMapZoom = FALSE;

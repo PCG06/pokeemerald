@@ -1157,10 +1157,8 @@ static u32 GetActiveMatchCallTrainerId(u32 activeMatchCallId)
 */
 bool32 TryStartMatchCall(void)
 {
-    if (gSaveBlock2Ptr->optionsDisableMatchCall == 1)   //tx_optionsPlus
-        return FALSE;
-
-    if (FlagGet(FLAG_HAS_MATCH_CALL)
+    if (!gSaveBlock2Ptr->optionsDisableMatchCall
+        && FlagGet(FLAG_HAS_MATCH_CALL)
         && UpdateMatchCallStepCounter()
         && UpdateMatchCallMinutesCounter()
         && CheckMatchCallChance()

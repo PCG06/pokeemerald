@@ -5271,7 +5271,7 @@ u32 GetOptionsBattleMusic(u32 option)
     if (option > musCount)
         option = musCount;
 
-    if (gSaveBlock2Ptr->optionsBattleMusic == 1)
+    if (option == OPTIONS_BATTLE_MUSIC_RANDOM)
         return sBattleMusicItems[Random32() % musCount];
 
     return sBattleMusicItems[option - 2]; // first two options are default and random
@@ -5281,7 +5281,7 @@ u16 GetBattleBGM(void)
 {
     u32 musicOption = gSaveBlock2Ptr->optionsBattleMusic;
 
-    if (musicOption != 0)
+    if (musicOption != OPTIONS_BATTLE_MUSIC_DEFAULT)
         return GetOptionsBattleMusic(musicOption);
 
     // The default music

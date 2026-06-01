@@ -2868,8 +2868,6 @@ bool32 CanThrowLastUsedBall(void)
         return FALSE;
     if (!CheckBagHasItem(gBallToDisplay, 1))
         return FALSE;
-    if (gSaveBlock2Ptr->optionsDisableBagUse)
-        return FALSE;
 
     return TRUE;
 }
@@ -2943,7 +2941,7 @@ static void DestroyLastUsedBallGfx(struct Sprite *sprite)
 
 void TryToAddMoveInfoWindow(void)
 {
-    if (!B_SHOW_MOVE_DESCRIPTION || gSaveBlock2Ptr->optionsShowBattleMoveInfoOff)
+    if (!B_SHOW_MOVE_DESCRIPTION || gSaveBlock2Ptr->optionsShowMoveInfoOff)
         return;
 
     if (B_MOVE_DESCRIPTION_BUTTON == L_BUTTON && gSaveBlock2Ptr->optionsButtonMode == OPTIONS_BUTTON_MODE_L_EQUALS_A)

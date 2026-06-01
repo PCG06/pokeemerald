@@ -1762,7 +1762,7 @@ static void MoveSelectionDisplayMoveType(enum BattlerId battler)
 
 static void TryMoveSelectionDisplayMoveDescription(enum BattlerId battler)
 {
-    if (!B_SHOW_MOVE_DESCRIPTION || gSaveBlock2Ptr->optionsShowBattleMoveInfoOff)
+    if (!B_SHOW_MOVE_DESCRIPTION || gSaveBlock2Ptr->optionsShowMoveInfoOff)
         return;
 
     if (gBattleStruct->descriptionSubmenu)

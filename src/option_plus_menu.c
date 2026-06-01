@@ -321,7 +321,9 @@ static const u8 sText_Desc_SurfMusicOn[]        = _("Surf theme music will play\
 static const u8 sText_Desc_SurfMusicOff[]       = _("Normal water route music continues\nwhile surfing.");
 
 // Disabled Descriptions
+static const u8 sText_Desc_Disabled_Followers[]     = _("Only active once you have a\nPOKéMON.");
 static const u8 sText_Desc_Disabled_AutoRun[]       = _("Only active if running shows are\nreceived.");
+static const u8 sText_Desc_Disabled_MatchCall[]     = _("Only active if the POKéNAV is\nreceived.");
 
 static const MenuItemFunctions sItemFunctionsGeneral[MENUITEM_GENERAL_COUNT] =
 {
@@ -424,9 +426,9 @@ static const u8 *const sOptionMenuItemDescriptionsDisabledGeneral[MENUITEM_GENER
     [MENUITEM_GENERAL_TEXTSPEED]   = sText_Empty,
     [MENUITEM_GENERAL_BUTTONMODE]  = sText_Empty,
     [MENUITEM_GENERAL_FRAMETYPE]   = sText_Empty,
-    [MENUITEM_GENERAL_FOLLOWERS]   = sText_Empty,
+    [MENUITEM_GENERAL_FOLLOWERS]   = sText_Desc_Disabled_Followers,
     [MENUITEM_GENERAL_AUTORUN]     = sText_Desc_Disabled_AutoRun,
-    [MENUITEM_GENERAL_MATCHCALL]   = sText_Empty,
+    [MENUITEM_GENERAL_MATCHCALL]   = sText_Desc_Disabled_MatchCall,
     [MENUITEM_GENERAL_CANCEL]      = sText_Empty,
 };
 
@@ -473,40 +475,25 @@ static bool8 CheckConditions(int selection)
     case MENU_GENERAL:
         switch(selection)
         {
+        case MENUITEM_GENERAL_FOLLOWERS:
+            return FlagGet(FLAG_SYS_POKEMON_GET);
         case MENUITEM_GENERAL_AUTORUN:
             return FlagGet(FLAG_SYS_B_DASH);
-        case MENUITEM_GENERAL_TEXTSPEED:
-        case MENUITEM_GENERAL_BUTTONMODE:
-        case MENUITEM_GENERAL_FRAMETYPE:
-        case MENUITEM_GENERAL_FOLLOWERS:
         case MENUITEM_GENERAL_MATCHCALL:
-        case MENUITEM_GENERAL_CANCEL:
-        case MENUITEM_GENERAL_COUNT:
+            return FlagGet(FLAG_SYS_POKENAV_GET);
+        default:
             return TRUE;
         }
     case MENU_BATTLE:
         switch(selection)
         {
-        case MENUITEM_BATTLE_BATTLESCENE:
-        case MENUITEM_BATTLE_BATTLESTYLE:
-        case MENUITEM_BATTLE_BATTLESPEED:
-        case MENUITEM_BATTLE_BATTLE_TYPE:
-        case MENUITEM_BATTLE_BAGUSE:
-        case MENUITEM_BATTLE_QUICKRUN:
-        case MENUITEM_BATTLE_MOVEINFO:
-        case MENUITEM_BATTLE_CANCEL:
-        case MENUITEM_BATTLE_COUNT:
+        default:
             return TRUE;
         }
     case MENU_SOUND:
         switch(selection)
         {
-        case MENUITEM_SOUND_SOUNDMODE:
-        case MENUITEM_SOUND_BATTLEMUSIC:
-        case MENUITEM_SOUND_BIKEMUSIC:
-        case MENUITEM_SOUND_SURFMUSIC:
-        case MENUITEM_SOUND_CANCEL:
-        case MENUITEM_SOUND_COUNT:
+        default:
             return TRUE;
         }
     }
@@ -858,7 +845,7 @@ void CB2_InitOptionPlusMenu(void)
         sOptions->sel_battle[MENUITEM_BATTLE_BATTLE_TYPE]   = gSaveBlock2Ptr->optionsBattlesType;
         sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE]        = gSaveBlock2Ptr->optionsDisableBagUse;
         sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN]      = gSaveBlock2Ptr->optionsQuickRunButton;
-        sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO]      = gSaveBlock2Ptr->optionsShowBattleMoveInfoOff;
+        sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO]      = gSaveBlock2Ptr->optionsShowMoveInfoOff;
 
         sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE]       = gSaveBlock2Ptr->optionsSound;
         sOptions->sel_sound[MENUITEM_SOUND_BATTLEMUSIC]     = gSaveBlock2Ptr->optionsBattleMusic;
@@ -1096,7 +1083,7 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsBattlesType      = sOptions->sel_battle[MENUITEM_BATTLE_BATTLE_TYPE];
     gSaveBlock2Ptr->optionsDisableBagUse    = sOptions->sel_battle[MENUITEM_BATTLE_BAGUSE];
     gSaveBlock2Ptr->optionsQuickRunButton   = sOptions->sel_battle[MENUITEM_BATTLE_QUICKRUN];
-    gSaveBlock2Ptr->optionsShowBattleMoveInfoOff = sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO];
+    gSaveBlock2Ptr->optionsShowMoveInfoOff  = sOptions->sel_battle[MENUITEM_BATTLE_MOVEINFO];
 
     gSaveBlock2Ptr->optionsSound            = sOptions->sel_sound[MENUITEM_SOUND_SOUNDMODE];
     gSaveBlock2Ptr->optionsBattleMusic      = sOptions->sel_sound[MENUITEM_SOUND_BATTLEMUSIC];

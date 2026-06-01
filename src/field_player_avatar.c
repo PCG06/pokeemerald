@@ -841,6 +841,11 @@ static void PlayerNotOnBikeTurningInPlace(enum Direction direction, u16 heldKeys
     PlayerTurnInPlace(direction);
 }
 
+static bool32 IsAutoRunEnabled(void)
+{
+    return !gSaveBlock2Ptr->optionsAutoRunOff;
+}
+
 static void PlayerNotOnBikeMoving(enum Direction direction, u16 heldKeys)
 {
     enum Collision collision = CheckForPlayerAvatarCollision(direction);
@@ -897,11 +902,11 @@ static void PlayerNotOnBikeMoving(enum Direction direction, u16 heldKeys)
             gPlayerAvatar.creeping = TRUE;
             PlayerWalkSlow(direction);
         }
-        else if (heldKeys & B_BUTTON && !gSaveBlock2Ptr->optionsAutoRunOff)
+        else if (heldKeys & B_BUTTON && IsAutoRunEnabled())
         {
             PlayerWalkFast(direction);
         }
-        else if (heldKeys & B_BUTTON || !gSaveBlock2Ptr->optionsAutoRunOff)
+        else if (heldKeys & B_BUTTON || IsAutoRunEnabled())
         {
             PlayerWalkFaster(direction);
         }
@@ -915,11 +920,11 @@ static void PlayerNotOnBikeMoving(enum Direction direction, u16 heldKeys)
 
     if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER)
     {
-        if (heldKeys & B_BUTTON && !gSaveBlock2Ptr->optionsAutoRunOff)
+        if (heldKeys & B_BUTTON && IsAutoRunEnabled())
         {
             PlayerWalkFast(direction);
         }
-        else if (heldKeys & B_BUTTON || !gSaveBlock2Ptr->optionsAutoRunOff)
+        else if (heldKeys & B_BUTTON || IsAutoRunEnabled())
         {
             PlayerWalkFaster(direction);
         }
@@ -932,13 +937,13 @@ static void PlayerNotOnBikeMoving(enum Direction direction, u16 heldKeys)
     }
 
     if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER)
-     && (heldKeys & B_BUTTON || !gSaveBlock2Ptr->optionsAutoRunOff)
+     && (heldKeys & B_BUTTON || IsAutoRunEnabled())
      && FlagGet(FLAG_SYS_B_DASH)
      && IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior) == 0
      && !FollowerNPCComingThroughDoor()
      && (I_ORAS_DOWSING_FLAG == 0 || (I_ORAS_DOWSING_FLAG != 0 && !FlagGet(I_ORAS_DOWSING_FLAG))))
     {
-        if (heldKeys & B_BUTTON && !gSaveBlock2Ptr->optionsAutoRunOff)
+        if (heldKeys & B_BUTTON && IsAutoRunEnabled())
         {
             PlayerWalkNormal(direction);
         }
