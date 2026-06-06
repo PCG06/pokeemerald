@@ -25,6 +25,7 @@
 #include "recorded_battle.h"
 #include "reshow_battle_screen.h"
 #include "sound.h"
+#include "speedup.h"
 #include "string_util.h"
 #include "task.h"
 #include "test_runner.h"
@@ -453,6 +454,13 @@ void HandleInputChooseTarget(enum BattlerId battler)
         EndBounceEffect(gMultiUsePlayerCursor, BOUNCE_HEALTHBOX);
         TryHideLastUsedBall();
         HideGimmickTriggerSprite();
+
+        if (!gBattleResources->bufferA[battler][1]
+         || (gBattleTypeFlags & (BATTLE_TYPE_MULTI | BATTLE_TYPE_INGAME_PARTNER))
+         || (GetBattlerPosition(battler) & BIT_FLANK) != B_FLANK_LEFT
+         || (gAbsentBattlerFlags & (1u << GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(battler))))))
+            StartSpeedup();
+
         BtlController_Complete(battler);
     }
     else if (JOY_NEW(B_BUTTON) || gPlayerDpadHoldFrames > 59)
@@ -625,6 +633,13 @@ void HandleInputShowEntireFieldTargets(enum BattlerId battler)
         else
             BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_EXEC_SCRIPT, gMoveSelectionCursor[battler] | (gMultiUsePlayerCursor << 8));
         HideGimmickTriggerSprite();
+
+        if (!gBattleResources->bufferA[battler][1]
+         || (gBattleTypeFlags & (BATTLE_TYPE_MULTI | BATTLE_TYPE_INGAME_PARTNER))
+         || (GetBattlerPosition(battler) & BIT_FLANK) != B_FLANK_LEFT
+         || (gAbsentBattlerFlags & (1u << GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(battler))))))
+            StartSpeedup();
+        
         BtlController_Complete(battler);
     }
     else if (JOY_NEW(B_BUTTON) || gPlayerDpadHoldFrames > 59)
@@ -654,6 +669,13 @@ void HandleInputShowTargets(enum BattlerId battler)
             BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_EXEC_SCRIPT, gMoveSelectionCursor[battler] | (gMultiUsePlayerCursor << 8));
         HideGimmickTriggerSprite();
         TryHideLastUsedBall();
+
+        if (!gBattleResources->bufferA[battler][1]
+         || (gBattleTypeFlags & (BATTLE_TYPE_MULTI | BATTLE_TYPE_INGAME_PARTNER))
+         || (GetBattlerPosition(battler) & BIT_FLANK) != B_FLANK_LEFT
+         || (gAbsentBattlerFlags & (1u << GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(battler))))))
+            StartSpeedup();
+
         BtlController_Complete(battler);
     }
     else if (JOY_NEW(B_BUTTON) || gPlayerDpadHoldFrames > 59)
@@ -780,6 +802,13 @@ void HandleInputChooseMove(enum BattlerId battler)
                 BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_EXEC_SCRIPT, gMoveSelectionCursor[battler] | (gMultiUsePlayerCursor << 8));
             HideGimmickTriggerSprite();
             TryHideLastUsedBall();
+
+            if (!gBattleResources->bufferA[battler][1]
+             || (gBattleTypeFlags & (BATTLE_TYPE_MULTI | BATTLE_TYPE_INGAME_PARTNER))
+             || (GetBattlerPosition(battler) & BIT_FLANK) != B_FLANK_LEFT
+             || (gAbsentBattlerFlags & (1u << GetBattlerAtPosition(BATTLE_PARTNER(GetBattlerPosition(battler))))))
+                StartSpeedup();
+
             BtlController_Complete(battler);
             break;
         case 1:
@@ -1917,6 +1946,8 @@ static void PlayerHandleDrawTrainerPic(enum BattlerId battler)
     s16 xPos, yPos;
     enum TrainerPicID trainerPicId;
 
+    StartSpeedup();
+
     if (TESTING)
     {
         trainerPicId = TRAINER_PIC_BRENDAN;
@@ -2026,6 +2057,7 @@ static void PlayerHandleChooseAction(enum BattlerId battler)
 {
     s32 i;
 
+    StopSpeedup();
     gBattlerControllerFuncs[battler] = HandleChooseActionAfterDma3;
     BattleTv_ClearExplosionFaintCause();
     if (IsAllowedToUseBag())
@@ -2179,6 +2211,8 @@ static void PlayerHandleChooseItem(enum BattlerId battler)
 static void PlayerHandleChoosePokemon(enum BattlerId battler)
 {
     s32 i;
+
+    StopSpeedup();
 
     for (i = 0; i < ARRAY_COUNT(gBattlePartyCurrentOrder); i++)
         gBattlePartyCurrentOrder[i] = gBattleResources->bufferA[battler][4 + i];

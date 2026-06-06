@@ -24,6 +24,7 @@
 #include "main.h"
 #include "trainer_hill.h"
 #include "test_runner.h"
+#include "speedup.h"
 #include "constants/rgb.h"
 
 static void VBlankIntr(void);
@@ -169,7 +170,9 @@ void AgbMainLoop(void)
 
         PlayTimeCounter_Update();
         MapMusicMain();
-        WaitForVBlank();
+
+        if (!SpeedupShouldSkip())
+            WaitForVBlank();
     }
 }
 

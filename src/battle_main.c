@@ -51,6 +51,7 @@
 #include "scanline_effect.h"
 #include "script.h"
 #include "sound.h"
+#include "speedup.h"
 #include "sprite.h"
 #include "string_util.h"
 #include "strings.h"
@@ -5459,6 +5460,8 @@ static void HandleEndTurn_MonFled(void)
 
 static void HandleEndTurn_FinishBattle(void)
 {
+    StopSpeedup();
+
     if (gCurrentActionFuncId == B_ACTION_TRY_FINISH || gCurrentActionFuncId == B_ACTION_FINISHED)
     {
         if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK
