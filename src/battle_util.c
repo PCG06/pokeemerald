@@ -1180,7 +1180,7 @@ void PrepareStringBattle(enum StringID stringId, enum BattlerId battler)
     {
     case STRINGID_ITDOESNTAFFECT:
     case STRINGID_PKMNUNAFFECTED:
-        TryInitializeTrainerSlideEnemyMonUnaffected(gBattlerTarget); // Depending on the future changes that might lead to bugs
+        TryInitializeTrainerSlideMonUnaffected(gBattlerTarget, gBattlerAttacker);
         break;
     default:
         break;
@@ -11005,4 +11005,17 @@ bool32 IsBattlersFirstTurn(enum BattlerId battler)
 struct PartyState *GetBattlerPartyState(enum BattlerId battler)
 {
     return &gBattleStruct->partyState[GetBattlerTrainer(battler)][gBattlerPartyIndexes[battler]];
+}
+
+bool32 IsVictoryCatch(void)
+{
+    return gBattleTypeFlags & BATTLE_TYPE_RAID
+        || FlagGet(B_FLAG_VICTORY_CATCH_RANDOM)
+        || FlagGet(B_FLAG_VICTORY_CATCH_GUARANTEED);
+}
+
+bool32 IsVictoryCatchGuaranteed(void)
+{
+    return gBattleTypeFlags & BATTLE_TYPE_RAID
+        || FlagGet(B_FLAG_VICTORY_CATCH_GUARANTEED);
 }

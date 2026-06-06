@@ -70,7 +70,6 @@
 #include "constants/battle_move_effects.h"
 #include "constants/battle_string_ids.h"
 #include "constants/battle_partner.h"
-#include "constants/battle_setup.h"
 #include "constants/items.h"
 #include "constants/moves.h"
 #include "constants/party_menu.h"
@@ -3795,12 +3794,12 @@ static void TryDoEventsBeforeFirstTurn(void)
         gBattleStruct->eventState.beforeFirstTurn++;
         break;
     case FIRST_TURN_EVENTS_TRAINER_SLIDE_A:
-        if (ShouldDoTrainerSlide(GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT), TRAINER_SLIDE_BEFORE_FIRST_TURN))
+        if (ShouldDoTrainerSlide(B_BATTLER_1, TRAINER_SLIDE_BEFORE_FIRST_TURN))
             BattleScriptExecute(BattleScript_TrainerASlideMsgEnd2);
         gBattleStruct->eventState.beforeFirstTurn++;
         break;
     case FIRST_TURN_EVENTS_TRAINER_SLIDE_B:
-        if (ShouldDoTrainerSlide(GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT), TRAINER_SLIDE_BEFORE_FIRST_TURN))
+        if (ShouldDoTrainerSlide(B_BATTLER_3, TRAINER_SLIDE_BEFORE_FIRST_TURN))
         {
             // Ensures only trainer A slide is played in single-trainer doubles (B == A / B == TRAINER_NONE) and 2v1 multibattles (B == 0xFFFF)
             if (!((TRAINER_BATTLE_PARAM.opponentB == TRAINER_BATTLE_PARAM.opponentA)
@@ -3813,7 +3812,7 @@ static void TryDoEventsBeforeFirstTurn(void)
         gBattleStruct->eventState.beforeFirstTurn++;
         break;
     case FIRST_TURN_EVENTS_TRAINER_SLIDE_PARTNER:
-        if (ShouldDoTrainerSlide(GetBattlerAtPosition(B_POSITION_PLAYER_RIGHT), TRAINER_SLIDE_BEFORE_FIRST_TURN))
+        if (ShouldDoTrainerSlide(B_BATTLER_2, TRAINER_SLIDE_BEFORE_FIRST_TURN))
             BattleScriptExecute(BattleScript_TrainerPartnerSlideMsgEnd2);
         gBattleStruct->eventState.beforeFirstTurn++;
         break;
@@ -5391,9 +5390,9 @@ static void HandleEndTurn_BattleLost(void)
     }
     else
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_TRAINER && GetTrainerBattleMode() == TRAINER_BATTLE_EARLY_RIVAL)
+        if (gBattleTypeFlags & BATTLE_TYPE_TRAINER && TRAINER_BATTLE_PARAM.earlyRival)
         {
-            if (GetRivalBattleFlags() & RIVAL_BATTLE_HEAL_AFTER)
+            if (TRAINER_BATTLE_PARAM.earlyRival)
                 gBattleCommunication[MULTISTRING_CHOOSER] = 1; // Dont do white out text
             else
                 gBattleCommunication[MULTISTRING_CHOOSER] = 2; // Do white out text
