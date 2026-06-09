@@ -608,7 +608,9 @@ enum AnimBattler
 #define B_ANIM_FORM_CHANGE_INSTANT      61
 #define B_ANIM_FORM_CHANGE_DISGUISE     62
 #define B_ANIM_HELD_ITEM_BERRY          63
-#define NUM_B_ANIMS_GENERAL             64
+#define B_ANIM_ELECTRO_BOOST            64
+#define B_ANIM_CHARGED_UP               65
+#define NUM_B_ANIMS_GENERAL             66
 
 // special animations table (sBattleAnims_Special)
 #define B_ANIM_LVL_UP                   0

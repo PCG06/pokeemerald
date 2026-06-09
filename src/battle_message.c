@@ -889,6 +889,9 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_AURORAVEILWOREOFF]                    = COMPOUND_STRING("{B_DEF_TEAM1} team's Aurora Veil wore off!"),
     [STRINGID_STICKYWEBDISAPPEAREDFROMYOU]          = COMPOUND_STRING("The sticky web has disappeared from the ground around you!"),
     [STRINGID_VICTORYCATCH]                         = COMPOUND_STRING("{B_DEF_NAME} is weak!\nThrow a Poké Ball now!"),
+    [STRINGID_ELECTROBOOSTSTARTS]                   = COMPOUND_STRING("A strong electric charge surrounded the field!"),
+    [STRINGID_ELECTROBOOSTCONTINUES]                = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} was charged up!"),
+    [STRINGID_CHARGEDUPENDS]                        = COMPOUND_STRING("The electric charge around the field disappeared."),
 };
 
 const u16 gTrainerUsedItemStringIds[] =
@@ -935,6 +938,7 @@ const u16 gStartingStatusStringIds[B_MSG_STARTING_STATUS_COUNT] =
     [B_MSG_SET_STICKY_WEB]       = STRINGID_STICKYWEBUSED,
     [B_MSG_SET_STEALTH_ROCK]     = STRINGID_POINTEDSTONESFLOAT,
     [B_MSG_SET_SHARP_STEEL]      = STRINGID_SHARPSTEELFLOATS,
+    [B_MSG_SET_ELECTRO_BOOST]       = STRINGID_ELECTROBOOSTSTARTS,
 };
 
 const u16 gTerrainStringIds[B_MSG_TERRAIN_COUNT] =

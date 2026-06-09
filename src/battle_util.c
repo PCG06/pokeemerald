@@ -2762,6 +2762,16 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             if (effect)
                 return TRUE;
         }
+        
+        else if (gStartingStatuses.electroBoost || gStartingStatuses.electroBoostTemporary)
+        {
+            effect = SetStartingFieldStatus(
+                        STATUS_FIELD_ELECTRO_BOOST,
+                        B_MSG_SET_ELECTRO_BOOST,
+                        B_ANIM_ELECTRO_BOOST,
+                        &gFieldTimers.electroBoostTimer, gStartingStatuses.electroBoost ? 0 : 5);
+            gStartingStatuses.electroBoostTemporary = gStartingStatuses.electroBoost = FALSE;
+        }
         if (effect)
         {
             if (isTerrain)

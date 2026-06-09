@@ -35603,3 +35603,33 @@ gBattleAnimGeneral_DynamaxGrowth:: @ PORTED FROM CFRU
 	createvisualtask AnimTask_DynamaxGrowth, 5, 1, 0
 	waitforvisualfinish
 	end
+
+gBattleAnimGeneral_ElectroBoost::
+	playsewithpan SE_M_CHARGE, SOUND_PAN_ATTACKER
+	playsewithpan SE_M_REVERSAL, SOUND_PAN_ATTACKER
+	createvisualtask AnimTask_BlendBattleAnimPal, 10, F_PAL_BG, 3, 0, 4, RGB(28, 28, 0)
+	delay 52
+	setarg 7, -1
+	playsewithpan SE_M_REFLECT, SOUND_PAN_ATTACKER
+	loopsewithpan SE_M_THUNDERBOLT2, SOUND_PAN_TARGET, 22, 3
+	delay 2
+	createvisualtask AnimTask_BlendBattleAnimPal, 10, F_PAL_BG, 3, 4, 0, RGB(28, 28, 0)
+	waitforvisualfinish
+	end
+
+gBattleAnimGeneral_ChargedUp::
+	monbg ANIM_ATTACKER
+	setalpha 12, 8
+	create_electric_puff_sprite ANIM_ATTACKER, 2, relative_to=0, x=16, y=16
+	delay 2
+	create_electric_puff_sprite ANIM_ATTACKER, 2, relative_to=0, x=-16, y=-16
+	playsewithpan SE_M_THUNDERBOLT2, SOUND_PAN_ATTACKER
+	delay 8
+	create_electric_puff_sprite ANIM_ATTACKER, 2, relative_to=0, x=-16, y=16
+	delay 2
+	create_electric_puff_sprite ANIM_ATTACKER, 2, relative_to=0, x=16, y=-16
+	playsewithpan SE_M_THUNDERBOLT2, SOUND_PAN_ATTACKER
+	waitforvisualfinish
+	clearmonbg ANIM_ATTACKER
+	blendoff
+	end

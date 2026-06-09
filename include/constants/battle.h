@@ -445,6 +445,8 @@ enum TypeSideHazard
 #define STATUS_FIELD_PSYCHIC_TERRAIN                (1 << 9)
 #define STATUS_FIELD_ION_DELUGE                     (1 << 10)
 #define STATUS_FIELD_FAIRY_LOCK                     (1 << 11)
+// New Custom Status Field
+#define STATUS_FIELD_ELECTRO_BOOST                  (1 << 12)
 
 #define STATUS_FIELD_TERRAIN_ANY        (STATUS_FIELD_GRASSY_TERRAIN | STATUS_FIELD_MISTY_TERRAIN | STATUS_FIELD_ELECTRIC_TERRAIN | STATUS_FIELD_PSYCHIC_TERRAIN)
 
@@ -823,6 +825,8 @@ enum FaintedActions
     F(STARTING_STATUS_STEALTH_ROCK_OPPONENT,          stealthRockOpponent,        (u32, 1)) /* Stealth Rock Opponent */                    \
     F(STARTING_STATUS_SHARP_STEEL_PLAYER,             sharpSteelPlayer,           (u32, 1)) /* Sharp Steel Player */                       \
     F(STARTING_STATUS_SHARP_STEEL_OPPONENT,           sharpSteelOpponent,         (u32, 1)) /* Sharp Steel Opponent */                     \
+    F(STARTING_STATUS_ELECTRO_BOOST,                  electroBoost,               (u32, 1)) /* Electro Boost (Permanent) */                \
+    F(STARTING_STATUS_ELECTRO_BOOST_TEMPORARY,        electroBoostTemporary,      (u32, 1)) /* Electro Boost Temporary (5 turns) */        \
 
 #define UNPACK_STARTING_STATUS_ENUMS(_enum, ...) _enum,
 

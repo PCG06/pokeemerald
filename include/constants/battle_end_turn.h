@@ -40,6 +40,7 @@ enum EndTurnResolutionOrder
     ENDTURN_ROOST,
     ENDTURN_SEND_OUT_REPLACEMENTS_3, // For Emergency Exit/Wimp Out activations
     ENDTURN_SECOND_EVENT_BLOCK,
+    ENDTURN_ELECTRO_BOOST, // New Custom Status Field
     ENDTURN_TRICK_ROOM,
     ENDTURN_GRAVITY,
     ENDTURN_WATER_SPORT,

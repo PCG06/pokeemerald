@@ -11,6 +11,7 @@
 #include "constants/battle.h"
 #include "constants/battle_string_ids.h"
 #include "constants/abilities.h"
+#include "constants/battle_anim.h"
 #include "constants/items.h"
 #include "constants/moves.h"
 
@@ -1111,6 +1112,38 @@ static bool32 HandleEndTurnSecondEventBlock(enum BattlerId battler)
     return effect;
 }
 
+// New Custom Status Field
+static bool32 HandleEndTurnElectroBoost(enum BattlerId battler)
+{
+    bool32 effect = FALSE;
+
+    gBattleStruct->eventState.endTurnBattler++;
+
+    if (gFieldTimers.electroBoostTimer > 0 && --gFieldTimers.electroBoostTimer == 0)
+    {
+        gFieldStatuses &= ~STATUS_FIELD_ELECTRO_BOOST;
+        BattleScriptCall(BattleScript_ElectroBoostEnds);
+        effect = TRUE;
+    }
+    else
+    {
+        if (!IsBattlerPresent(battler) || !IS_BATTLER_OF_TYPE(battler, TYPE_ELECTRIC))
+            return effect;
+            
+        if (gBattleMons[battler].volatiles.chargeTimer == 0)
+        {
+            gBattlerAttacker = battler;
+            gBattleMons[battler].volatiles.chargeTimer++;
+            gBattleScripting.animArg1 = B_ANIM_CHARGED_UP;
+            SetStatChange(battler, STAT_SPDEF, 1);
+            BattleScriptCall(BattleScript_ElectroBoostContinues);
+            effect = TRUE;
+        }
+    }
+
+    return effect;
+}
+
 static bool32 HandleEndTurnTrickRoom(enum BattlerId battler)
 {
     bool32 effect = FALSE;
@@ -1560,6 +1593,7 @@ static bool32 (*const sEndTurnEffectHandlers[])(enum BattlerId battler) =
     [ENDTURN_ROOST] = HandleEndTurnRoost,
     [ENDTURN_SEND_OUT_REPLACEMENTS_3] = HandleEndTurnSendOutReplacements,
     [ENDTURN_SECOND_EVENT_BLOCK] = HandleEndTurnSecondEventBlock,
+    [ENDTURN_ELECTRO_BOOST] = HandleEndTurnElectroBoost,
     [ENDTURN_TRICK_ROOM] = HandleEndTurnTrickRoom,
     [ENDTURN_GRAVITY] = HandleEndTurnGravity,
     [ENDTURN_WATER_SPORT] = HandleEndTurnWaterSport,
