@@ -107,8 +107,6 @@ TEST("Move descriptions fit on Pokemon Summary Screen")
 
 TEST("Item names fit on Bag Screen (list)")
 {
-    KNOWN_FAILING;
-
     u32 i;
     const u32 fontId = FONT_NARROWER;
     const u32 tmHmBerryWidthPx = 61, restWidthPx = 88;
@@ -141,8 +139,6 @@ TEST("Item plural names fit on Bag Screen (left box)")
 
 TEST("Item names fit on PC Storage (list)")
 {
-    KNOWN_FAILING;
-
     u32 i;
     const u32 fontId = FONT_NARROWER, widthPx = 73;
     enum Item item = ITEM_NONE;
@@ -170,8 +166,6 @@ TEST("Item plural names fit on PC storage (left box)")
 
 TEST("Item names fit on Pokemon Storage System")
 {
-    KNOWN_FAILING;
-
     u32 i;
     const u32 fontId = FONT_SMALL_NARROWER, widthPx = 66;
     enum Item item = ITEM_NONE;
@@ -199,8 +193,6 @@ TEST("Item names fit on Pokemon Storage System")
 
 TEST("Item names fit on Pokemon Summary Screen")
 {
-    KNOWN_FAILING;
-
     u32 i;
     const u32 fontId = FONT_NARROWER, widthPx = 72;
     enum Item item = ITEM_NONE;
@@ -223,8 +215,6 @@ TEST("Item names fit on Pokemon Summary Screen")
 
 TEST("Item names fit on Shop Screen")
 {
-    KNOWN_FAILING;
-
     u32 i;
     const u32 fontId = FONT_NARROWER, widthPx = 84;
     enum Item item = ITEM_NONE;
@@ -237,8 +227,6 @@ TEST("Item names fit on Shop Screen")
 
 TEST("Item descriptions fit on Bag and Shop Screen")
 {
-    KNOWN_FAILING;
-
     u32 i;
     const u32 widthPx = 102;
     u32 fontId = FONT_NORMAL;

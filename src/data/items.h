@@ -14854,6 +14854,94 @@ const struct ItemInfo gItemsInfo[] =
         .fieldUseFunc = ItemUseOutOfBattle_TMHM,
     },
 
+    [ITEM_HM01] =
+    {
+        .name = ITEM_NAME("HM01"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
+    [ITEM_HM02] =
+    {
+        .name = ITEM_NAME("HM02"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
+    [ITEM_HM03] =
+    {
+        .name = ITEM_NAME("HM03"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
+    [ITEM_HM04] =
+    {
+        .name = ITEM_NAME("HM04"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
+    [ITEM_HM05] =
+    {
+        .name = ITEM_NAME("HM05"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
+    [ITEM_HM06] =
+    {
+        .name = ITEM_NAME("HM06"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
+    [ITEM_HM07] =
+    {
+        .name = ITEM_NAME("HM07"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
+    [ITEM_HM08] =
+    {
+        .name = ITEM_NAME("HM08"),
+        .price = 0,
+        .description = sPlaceholderDesc,
+        .importance = 1,
+        .pocket = POCKET_TM_HM,
+        .type = ITEM_USE_PARTY_MENU,
+        .fieldUseFunc = ItemUseOutOfBattle_TMHM,
+    },
+
 // Charms
 
     [ITEM_OVAL_CHARM] =
