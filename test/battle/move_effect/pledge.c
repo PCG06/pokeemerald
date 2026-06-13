@@ -217,7 +217,7 @@ DOUBLE_BATTLE_TEST("Pledge moves can not be redirected by absorbing abilities")
         OPPONENT(SPECIES_LILEEP) { Ability(ABILITY_STORM_DRAIN); }
         OPPONENT(SPECIES_WOBBUFFET);
     } WHEN {
-        TURN { MOVE(playerLeft, MOVE_WATER_PLEDGE, target: opponentRight);}
+        TURN { MOVE(playerLeft, MOVE_WATER_PLEDGE, target: opponentRight); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_WATER_PLEDGE, playerLeft);
         HP_BAR(opponentRight);
@@ -226,7 +226,7 @@ DOUBLE_BATTLE_TEST("Pledge moves can not be redirected by absorbing abilities")
 
 DOUBLE_BATTLE_TEST("Pledge status timer does not reset if combined move is used again")
 {
-    u16 pledgeMove1, pledgeMove2;
+    enum Move pledgeMove1, pledgeMove2;
 
     PARAMETRIZE { pledgeMove1 = MOVE_WATER_PLEDGE; pledgeMove2 = MOVE_FIRE_PLEDGE; }
     PARAMETRIZE { pledgeMove1 = MOVE_FIRE_PLEDGE; pledgeMove2 = MOVE_GRASS_PLEDGE; }
@@ -270,7 +270,7 @@ DOUBLE_BATTLE_TEST("Pledge status timer does not reset if combined move is used 
 
 DOUBLE_BATTLE_TEST("Pledge moves get same attack type bonus from partner", s16 damage)
 {
-    u32 species;
+    enum Species species;
 
     PARAMETRIZE { species = SPECIES_WOBBUFFET; }
     PARAMETRIZE { species = SPECIES_CHARMANDER; }
@@ -334,7 +334,8 @@ DOUBLE_BATTLE_TEST("Damage calculation: Combined pledge move")
 DOUBLE_BATTLE_TEST("Pledge move combo interactions with Powder are correct")
 {
     // Fire Pledge as the first move or Fire Pledge combo should fail
-    u32 moveLeft, moveRight, speedLeft, speedRight;
+    enum Move moveLeft, moveRight;
+    u32 speedLeft, speedRight;
     PARAMETRIZE { moveLeft = MOVE_FIRE_PLEDGE; moveRight = MOVE_WATER_PLEDGE; speedLeft = 4; speedRight = 3; } // FAIL 1
     PARAMETRIZE { moveLeft = MOVE_FIRE_PLEDGE; moveRight = MOVE_WATER_PLEDGE; speedLeft = 3; speedRight = 4; }
     PARAMETRIZE { moveLeft = MOVE_WATER_PLEDGE; moveRight = MOVE_FIRE_PLEDGE; speedLeft = 4; speedRight = 3; }
@@ -910,6 +911,7 @@ DOUBLE_BATTLE_TEST("Pledge move combo doesn't trigger on opponent's Pledge move 
 DOUBLE_BATTLE_TEST("Pledge move combo doesn't trigger on opponent's Pledge move - Storm Drain")
 {
     GIVEN {
+        WITH_CONFIG(B_REDIRECT_ABILITY_IMMUNITY, GEN_5);
         PLAYER(SPECIES_GASTRODON) { Ability(ABILITY_STORM_DRAIN); }
         PLAYER(SPECIES_WOBBUFFET);
         OPPONENT(SPECIES_WOBBUFFET);

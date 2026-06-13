@@ -30,10 +30,10 @@ SINGLE_BATTLE_TEST("Salt Cure inflicts 1/8 of the target's maximum HP as damage 
 
 SINGLE_BATTLE_TEST("Salt Cure inflicts 1/4 to Water/Steel types of their maximum HP as damage per turn")
 {
-    u32 species;
+    enum Species species;
 
-    PARAMETRIZE { species = SPECIES_LAPRAS; };
-    PARAMETRIZE { species = SPECIES_JIRACHI; };
+    PARAMETRIZE { species = SPECIES_LAPRAS; }
+    PARAMETRIZE { species = SPECIES_JIRACHI; }
 
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -104,7 +104,7 @@ SINGLE_BATTLE_TEST("Salt Cure residual damage does not inflict any damage agains
 {
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
-        OPPONENT(SPECIES_CLEFABLE) { Ability(ABILITY_MAGIC_GUARD); };
+        OPPONENT(SPECIES_CLEFABLE) { Ability(ABILITY_MAGIC_GUARD); }
     } WHEN {
         TURN { MOVE(player, MOVE_SALT_CURE); }
     } SCENE {
