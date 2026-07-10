@@ -3,7 +3,7 @@
 #include "rtc.h"
 
 
-const struct DateTime gGen3Epoch = 
+const struct DateTime gGen3Epoch =
 {
     .year = 2000,
     .month = MONTH_JAN,
@@ -60,7 +60,7 @@ void DateTime_AddMinutes(struct DateTime *dateTime, u32 minutes)
     u32 hours = 0;
 
     dateTime->minute += minutes;
-    while(dateTime->minute >= MINUTES_PER_HOUR)
+    while (dateTime->minute >= MINUTES_PER_HOUR)
     {
         hours++;
         dateTime->minute -= MINUTES_PER_HOUR;
@@ -74,7 +74,7 @@ void DateTime_AddSeconds(struct DateTime *dateTime, u32 seconds)
     u32 minutes = 0;
 
     dateTime->second += seconds;
-    while(dateTime->second >= SECONDS_PER_MINUTE)
+    while (dateTime->second >= SECONDS_PER_MINUTE)
     {
         minutes++;
         dateTime->second -= SECONDS_PER_MINUTE;
@@ -105,14 +105,11 @@ void ConvertRtcToDateTime(struct DateTime *result, struct SiiRtcInfo *rtc)
     result->year = gGen3Epoch.year + rtc->year;
 }
 
-// The date in DateTime is off by 1
-#define DT_DAY_OFFSET 1 
-
 void ConvertTimeToDateTime(struct DateTime *result, struct Time *timeSinceEpoch)
 {
     result = memcpy(result, &gGen3Epoch, sizeof(struct DateTime));
     DateTime_AddSeconds(result, timeSinceEpoch->seconds);
     DateTime_AddMinutes(result, timeSinceEpoch->minutes);
     DateTime_AddHours(result, timeSinceEpoch->hours);
-    DateTime_AddDays(result, timeSinceEpoch->days - DT_DAY_OFFSET);
+    DateTime_AddDays(result, timeSinceEpoch->days);
 }
