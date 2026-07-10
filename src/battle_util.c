@@ -1700,7 +1700,7 @@ void TryToRevertMimicryAndFlags(void)
         gBattleMons[battler].volatiles.terrainAbilityDone = FALSE;
         ResetParadoxTerrainStat(battler);
         if (IsAbilityAndRecord(battler, GetBattlerAbility(battler), ABILITY_MIMICRY))
-            RESTORE_BATTLER_TYPE(battler);
+            SetBattlerTypes(battler);
     }
 }
 
