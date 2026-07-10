@@ -901,13 +901,10 @@ bool8 ScrCmd_dotimebasedevents(struct ScriptContext *ctx)
     return FALSE;
 }
 
-
-
 bool8 ScrCmd_gettime(struct ScriptContext *ctx)
 {
     Script_RequestEffects(SCREFF_V1 | SCREFF_HARDWARE);
 
-    RtcCalcLocalTime();
     gSpecialVar_0x8000 = GetTimeOfDay();
     gSpecialVar_0x8001 = GetDay();
     gSpecialVar_0x8002 = GetMonth();
