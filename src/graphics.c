@@ -711,6 +711,14 @@ const u16 gBattleInterface_BallStatusBarPal[] = INCGFX_U16("graphics/battle_inte
 
 const u16 gBattleInterface_BallDisplayPal[] = INCGFX_U16("graphics/battle_interface/ball_display.png", ".gbapal");
 
+const u16 gBattleInterface_BwHealthboxPal[] = INCGFX_U16("graphics/battle_interface/bw_healthbox.pal", ".gbapal");
+const u16 gBattleInterface_BwHealthbarPal[] = INCGFX_U16("graphics/battle_interface/bw_healthbar.pal", ".gbapal");
+const u32 gBattleInterface_BwStatusSingleGfx[] = INCGFX_U32("graphics/battle_interface/bw_status_single.png", ".4bpp");
+const u32 gBattleInterface_BwStatusDoubleGfx[] = INCGFX_U32("graphics/battle_interface/bw_status_double.png", ".4bpp");
+const u32 gBattleInterface_BwNameFontGfx[] = INCGFX_U32("graphics/battle_interface/bw_name_font.png", ".4bpp");
+const u32 gBattleInterface_BwHpNumbersFontGfx[] = INCGFX_U32("graphics/battle_interface/bw_hp_numbers_font.png", ".4bpp");
+const u32 gBattleInterface_BwLevelLabelGfx[] = INCGFX_U32("graphics/battle_interface/bw_level_label.png", ".4bpp");
+
 const u8 gHealthboxElementsGfxTable[][32] = INCBIN_U8("graphics/battle_interface/hpbar.4bpp",
                                                   "graphics/battle_interface/expbar.4bpp",
                                                   "graphics/battle_interface/status.4bpp",

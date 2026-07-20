@@ -128,6 +128,11 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 - [larryturbo](https://www.deviantart.com/larryturbo)
 - [kidkatt](https://www.deviantart.com/kidkatt)
 
+### Battle Interface Credits:
+- [EternalCode](https://github.com/PlatinumMaster/EternalCode-BWHealthBars-BPRE) - Black/White-style health bar design, graphics, and original FireRed implementation
+- [PlatinumMaster](https://github.com/PlatinumMaster) - Maintained buildable source for the original health bar implementation
+- [NicoSwag](https://github.com/NicoSwag/pokeemerald-expansion/tree/nicos_cool_ui) - Nico's Cool UI battle type-icon artwork and layout
+
 ## Resources
 - [Sugimori Palettes and Sprites](https://www.pokecommunity.com/showthread.php?t=336945)
 - [DS Style Gen VI Sprites](https://www.pokecommunity.com/showthread.php?t=314422)

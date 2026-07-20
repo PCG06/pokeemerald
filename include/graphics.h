@@ -2032,6 +2032,13 @@ extern const u32 gBattleInterface_BallStatusBarGfx[];
 extern const u8 gBattleInterface_BallDisplayGfx[];
 extern const u16 gBattleInterface_BallStatusBarPal[];
 extern const u16 gBattleInterface_BallDisplayPal[];
+extern const u16 gBattleInterface_BwHealthboxPal[];
+extern const u16 gBattleInterface_BwHealthbarPal[];
+extern const u32 gBattleInterface_BwStatusSingleGfx[];
+extern const u32 gBattleInterface_BwStatusDoubleGfx[];
+extern const u32 gBattleInterface_BwNameFontGfx[];
+extern const u32 gBattleInterface_BwHpNumbersFontGfx[];
+extern const u32 gBattleInterface_BwLevelLabelGfx[];
 extern const u8 gHealthboxElementsGfxTable[][32];
 
 extern const u16 gNamingScreenMenu_Pal[6][16];
