@@ -197,9 +197,11 @@ const struct OamData sOamData_TypeIcons =
     .objMode = ST_OAM_OBJ_NORMAL,
     .shape = SPRITE_SHAPE(8x16),
     .size = SPRITE_SIZE(8x16),
-    // Draw behind the healthbox so its solid HP bar cleanly masks the badges as
-    // they rise into and drop out of the transparent name row.
-    .priority = 2,
+    // One priority ahead of the battler sprites (priority 2) so a Pokémon never
+    // covers the badges. This ties the healthbox priority, but the badges carry
+    // the largest possible subpriority, so the healthbox and its HP bar still
+    // draw over them and cleanly mask the slide into and out of the name row.
+    .priority = 1,
 };
 
 const struct CompressedSpriteSheet sSpriteSheet_TypeIcons2 =
