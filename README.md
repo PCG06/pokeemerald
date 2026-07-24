@@ -1,3 +1,54 @@
+# Gen 5 Black/White Battle UI
+
+This branch replaces the battle interface with the one
+from Pokémon Black and White. It contains the battle UI and nothing else, so it can be
+merged into an existing project on its own. Battle backgrounds are left alone.
+
+| | |
+| --- | --- |
+| ![The action box: FIGHT, BAG, POKéMON and RUN in a four panel box beside the message box, with the animated cursor framing FIGHT](docs/screenshots/action-box.png) | ![The move box: four panels tinted by move type, each showing its PP, above the BW healthboxes and type icons](docs/screenshots/move-box.png) |
+
+## Configuration
+
+Everything lives in `include/config/bw_battle_ui.h`:
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `BW_BATTLE_UI` | `TRUE` | Master switch for everything below. |
+| `BW_BATTLE_UI_TEXTBOX` | `TRUE` | The BW message box. |
+| `BW_BATTLE_UI_INPUTBOX` | `TRUE` | The action box, move box and cursor. Requires the textbox. |
+
+Turning the textbox off returns the lower half of the screen to the Gen 3 look. Turning
+off only the input box keeps the BW message box but restores the Gen 3 menus. The
+healthboxes and type icons are a separate port and are **not** switched off by any of
+these, so the top half stays BW either way.
+
+Type icons are controlled by expansion's own `B_SHOW_TYPES` in `include/config/battle.h`,
+which this branch sets to `SHOW_TYPES_ALWAYS`.
+
+One requirement to be aware of: `B_MOVE_REARRANGEMENT_IN_BATTLE` must be `GEN_4` or later,
+which is the expansion default. The BW move box has nowhere to show the Gen 3 move
+swapping prompt, so a lower setting stops the build with an explanatory error rather than
+producing a broken menu.
+
+## Credits
+
+Almost none of this is my own work. It is a port, and it exists because of:
+
+- **[EternalCode](https://github.com/PlatinumMaster/EternalCode-BWHealthBars-BPRE)** for the
+  original Black/White health bar design, graphics and FireRed implementation.
+- **[PlatinumMaster](https://github.com/PlatinumMaster)** for maintaining a buildable
+  source of that health bar implementation.
+- **[NicoSwag](https://github.com/NicoSwag/pokeemerald-expansion/tree/nicos_cool_ui)** for
+  the Nico's Cool UI battle type-icon artwork and layout.
+- **[mudskipper13](https://github.com/mudskipper13/pokeemerald/tree/feature/bwBattleUI)** for
+  the Black/White message box, action box, move box and cursor, and the outlined battle
+  UI font.
+
+If you use this branch, please credit myself and all of the above.
+
+---
+
 # About `pokeemerald-expansion`
 
 ![Gif that shows debugging functionality that is unique to pokeemerald-expansion such as rerolling Trainer ID, Cheat Start, PC from Debug Menu, Debug PC Fill, Pokémon Sprite Visualizer, Debug Warp to Map, and Battle Debug Menu](https://github.com/user-attachments/assets/cf9dfbee-4c6b-4bca-8e0a-07f116ef891c) ![Gif that shows overworld functionality that is unique to pokeemerald-expansion such as indoor running, BW2 style map popups, overworld followers, DNA Splicers, Gen 1 style fishing, OW Item descriptions, Quick Run from Battle, Use Last Ball, Wild Double Battles, and Catch from EXP](https://github.com/user-attachments/assets/383af243-0904-4d41-bced-721492fbc48e) ![Gif that shows off a number of modern Pokémon battle mechanics happening in the pokeemerald-expansion engine: 2 vs 1 battles, modern Pokémon, items, moves, abilities, fully customizable opponents and partners, Trainer Slides, and generational gimmicks](https://github.com/user-attachments/assets/50c576bc-415e-4d66-a38f-ad712f3316be)
