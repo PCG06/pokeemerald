@@ -154,8 +154,8 @@ enum
 
 struct Subsprite
 {
-    s8 x; // was u16 in R/S
-    s8 y; // was u16 in R/S
+    s16 x; // was u16 in R/S, widened past 127 for the BW battle UI cursor
+    s16 y; // was u16 in R/S, widened past 127 for the BW battle UI cursor
     u16 shape:2;
     u16 size:2;
     u16 tileOffset:10;

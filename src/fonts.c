@@ -1,4 +1,5 @@
 #include "global.h"
+#include "text.h"
 
 ALIGNED(4) const u16 gFontSmallNarrowLatinGlyphs[] = INCGFX_U16("graphics/fonts/latin_small_narrow.png", ".latfont");
 ALIGNED(4) const u8 gFontSmallNarrowLatinGlyphWidths[] = {
@@ -433,4 +434,60 @@ ALIGNED(4) const u8 gFontShortJapaneseGlyphWidths[] = {
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+};
+
+// The BW battle UI draws its lettering from a single outlined sheet, so each
+// glyph carries its own height as well as its width.
+ALIGNED(4) const u16 gFontBattleUIElementsLatinGlyphs[] = INCGFX_U16("graphics/fonts/latin_battle_ui_element.png", ".latfont");
+ALIGNED(4) const u8 gFontBattleUIElementsLatinGlyphSizes[][2] =
+{
+    // move box numbers
+    [CHAR_0] = { 6, 6 },
+    [CHAR_1] = { 6, 6 },
+    [CHAR_2] = { 6, 6 },
+    [CHAR_3] = { 6, 6 },
+    [CHAR_4] = { 6, 6 },
+    [CHAR_5] = { 6, 6 },
+    [CHAR_6] = { 6, 6 },
+    [CHAR_7] = { 6, 6 },
+    [CHAR_8] = { 6, 6 },
+    [CHAR_9] = { 6, 6 },
+    [CHAR_SPACE] = { 6, 6 },
+    [CHAR_SPACER] = { 6, 6 },
+    [CHAR_SLASH] = { 8, 6 },
+
+    // actionbox text
+    [CHAR_A] = { 8, 16 },
+    [CHAR_B] = { 8, 16 },
+    [CHAR_C] = { 7, 16 },
+    [CHAR_D] = { 8, 16 },
+    [CHAR_E] = { 7, 16 },
+    [CHAR_F] = { 8, 16 },
+    [CHAR_G] = { 8, 16 },
+    [CHAR_H] = { 8, 16 },
+    [CHAR_I] = { 4, 16 },
+    [CHAR_J] = { 7, 16 },
+    [CHAR_K] = { 8, 16 },
+    [CHAR_L] = { 7, 16 },
+    [CHAR_M] = { 9, 16 },
+    [CHAR_N] = { 8, 16 },
+    [CHAR_O] = { 7, 16 },
+    [CHAR_P] = { 7, 16 },
+    [CHAR_Q] = { 8, 16 },
+    [CHAR_R] = { 8, 16 },
+    [CHAR_S] = { 8, 16 },
+    [CHAR_T] = { 8, 16 },
+    [CHAR_U] = { 8, 16 },
+    [CHAR_V] = { 8, 16 },
+    [CHAR_W] = { 9, 16 },
+    [CHAR_X] = { 8, 16 },
+    [CHAR_Y] = { 8, 16 },
+    [CHAR_Z] = { 8, 16 },
+    [CHAR_E_ACUTE] = { 7, 16 },
+    [CHAR_PO] = { 16, 16 },
+    [CHAR_KE] = { 16, 16 },
+    [CHAR_BLOCK_1] = { 16, 16 },
+    [CHAR_BLOCK_2] = { 0, 0 },
+    [CHAR_BLOCK_3] = { 0, 0 },
+    [CHAR_EXCL_MARK] = { 6, 16 },
 };

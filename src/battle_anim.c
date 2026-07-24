@@ -1272,20 +1272,23 @@ void MoveBattlerSpriteToBG(enum BattlerId battler, bool8 toBG_2, bool8 setSprite
     {
         enum BattlerPosition battlerPosition;
 
+        // The tile data cleared just below is tile 0 of the anim charset, so
+        // blank the tilemap with that rather than 0xFF. 0xFF only happened to
+        // be empty in the vanilla battle textbox tileset.
         if (IsContest() == TRUE)
         {
             RequestDma3Fill(0, (void *)(BG_SCREEN_ADDR(16)), 0x2000, 1);
-            RequestDma3Fill(0xFF, (void *)(BG_SCREEN_ADDR(30)), 0x1000, 0);
+            RequestDma3Fill(0, (void *)(BG_SCREEN_ADDR(30)), 0x1000, 0);
         }
         else
         {
             RequestDma3Fill(0, (void *)(BG_SCREEN_ADDR(8)), 0x2000, 1);
-            RequestDma3Fill(0xFF, (void *)(BG_SCREEN_ADDR(28)), 0x1000, 0);
+            RequestDma3Fill(0, (void *)(BG_SCREEN_ADDR(28)), 0x1000, 0);
         }
 
         GetBattleAnimBg1Data(&animBg);
         CpuFill16(0, animBg.bgTiles, 0x1000);
-        CpuFill16(0xFF, animBg.bgTilemap, 0x800);
+        CpuFill16(0, animBg.bgTilemap, 0x800);
 
         SetAnimBgAttribute(1, BG_ANIM_PRIORITY, 2);
         SetAnimBgAttribute(1, BG_ANIM_SCREEN_SIZE, 1);

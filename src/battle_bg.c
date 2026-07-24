@@ -23,6 +23,8 @@
 #include "text_window.h"
 #include "trig.h"
 #include "window.h"
+#include "bw_battle_ui.h"
+#include "config/bw_battle_ui.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
@@ -166,55 +168,100 @@ static const struct WindowTemplate sStandardBattleWindowTemplates[] =
         .bg = 0,
         .tilemapLeft = 1,
         .tilemapTop = 35,
-        .width = 14,
+        .width = BW_BATTLE_UI_INPUTBOX ? 12 : 14,
         .height = 4,
         .paletteNum = 0,
-        .baseBlock = 0x01c0,
+        .baseBlock = BW_BATTLE_UI_INPUTBOX ? 0x00f8 : 0x01c0,
     },
     [B_WIN_ACTION_MENU] = {
         .bg = 0,
+    #if (BW_BATTLE_UI == TRUE && BW_BATTLE_UI_TEXTBOX == TRUE && BW_BATTLE_UI_INPUTBOX == TRUE)
+        .tilemapLeft = 13,
+        .tilemapTop = 34,
+        .width = 17,
+        .height = 6,
+        .paletteNum = 0,
+        .baseBlock = 0x0128,
+    #else
         .tilemapLeft = 17,
         .tilemapTop = 35,
         .width = 12,
         .height = 4,
         .paletteNum = 5,
         .baseBlock = 0x0190,
+    #endif
     },
     [B_WIN_MOVE_NAME_1] = {
         .bg = 0,
+    #if (BW_BATTLE_UI == TRUE && BW_BATTLE_UI_TEXTBOX == TRUE && BW_BATTLE_UI_INPUTBOX == TRUE)
+        .tilemapLeft = 1,
+        .tilemapTop = 54,
+        .width = 28,
+        .height = 6,
+        .paletteNum = 10,
+        .baseBlock = 0x0200,
+    #else
         .tilemapLeft = 2,
         .tilemapTop = 55,
         .width = 16,    //for z move names
         .height = 2,
         .paletteNum = 5,
         .baseBlock = 0x0300,
+    #endif
     },
     [B_WIN_MOVE_NAME_2] = {
         .bg = 0,
+    #if (BW_BATTLE_UI == TRUE && BW_BATTLE_UI_TEXTBOX == TRUE && BW_BATTLE_UI_INPUTBOX == TRUE)
+        .tilemapLeft = 15,
+        .tilemapTop = 54,
+        .width = 14,
+        .height = 3,
+        .paletteNum = 11,
+        .baseBlock = 0x02AC,
+    #else
         .tilemapLeft = 11,
         .tilemapTop = 55,
         .width = 8,
         .height = 2,
         .paletteNum = 5,
         .baseBlock = 0x0318,
+    #endif
     },
     [B_WIN_MOVE_NAME_3] = {
         .bg = 0,
+    #if (BW_BATTLE_UI == TRUE && BW_BATTLE_UI_TEXTBOX == TRUE && BW_BATTLE_UI_INPUTBOX == TRUE)
+        .tilemapLeft = 1,
+        .tilemapTop = 57,
+        .width = 14,
+        .height = 3,
+        .paletteNum = 12,
+        .baseBlock = 0x02D6,
+    #else
         .tilemapLeft = 2,
         .tilemapTop = 57,
         .width = 16,    //for z effect descriptions
         .height = 2,
         .paletteNum = 5,
         .baseBlock = 0x0328,
+    #endif
     },
     [B_WIN_MOVE_NAME_4] = {
         .bg = 0,
+    #if (BW_BATTLE_UI == TRUE && BW_BATTLE_UI_TEXTBOX == TRUE && BW_BATTLE_UI_INPUTBOX == TRUE)
+        .tilemapLeft = 15,
+        .tilemapTop = 57,
+        .width = 14,
+        .height = 3,
+        .paletteNum = 13,
+        .baseBlock = 0x0300,
+    #else
         .tilemapLeft = 11,
         .tilemapTop = 57,
         .width = 8,
         .height = 2,
         .paletteNum = 5,
         .baseBlock = 0x0340,
+    #endif
     },
     [B_WIN_PP] = {
         .bg = 0,
@@ -376,7 +423,7 @@ static const struct WindowTemplate sStandardBattleWindowTemplates[] =
         .width = 18,
         .height = 6,
         .paletteNum = 5,
-        .baseBlock = 0x0350,
+        .baseBlock = BW_BATTLE_UI_INPUTBOX ? 0x032a : 0x0350,
     },
     DUMMY_WIN_TEMPLATE
 };
@@ -983,10 +1030,10 @@ void DrawMainBattleBackground(void)
 
 void LoadBattleTextboxAndBackground(void)
 {
-    DecompressDataWithHeaderVram(gBattleTextboxTiles, (void *)(BG_CHAR_ADDR(0)));
-    CopyToBgTilemapBuffer(0, gBattleTextboxTilemap, 0, 0);
+    DecompressDataWithHeaderVram(BattleUI_GetTextboxTiles(), (void *)(BG_CHAR_ADDR(0)));
+    CopyToBgTilemapBuffer(0, BattleUI_GetTextboxTilemap(), 0, 0);
     CopyBgTilemapBufferToVram(0);
-    LoadPalette(gBattleTextboxPalette, BG_PLTT_ID(0), 2 * PLTT_SIZE_4BPP);
+    LoadPalette(BattleUI_GetTextboxPalette(), BG_PLTT_ID(0), 2 * PLTT_SIZE_4BPP);
     LoadBattleMenuWindowGfx();
     if (B_TERRAIN_BG_CHANGE == TRUE)
         DrawTerrainTypeBattleBackground();
@@ -1319,14 +1366,14 @@ bool8 LoadChosenBattleElement(u8 caseId)
     switch (caseId)
     {
     case 0:
-        DecompressDataWithHeaderVram(gBattleTextboxTiles, (void *)(BG_CHAR_ADDR(0)));
+        DecompressDataWithHeaderVram(BattleUI_GetTextboxTiles(), (void *)(BG_CHAR_ADDR(0)));
         break;
     case 1:
-        CopyToBgTilemapBuffer(0, gBattleTextboxTilemap, 0, 0);
+        CopyToBgTilemapBuffer(0, BattleUI_GetTextboxTilemap(), 0, 0);
         CopyBgTilemapBufferToVram(0);
         break;
     case 2:
-        LoadPalette(gBattleTextboxPalette, BG_PLTT_ID(0), 2 * PLTT_SIZE_4BPP);
+        LoadPalette(BattleUI_GetTextboxPalette(), BG_PLTT_ID(0), 2 * PLTT_SIZE_4BPP);
         break;
     case 3:
         DecompressDataWithHeaderVram(gBattleEnvironmentInfo[GetBattleEnvironmentOverride()].background.tileset, (void *)(BG_CHAR_ADDR(2)));

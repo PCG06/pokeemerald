@@ -35,15 +35,18 @@ static bool32 ShouldHideTypeIcon(enum BattlerId);
 static s32 GetTypeIconHiddenY(struct Sprite *);
 static s32 GetTypeIconSlideMovement(s32, s32);
 
-// Player singles use a compact vertical column beside the pointed cap. Doubles
-// keep a horizontal pair so four healthboxes remain easy to scan.
-#define TYPE_ICON_PLAYER_SINGLE_X_OFFSET (-38)
-#define TYPE_ICON_PLAYER_SINGLE_Y_OFFSET   3
+// Player singles stack a vertical column past the right end of the level, flush
+// with the edge of the box, and slide it in from off the right of the screen.
+// The lower badge shares the level's line and the column grows upward from
+// there, since the healthbox draws over anything below that line.
+// Doubles keep a horizontal pair so four healthboxes remain easy to scan.
+#define TYPE_ICON_PLAYER_SINGLE_X_OFFSET  79
+#define TYPE_ICON_PLAYER_SINGLE_Y_OFFSET (-1)
 #define TYPE_ICON_PLAYER_DOUBLE_X_OFFSET (-34)
 #define TYPE_ICON_OPPONENT_X_OFFSET      78
 #define TYPE_ICON_PAIR_SPACING           10
 #define TYPE_ICON_RESTING_Y_OFFSET       (-5)
-#define TYPE_ICON_VERTICAL_Y_OFFSET       (-5)
+#define TYPE_ICON_VERTICAL_Y_OFFSET      (-11)
 #define TYPE_ICON_VERTICAL_Y_SPACING     11
 #define TYPE_ICON_REVEAL_DISTANCE        10
 #define TYPE_ICON_SLIDE_SPEED            2
@@ -274,10 +277,12 @@ static void LoadTypeIconsPerBattler(enum BattlerId battler, u32 position)
     if (!IsBattlerAlive(battlerId))
         return;
 
-    // The active battler's type icons occupy the same edge of the healthbox as
-    // the Mega trigger. Suppress only that battler while the trigger is usable;
-    // every other Pokémon on the field keeps its type display.
+    // In doubles the active battler's type icons overlap the Mega trigger.
+    // Suppress only that battler while the trigger is usable; every other
+    // Pokémon on the field keeps its type display. The singles column is set
+    // back far enough to clear the trigger, so it can stay.
     if (battlerId == battler
+     && useDoubleBattleCoords
      && gBattleStruct->gimmick.usableGimmick[battler] == GIMMICK_MEGA)
         return;
 

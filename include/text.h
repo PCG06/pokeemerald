@@ -29,6 +29,7 @@ enum {
     FONT_SMALL_NARROWER,
     FONT_SHORT_NARROW,
     FONT_SHORT_NARROWER,
+    FONT_BATTLE_UI_ELEMENTS, // Outlined BW battle UI lettering; glyphs overlap by a pixel.
 };
 
 #define FONT_MALE FONT_NORMAL
@@ -120,7 +121,6 @@ struct TextPrinter
     u16 downArrowYPosIdx:2;
     bool16 hasFontIdBeenSet:1;
     u8 autoScrollDelay;
-    u8 fontId:4;
     bool8 hasPrintBeenSpedUp:1;
     u8 japanese:1;
     u8 active:1;
@@ -132,7 +132,8 @@ struct TextPrinter
     u8 minLetterSpacing;
 
     u8 textSpeed;
-    u8 padding[3];
+    u8 fontId; // Widened out of the bitfield above to leave room for added fonts.
+    u8 padding[2];
 
     struct TextPrinter *nextPrinter;
 

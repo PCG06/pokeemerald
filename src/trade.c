@@ -43,6 +43,7 @@
 #include "union_room.h"
 #include "util.h"
 #include "window.h"
+#include "bw_battle_ui.h"
 #include "constants/contest.h"
 #include "constants/items.h"
 #include "constants/moves.h"
@@ -2949,9 +2950,9 @@ static void TradeAnimInit_LoadGfx(void)
     SetBgTilemapBuffer(3, Alloc(BG_SCREEN_SIZE));
     DeactivateAllTextPrinters();
     // Doing the graphics load.
-    DecompressAndLoadBgGfxUsingHeap(0, gBattleTextboxTiles, 0, 0, 0);
-    DecompressAndCopyToBgTilemapBuffer(0, gBattleTextboxTilemap, BG_SCREEN_SIZE, 0);
-    LoadPalette(gBattleTextboxPalette, BG_PLTT_ID(0), PLTT_SIZE_4BPP);
+    DecompressAndLoadBgGfxUsingHeap(0, BattleUI_GetTextboxTiles(), 0, 0, 0);
+    DecompressAndCopyToBgTilemapBuffer(0, BattleUI_GetTextboxTilemap(), BG_SCREEN_SIZE, 0);
+    LoadPalette(BattleUI_GetTextboxPalette(), BG_PLTT_ID(0), PLTT_SIZE_4BPP);
     InitWindows(sTradeSequenceWindowTemplates);
 }
 

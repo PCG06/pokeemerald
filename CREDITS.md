@@ -132,6 +132,7 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 - [EternalCode](https://github.com/PlatinumMaster/EternalCode-BWHealthBars-BPRE) - Black/White-style health bar design, graphics, and original FireRed implementation
 - [PlatinumMaster](https://github.com/PlatinumMaster) - Maintained buildable source for the original health bar implementation
 - [NicoSwag](https://github.com/NicoSwag/pokeemerald-expansion/tree/nicos_cool_ui) - Nico's Cool UI battle type-icon artwork and layout
+- [mudskipper13](https://github.com/mudskipper13/pokeemerald/tree/feature/bwBattleUI) - Black/White-style message box, action box, move box and cursor, and the outlined battle UI font
 
 ## Resources
 - [Sugimori Palettes and Sprites](https://www.pokecommunity.com/showthread.php?t=336945)
