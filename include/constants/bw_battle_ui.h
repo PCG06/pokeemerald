@@ -9,6 +9,15 @@
 
 #define BUI_ACTION_BOX_ENTRY_COUNT  (4)
 
+// The action box and move box sheets are copied into their windows as raw 4bpp
+// tiles, so these are the tile counts of each piece rather than pixel sizes.
+#define BUI_ACTION_BOX_TILES        (17 * 6)
+#define BUI_MOVE_PANEL_TILE_WIDTH   (14)
+#define BUI_MOVE_PANEL_TILE_HEIGHT  (3)
+#define BUI_MOVE_PANEL_TILES        (BUI_MOVE_PANEL_TILE_WIDTH * BUI_MOVE_PANEL_TILE_HEIGHT)
+#define BUI_MOVE_BOX_TILE_WIDTH     (28)
+#define BUI_MOVE_BOX_TILES          (BUI_MOVE_BOX_TILE_WIDTH * 6)
+
 // Distance between the two halves of each cursor frame. The cursor is one
 // sprite built from four 16x16 corners, so these are the corner offsets.
 #define BUI_ACTION_CURSOR_MAX_X     (TILE_TO_PIXELS( 7) - 3)

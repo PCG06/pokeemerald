@@ -21,7 +21,9 @@ static const u8 *const sBWBattleUI_ActionBoxFields[][BUI_ACTION_BOX_ENTRY_COUNT]
 };
 
 // inputbox->movebox
-static const u8 sBWBattleUI_MoveBoxGraphics[] = INCGFX_U8("graphics/battle_interface/bw/movebox.png", ".4bpp");
+// Built as four 14x3 metatiles, one per panel, so each window can be filled
+// with a single contiguous tile copy.
+static const u8 sBWBattleUI_MoveBoxGraphics[] = INCGFX_U8("graphics/battle_interface/bw/movebox.png", ".4bpp", "-mwidth 14 -mheight 3");
 static const u8 sBWBattleUI_MoveBoxGraphicsZ[] = INCGFX_U8("graphics/battle_interface/bw/movebox_z.png", ".4bpp");
 static const u16 sBWBattleUI_MoveBoxPalette[] = INCGFX_U16("graphics/battle_interface/bw/movebox.png", ".gbapal");
 static const u16 sBWBattleUI_MoveBoxTypePalettes[] = INCGFX_U16("graphics/battle_interface/bw/movebox_types.png", ".gbapal");

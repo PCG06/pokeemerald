@@ -81,7 +81,9 @@ void BattleUI_PopulateActionBox(void)
 {
     u32 windowId = B_WIN_ACTION_MENU;
 
-    BlitBitmapToWindow(windowId, sBWBattleUI_ActionBox, 0, 0, TILE_TO_PIXELS(17), TILE_TO_PIXELS(6));
+    // The sheet is 4bpp tiles in the same order the window stores them, so it
+    // copies straight in. Blitting it walked all 6528 pixels one at a time.
+    CopyToWindowPixelBuffer(windowId, sBWBattleUI_ActionBox, BUI_ACTION_BOX_TILES * TILE_SIZE_4BPP, 0);
 
     bool32 safari = !!(gBattleTypeFlags & BATTLE_TYPE_SAFARI);
     u32 fontId = FONT_BATTLE_UI_ELEMENTS;
@@ -307,21 +309,33 @@ static u32 BattleUI_GetCursorBattler(void)
 
 static void BattleUI_DisplayMoveBoxGraphics(enum BattlerId battler, u32 windowId)
 {
+    // Both sheets are 4bpp tiles laid out to match the windows they fill, so
+    // they copy straight in rather than being blitted a pixel at a time.
     if (windowId == B_WIN_MOVE_NAME_1 && IsGimmickSelected(battler, GIMMICK_Z_MOVE))
     {
-        BlitBitmapToWindow(windowId, sBWBattleUI_MoveBoxGraphicsZ,
-            0, 0,
-            TILE_TO_PIXELS(28), TILE_TO_PIXELS(6));
-
+        CopyToWindowPixelBuffer(windowId, sBWBattleUI_MoveBoxGraphicsZ,
+                                BUI_MOVE_BOX_TILES * TILE_SIZE_4BPP, 0);
         return;
     }
 
     u32 slot = windowId - B_WIN_MOVE_NAME_1;
-    BlitBitmapRectToWindow(windowId, sBWBattleUI_MoveBoxGraphics,
-        (slot & 1) ? TILE_TO_PIXELS(14) : 0, (slot & 2) ? TILE_TO_PIXELS(3) : 0,
-        TILE_TO_PIXELS(28), TILE_TO_PIXELS(6),
-        0, 0,
-        TILE_TO_PIXELS(14), TILE_TO_PIXELS(3));
+    const u8 *panel = sBWBattleUI_MoveBoxGraphics + slot * BUI_MOVE_PANEL_TILES * TILE_SIZE_4BPP;
+
+    if (windowId != B_WIN_MOVE_NAME_1)
+    {
+        CopyToWindowPixelBuffer(windowId, panel, BUI_MOVE_PANEL_TILES * TILE_SIZE_4BPP, 0);
+        return;
+    }
+
+    // The first window spans the whole box so it can also hold the Z move
+    // layout, so its panel is the left half of each of the top three rows.
+    for (u32 row = 0; row < BUI_MOVE_PANEL_TILE_HEIGHT; row++)
+    {
+        CopyToWindowPixelBuffer(windowId,
+                                panel + row * BUI_MOVE_PANEL_TILE_WIDTH * TILE_SIZE_4BPP,
+                                BUI_MOVE_PANEL_TILE_WIDTH * TILE_SIZE_4BPP,
+                                row * BUI_MOVE_BOX_TILE_WIDTH);
+    }
 }
 
 static void BattleUI_DisplayNormalMoveBox(enum BattlerId battler, struct ChooseMoveStruct *moveInfo)

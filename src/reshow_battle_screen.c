@@ -17,8 +17,17 @@
 #include "battle_anim.h"
 #include "data.h"
 
+// The screen stays blank while it is rebuilt, so there is no reason to idle
+// away the rest of each frame between steps. Every step is well under a frame's
+// worth of work; running one per frame just added latency to every trip out to
+// the bag or party menu. Audio is driven from the VBlank interrupt, so a step
+// budget that overruns a frame cannot stutter it.
+#define RESHOW_STEPS_PER_FRAME 4
+
 // this file's functions
+static bool32 DoReshowBattleScreenStep(void);
 static void CB2_ReshowBattleScreenAfterMenu(void);
+static bool32 DoReshowBlankBattleScreenStep(void);
 static void CB2_ReshowBlankBattleScreenAfterMenu(void);
 static bool8 LoadBattlerSpriteGfx(enum BattlerId battler);
 static void CreateHealthboxSprite(enum BattlerId battler);
@@ -45,6 +54,17 @@ void ReshowBattleScreenAfterMenu(void)
 
 static void CB2_ReshowBattleScreenAfterMenu(void)
 {
+    for (u32 step = 0; step < RESHOW_STEPS_PER_FRAME; step++)
+    {
+        if (DoReshowBattleScreenStep())
+            break;
+    }
+}
+
+static bool32 DoReshowBattleScreenStep(void)
+{
+    bool32 finished = FALSE;
+
     switch (gBattleScripting.reshowMainState)
     {
     case 0:
@@ -169,10 +189,12 @@ static void CB2_ReshowBattleScreenAfterMenu(void)
         gPaletteFade.bufferTransferDisabled = 0;
         SetMainCallback2(BattleMainCB2);
         FillAroundBattleWindows();
+        finished = TRUE;
         break;
     }
 
     gBattleScripting.reshowMainState++;
+    return finished;
 }
 
 void ReshowBlankBattleScreenAfterMenu(void)
@@ -188,6 +210,17 @@ void ReshowBlankBattleScreenAfterMenu(void)
 
 static void CB2_ReshowBlankBattleScreenAfterMenu(void)
 {
+    for (u32 step = 0; step < RESHOW_STEPS_PER_FRAME; step++)
+    {
+        if (DoReshowBlankBattleScreenStep())
+            break;
+    }
+}
+
+static bool32 DoReshowBlankBattleScreenStep(void)
+{
+    bool32 finished = FALSE;
+
     switch (gBattleScripting.reshowMainState)
     {
     case 0:
@@ -252,10 +285,12 @@ static void CB2_ReshowBlankBattleScreenAfterMenu(void)
         gPaletteFade.bufferTransferDisabled = 0;
         SetMainCallback2(BattleMainCB2);
         FillAroundBattleWindows();
+        finished = TRUE;
         break;
     }
 
     gBattleScripting.reshowMainState++;
+    return finished;
 }
 
 static void ClearBattleBgCntBaseBlocks(void)
