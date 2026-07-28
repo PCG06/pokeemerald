@@ -16,7 +16,6 @@ struct GimmickInfo
 {
     const struct SpritePalette *triggerPal;        // trigger gfx data
     const struct SpriteSheet *triggerSheet;
-    const struct SpriteSheet *triggerSheetDoubles;
     const struct SpriteTemplate *triggerTemplate;
     const u32 indicatorPalTag;
     const u8 *indicatorData;

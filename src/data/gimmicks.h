@@ -8,7 +8,6 @@ const struct GimmickInfo gGimmicksInfo[GIMMICKS_COUNT] =
     [GIMMICK_MEGA] =
     {
         .triggerSheet = &sSpriteSheet_MegaTrigger,
-        .triggerSheetDoubles = &sSpriteSheet_MegaTriggerDoubles,
         .triggerPal = &sSpritePalette_MegaTrigger,
         .triggerTemplate = &sSpriteTemplate_GimmickTrigger,
         .indicatorData = sMegaIndicatorGfx,

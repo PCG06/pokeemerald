@@ -3047,6 +3047,9 @@ void TryToAddMoveInfoWindow(void)
     if (!B_SHOW_MOVE_DESCRIPTION)
         return;
 
+    if (!B_SHOW_MOVE_DESCRIPTION_PROMPT)
+        return;
+
     if (B_MOVE_DESCRIPTION_BUTTON == L_BUTTON && gSaveBlock2Ptr->optionsButtonMode == OPTIONS_BUTTON_MODE_L_EQUALS_A)
         return;
 

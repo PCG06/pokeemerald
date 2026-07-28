@@ -279,15 +279,6 @@ static void LoadTypeIconsPerBattler(enum BattlerId battler, u32 position)
     if (!IsBattlerAlive(battlerId))
         return;
 
-    // In doubles the active battler's type icons overlap the Mega trigger.
-    // Suppress only that battler while the trigger is usable; every other
-    // Pokémon on the field keeps its type display. The singles column is set
-    // back far enough to clear the trigger, so it can stay.
-    if (battlerId == battler
-     && useDoubleBattleCoords
-     && gBattleStruct->gimmick.usableGimmick[battler] == GIMMICK_MEGA)
-        return;
-
     for (typeNum = 0; typeNum < 2; ++typeNum)
         types[typeNum] = GetMonPublicType(battlerId, typeNum);
 

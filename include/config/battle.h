@@ -289,6 +289,7 @@
 
 // Move description menu
 #define B_SHOW_MOVE_DESCRIPTION     TRUE       // Shows move information in battler
+#define B_SHOW_MOVE_DESCRIPTION_PROMPT FALSE   // Shows the move information prompt
 
 // Weather settings
 // Search for 'rain', 'sunny day', and 'hail' for move-specific or species-specific weather interactions.
