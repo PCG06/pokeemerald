@@ -192,67 +192,96 @@ static const struct BgTemplate sStatEditorBgTemplates[] =
     },
 };
 
+// Window Template Constants
+#define STAT_EDITOR_BASE(prevBase,  prevWidth, prevHeight)   (prevBase + (prevWidth * prevHeight))
+
+#define STAT_EDITOR_WIN_BASE    1
+
+#define STAT_EDITOR_MAIN_HEADER_W               16
+#define STAT_EDITOR_MAIN_HEADER_H               2
+#define STAT_EDITOR_MAIN_HEADER_BASE            STAT_EDITOR_BASE(STAT_EDITOR_WIN_BASE, 0, 0)
+
+#define STAT_EDITOR_STATS_HEADER_W              12
+#define STAT_EDITOR_STATS_HEADER_H              2
+#define STAT_EDITOR_STATS_HEADER_BASE           STAT_EDITOR_BASE(STAT_EDITOR_MAIN_HEADER_BASE, STAT_EDITOR_MAIN_HEADER_W, STAT_EDITOR_MAIN_HEADER_H)
+
+#define STAT_EDITOR_STATS_PANEL_W               16
+#define STAT_EDITOR_STATS_PANEL_H               14
+#define STAT_EDITOR_STATS_PANEL_BASE            STAT_EDITOR_BASE(STAT_EDITOR_STATS_HEADER_BASE, STAT_EDITOR_STATS_HEADER_W, STAT_EDITOR_STATS_HEADER_H)
+
+#define STAT_EDITOR_NICKNAME_W                  10
+#define STAT_EDITOR_NICKNAME_H                  3
+#define STAT_EDITOR_NICKNAME_BASE               STAT_EDITOR_BASE(STAT_EDITOR_STATS_PANEL_BASE, STAT_EDITOR_STATS_PANEL_W, STAT_EDITOR_STATS_PANEL_H)
+
+#define STAT_EDITOR_ABILITIES_W                 14
+#define STAT_EDITOR_ABILITIES_H                 2
+#define STAT_EDITOR_ABILITIES_BASE              STAT_EDITOR_BASE(STAT_EDITOR_NICKNAME_BASE, STAT_EDITOR_NICKNAME_W, STAT_EDITOR_NICKNAME_H)
+
+#define STAT_EDITOR_NATURES_W                   14
+#define STAT_EDITOR_NATURES_H                   2
+#define STAT_EDITOR_NATURES_BASE                STAT_EDITOR_BASE(STAT_EDITOR_ABILITIES_BASE, STAT_EDITOR_ABILITIES_W, STAT_EDITOR_ABILITIES_H)
+
 static const struct WindowTemplate sMenuWindowTemplates[] =
 {
     [WINDOW_MAIN_HEADER] = 
     {
-        .bg = 0,          // which bg to print text on
-        .tilemapLeft = 1, // position from left (per 8 pixels)
-        .tilemapTop = 0,  // position from top (per 8 pixels)
-        .width = 16,      // width (per 8 pixels)
-        .height = 2,      // height (per 8 pixels)
-        .paletteNum = 2, // palette index to use for text
-        .baseBlock = 1,   // tile start in VRAM
+        .bg = 0,
+        .tilemapLeft = 1,
+        .tilemapTop = 0,
+        .width = STAT_EDITOR_MAIN_HEADER_W, 
+        .height = STAT_EDITOR_MAIN_HEADER_H,
+        .paletteNum = 2,
+        .baseBlock = STAT_EDITOR_MAIN_HEADER_BASE,
     },
     [WINDOW_STATS_HEADER] =
     {
         .bg = 0,
         .tilemapLeft = 17,
         .tilemapTop = 1,
-        .width = 12,
-        .height = 2,
+        .width = STAT_EDITOR_STATS_HEADER_W, 
+        .height = STAT_EDITOR_STATS_HEADER_H,
         .paletteNum = 2,
-        .baseBlock = 1 + 32,
+        .baseBlock = STAT_EDITOR_STATS_HEADER_BASE,
     },
     [WINDOW_STATS_PANEL] = 
     {
         .bg = 0,
         .tilemapLeft = 14,
         .tilemapTop = 3,
-        .width = 16,
-        .height = 14,
+        .width = STAT_EDITOR_STATS_PANEL_W,
+        .height = STAT_EDITOR_STATS_PANEL_H,
         .paletteNum = 2,
-        .baseBlock = 1 + 32 + 24,
+        .baseBlock = STAT_EDITOR_STATS_PANEL_BASE,
     },
     [WINDOW_NICKNAME] = 
     {
         .bg = 0,
         .tilemapLeft = 0,
         .tilemapTop = 12,
-        .width = 10,
-        .height = 3,
+        .width = STAT_EDITOR_NICKNAME_W,
+        .height = STAT_EDITOR_NICKNAME_H,
         .paletteNum = 2,
-        .baseBlock = 1 + 32 + 24 + 224,
+        .baseBlock = STAT_EDITOR_NICKNAME_BASE,
     },
     [WINDOW_ABILITIES] = 
     {
         .bg = 0,
         .tilemapLeft = 0,
         .tilemapTop = 15,
-        .width = 14,
-        .height = 2,
+        .width = STAT_EDITOR_ABILITIES_W,
+        .height = STAT_EDITOR_ABILITIES_H,
         .paletteNum = 2,
-        .baseBlock = 1 + 32 + 24 + 224 + 36,
+        .baseBlock = STAT_EDITOR_ABILITIES_BASE,
     },
     [WINDOW_NATURES] = 
     {
         .bg = 0,
         .tilemapLeft = 0,
         .tilemapTop = 17,
-        .width = 14,
-        .height = 2,
+        .width = STAT_EDITOR_NATURES_W,
+        .height = STAT_EDITOR_NATURES_H,
         .paletteNum = 2,
-        .baseBlock = 1 + 32 + 24 + 224 + 36 + 28,
+        .baseBlock = STAT_EDITOR_NATURES_BASE,
     },
     DUMMY_WIN_TEMPLATE
 };
