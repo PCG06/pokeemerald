@@ -21,71 +21,6 @@ static void BattleIntroSlideLink(u8);
 static void BattleIntroSlidePartner(u8);
 static void BattleIntroNoSlide(u8);
 
-static const u8 sBattleAnimBgCnts[] = {REG_OFFSET_BG0CNT, REG_OFFSET_BG1CNT, REG_OFFSET_BG2CNT, REG_OFFSET_BG3CNT};
-
-void SetAnimBgAttribute(u8 bgId, u8 attributeId, u8 value)
-{
-    if (bgId < 4)
-    {
-        u32 bgCnt = GetGpuReg(sBattleAnimBgCnts[bgId]);
-        switch (attributeId)
-        {
-        case BG_ANIM_SCREEN_SIZE:
-            ((vBgCnt *)&bgCnt)->screenSize = value;
-            break;
-        case BG_ANIM_AREA_OVERFLOW_MODE:
-            ((vBgCnt *)&bgCnt)->areaOverflowMode = value;
-            break;
-        case BG_ANIM_MOSAIC:
-            ((vBgCnt *)&bgCnt)->mosaic = value;
-            break;
-        case BG_ANIM_CHAR_BASE_BLOCK:
-            ((vBgCnt *)&bgCnt)->charBaseBlock = value;
-            break;
-        case BG_ANIM_PRIORITY:
-            ((vBgCnt *)&bgCnt)->priority = value;
-            break;
-        case BG_ANIM_PALETTES_MODE:
-            ((vBgCnt *)&bgCnt)->palettes = value;
-            break;
-        case BG_ANIM_SCREEN_BASE_BLOCK:
-            ((vBgCnt *)&bgCnt)->screenBaseBlock = value;
-            break;
-        }
-
-        SetGpuReg(sBattleAnimBgCnts[bgId], bgCnt);
-    }
-}
-
-int GetAnimBgAttribute(u8 bgId, u8 attributeId)
-{
-    u32 bgCnt;
-
-    if (bgId < 4)
-    {
-        bgCnt = GetGpuReg(sBattleAnimBgCnts[bgId]);
-        switch (attributeId)
-        {
-        case BG_ANIM_SCREEN_SIZE:
-            return ((vBgCnt *)&bgCnt)->screenSize;
-        case BG_ANIM_AREA_OVERFLOW_MODE:
-            return ((vBgCnt *)&bgCnt)->areaOverflowMode;
-        case BG_ANIM_MOSAIC:
-            return ((vBgCnt *)&bgCnt)->mosaic;
-        case BG_ANIM_CHAR_BASE_BLOCK:
-            return ((vBgCnt *)&bgCnt)->charBaseBlock;
-        case BG_ANIM_PRIORITY:
-            return ((vBgCnt *)&bgCnt)->priority;
-        case BG_ANIM_PALETTES_MODE:
-            return ((vBgCnt *)&bgCnt)->palettes;
-        case BG_ANIM_SCREEN_BASE_BLOCK:
-            return ((vBgCnt *)&bgCnt)->screenBaseBlock;
-        }
-    }
-
-    return 0;
-}
-
 #define tState data[0]
 #define tEnvironment data[1]
 
@@ -93,15 +28,15 @@ void HandleIntroSlide(u8 environment)
 {
     u8 taskId;
 
-    if ((gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER) && gPartnerTrainerId < TRAINER_PARTNER(PARTNER_NONE))
+    if (HasAnyBattleFlags(BATTLE_TYPE_INGAME_PARTNER) && gPartnerTrainerId < TRAINER_PARTNER(PARTNER_NONE))
     {
         taskId = CreateTask(BattleIntroSlidePartner, 0);
     }
-    else if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+    else if (HasAnyBattleFlags(BATTLE_TYPE_LINK))
     {
         taskId = CreateTask(BattleIntroSlideLink, 0);
     }
-    else if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
+    else if (HasAnyBattleFlags(BATTLE_TYPE_FRONTIER))
     {
         taskId = CreateTask(BattleIntroSlide3, 0);
     }
@@ -141,7 +76,7 @@ static void BattleIntroNoSlide(u8 taskId)
     switch (gTasks[taskId].tState)
     {
     case 0:
-        if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+        if (HasAnyBattleFlags(BATTLE_TYPE_LINK))
         {
             gTasks[taskId].data[2] = 16;
             gTasks[taskId].tState++;
@@ -194,7 +129,7 @@ void BattleIntroSlide1(u8 taskId)
     switch (gTasks[taskId].tState)
     {
     case 0:
-        if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+        if (HasAnyBattleFlags(BATTLE_TYPE_LINK))
         {
             gTasks[taskId].data[2] = 16;
             gTasks[taskId].tState++;
@@ -305,7 +240,7 @@ void BattleIntroSlide2(u8 taskId)
     {
     case 0:
         gTasks[taskId].data[4] = 16;
-        if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+        if (HasAnyBattleFlags(BATTLE_TYPE_LINK))
         {
             gTasks[taskId].data[2] = 16;
             gTasks[taskId].tState++;
@@ -400,7 +335,7 @@ void BattleIntroSlide3(u8 taskId)
         SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(8, 8));
         SetGpuReg(REG_OFFSET_BLDY, 0);
         gTasks[taskId].data[4] = BLDALPHA_BLEND(8, 8);
-        if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
+        if (HasAnyBattleFlags(BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
         {
             gTasks[taskId].data[2] = 16;
             gTasks[taskId].tState++;

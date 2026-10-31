@@ -35,6 +35,7 @@
 #include "tv.h"
 #include "pokeball.h"
 #include "data.h"
+#include "frontier_util.h"
 #include "constants/battle_frontier.h"
 #include "constants/contest.h"
 #include "constants/decorations.h"
@@ -184,26 +185,6 @@ static const u8 sText_Slots[] = _("SLOTS");
 static const u8 sText_Roulette[] = _("ROULETTE");
 static const u8 sText_Jackpot[] = _("jackpot");
 
-static const u16 sGoldSymbolFlags[NUM_FRONTIER_FACILITIES] = {
-    [FRONTIER_FACILITY_TOWER]   = FLAG_SYS_TOWER_GOLD,
-    [FRONTIER_FACILITY_DOME]    = FLAG_SYS_DOME_GOLD,
-    [FRONTIER_FACILITY_PALACE]  = FLAG_SYS_PALACE_GOLD,
-    [FRONTIER_FACILITY_ARENA]   = FLAG_SYS_ARENA_GOLD,
-    [FRONTIER_FACILITY_FACTORY] = FLAG_SYS_FACTORY_GOLD,
-    [FRONTIER_FACILITY_PIKE]    = FLAG_SYS_PIKE_GOLD,
-    [FRONTIER_FACILITY_PYRAMID] = FLAG_SYS_PYRAMID_GOLD
-};
-
-static const u16 sSilverSymbolFlags[NUM_FRONTIER_FACILITIES] = {
-    [FRONTIER_FACILITY_TOWER]   = FLAG_SYS_TOWER_SILVER,
-    [FRONTIER_FACILITY_DOME]    = FLAG_SYS_DOME_SILVER,
-    [FRONTIER_FACILITY_PALACE]  = FLAG_SYS_PALACE_SILVER,
-    [FRONTIER_FACILITY_ARENA]   = FLAG_SYS_ARENA_SILVER,
-    [FRONTIER_FACILITY_FACTORY] = FLAG_SYS_FACTORY_SILVER,
-    [FRONTIER_FACILITY_PIKE]    = FLAG_SYS_PIKE_SILVER,
-    [FRONTIER_FACILITY_PYRAMID] = FLAG_SYS_PYRAMID_SILVER
-};
-
 static const u16 sNumberOneVarsAndThresholds[][2] = {
     {VAR_DAILY_SLOTS, 100},
     {VAR_DAILY_ROULETTE,  50},
@@ -236,12 +217,6 @@ static const u8 *const sPokeNewsTextGroup_Ending[NUM_POKENEWS_TYPES + 1] = {
     [POKENEWS_GAME_CORNER] = gPokeNewsTextGameCorner_Ending,
     [POKENEWS_LILYCOVE]    = gPokeNewsTextLilycove_Ending,
     [POKENEWS_BLENDMASTER] = gPokeNewsTextBlendMaster_Ending
-};
-
-u8 *const gTVStringVarPtrs[] = {
-    gStringVar1,
-    gStringVar2,
-    gStringVar3
 };
 
 static const u8 *const sTVFanClubTextGroup[] = {
@@ -1189,7 +1164,7 @@ void PutBattleUpdateOnTheAir(u8 opponentLinkPlayerId, enum Move move, enum Speci
             show->battleUpdate.active = TRUE;
             StringCopy(show->battleUpdate.playerName, gSaveBlock2Ptr->playerName);
 
-            if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
+            if (HasAnyBattleFlags(BATTLE_TYPE_MULTI))
                 show->battleUpdate.battleType = 2;
             else if (IsDoubleBattle())
                 show->battleUpdate.battleType = 1;
@@ -1727,10 +1702,10 @@ void TryPutTodaysRivalTrainerOnAir(void)
         show->rivalTrainer.nGoldSymbols = 0;
         for (i = 0; i < NUM_FRONTIER_FACILITIES; i++)
         {
-            if (FlagGet(sSilverSymbolFlags[i]) == TRUE)
+            if (FlagGet(gFrontierBrainInfo[i].silverSymbolFlag) == TRUE)
                 show->rivalTrainer.nSilverSymbols++;
 
-            if (FlagGet(sGoldSymbolFlags[i]) == TRUE)
+            if (FlagGet(gFrontierBrainInfo[i].goldSymbolFlag) == TRUE)
                 show->rivalTrainer.nGoldSymbols++;
         }
         show->rivalTrainer.battlePoints = gSaveBlock2Ptr->frontier.battlePoints;
@@ -2044,7 +2019,7 @@ void TryPutLotteryWinnerReportOnAir(void)
     }
 }
 
-void TryPutBattleSeminarOnAir(enum Species foeSpecies, enum Species species, u8 moveIndex, const u16 *movePtr, enum Move betterMove)
+void TryPutBattleSeminarOnAir(enum Species foeSpecies, enum Species species, enum MoveSlot moveIndex, const u16 *movePtr, enum Move betterMove)
 {
     TVShow *show;
     u8 i;
@@ -2106,7 +2081,7 @@ void TryPutSpotTheCutiesOnAir(struct Pokemon *pokemon, u8 ribbonMonDataIdx)
         StringCopy(show->cuties.playerName, gSaveBlock2Ptr->playerName);
         GetMonData(pokemon, MON_DATA_NICKNAME10, show->cuties.nickname);
         StripExtCtrlCodes(show->cuties.nickname);
-        show->cuties.nRibbons = GetRibbonCount(pokemon);
+        show->cuties.nRibbons = GetMonData(pokemon, MON_DATA_RIBBON_COUNT);
         show->cuties.selectedRibbon = MonDataIdxToRibbon(ribbonMonDataIdx);
         StorePlayerIdInRecordMixShow(show);
         show->cuties.language = gGameLanguage;
@@ -2115,31 +2090,6 @@ void TryPutSpotTheCutiesOnAir(struct Pokemon *pokemon, u8 ribbonMonDataIdx)
         else
             show->cuties.pokemonNameLanguage = GetMonData(pokemon, MON_DATA_LANGUAGE);
     }
-}
-
-u8 GetRibbonCount(struct Pokemon *pokemon)
-{
-    u8 nRibbons;
-
-    nRibbons = 0;
-    nRibbons += GetMonData(pokemon, MON_DATA_COOL_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_BEAUTY_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_CUTE_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_SMART_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_TOUGH_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_CHAMPION_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_WINNING_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_VICTORY_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_ARTIST_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_EFFORT_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_MARINE_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_LAND_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_SKY_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_COUNTRY_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_NATIONAL_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_EARTH_RIBBON);
-    nRibbons += GetMonData(pokemon, MON_DATA_WORLD_RIBBON);
-    return nRibbons;
 }
 
 static u8 MonDataIdxToRibbon(u8 monDataIdx)
@@ -2585,42 +2535,23 @@ void CopyContestRankToStringVar(u8 varIdx, u8 rank)
     switch (rank)
     {
     case CONTEST_RANK_NORMAL:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_NORMAL]);
+        StringCopy(GetStringVar(varIdx), gStdStrings[STDSTRING_NORMAL]);
         break;
     case CONTEST_RANK_SUPER:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_SUPER]);
+        StringCopy(GetStringVar(varIdx), gStdStrings[STDSTRING_SUPER]);
         break;
     case CONTEST_RANK_HYPER:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_HYPER]);
+        StringCopy(GetStringVar(varIdx), gStdStrings[STDSTRING_HYPER]);
         break;
     case CONTEST_RANK_MASTER:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_MASTER]);
+        StringCopy(GetStringVar(varIdx), gStdStrings[STDSTRING_MASTER]);
         break;
     }
 }
 
 void CopyContestCategoryToStringVar(u8 varIdx, enum ContestCategories category)
 {
-    switch (category)
-    {
-    case CONTEST_CATEGORY_COOL:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_COOL]);
-        break;
-    case CONTEST_CATEGORY_BEAUTY:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_BEAUTY]);
-        break;
-    case CONTEST_CATEGORY_CUTE:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_CUTE]);
-        break;
-    case CONTEST_CATEGORY_SMART:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_SMART]);
-        break;
-    case CONTEST_CATEGORY_TOUGH:
-        StringCopy(gTVStringVarPtrs[varIdx], gStdStrings[STDSTRING_TOUGH]);
-        break;
-    default:
-        break;
-    }
+    StringCopy(GetStringVar(varIdx), gStdStrings[gContestCategoryInfo[category].stdString]);
 }
 
 void SetContestCategoryStringVarForInterview(void)
@@ -2632,12 +2563,15 @@ void SetContestCategoryStringVarForInterview(void)
 void ConvertIntToDecimalString(u8 varIdx, int value)
 {
     int nDigits = CountDigits(value);
-    ConvertIntToDecimalStringN(gTVStringVarPtrs[varIdx], value, STR_CONV_MODE_LEFT_ALIGN, nDigits);
+    ConvertIntToDecimalStringN(GetStringVar(varIdx), value, STR_CONV_MODE_LEFT_ALIGN, nDigits);
 }
 
 size_t CountDigits(int value)
 {
     u32 count = 0;
+
+    if (value == 0)
+        return 1;
 
     while (value > 0)
     {
@@ -2698,7 +2632,7 @@ static void SortPurchasesByQuantity(void)
         {
             if (gMartPurchaseHistory[i].quantity < gMartPurchaseHistory[j].quantity)
             {
-                u16 tempItemId = gMartPurchaseHistory[i].itemId;
+                enum Item tempItemId = gMartPurchaseHistory[i].itemId;
                 u16 tempQuantity = gMartPurchaseHistory[i].quantity;
                 gMartPurchaseHistory[i].itemId = gMartPurchaseHistory[j].itemId;
                 gMartPurchaseHistory[i].quantity = gMartPurchaseHistory[j].quantity;
@@ -2924,30 +2858,36 @@ static void CompactTVShowArray(TVShow *shows)
 static enum Species GetRandomDifferentSpeciesAndNameSeenByPlayer(u8 varIdx, enum Species excludedSpecies)
 {
     enum Species species = GetRandomDifferentSpeciesSeenByPlayer(excludedSpecies);
-    StringCopy(gTVStringVarPtrs[varIdx], GetSpeciesName(species));
+    StringCopy(GetStringVar(varIdx), GetSpeciesName(species));
     return species;
 }
 
 static enum Species GetRandomDifferentSpeciesSeenByPlayer(enum Species excludedSpecies)
 {
-    enum Species species = Random() % (NUM_SPECIES - 1) + 1;
-    enum Species initSpecies = species;
-
-    while (GetSetPokedexFlag(SpeciesToNationalPokedexNum(species), FLAG_GET_SEEN) != TRUE || species == excludedSpecies)
+    enum NationalDexOrder selectedNatDex;
+    enum NationalDexOrder excludexNatDex = SpeciesToNationalPokedexNum(excludedSpecies);
+    enum NationalDexOrder *natDexArray = Alloc(POKEMON_SLOTS_NUMBER * sizeof(enum NationalDexOrder));
+    u32 count = 0;
+    for (u32 i = 0; i < NUM_DEX_FLAG_BYTES; i++)
     {
-        if (species == SPECIES_NONE + 1)
-            species = NUM_SPECIES - 1;
-        else
-            species--;
-
-        if (species == initSpecies)
+        u32 tmp = gSaveBlock1Ptr->dexSeen[i];
+        for (u32 j = 0; j < 8; j++)
         {
-            // Looped back to initial species (only Pokémon seen), must choose excluded species
-            species = excludedSpecies;
-            return species;
+            if (tmp & 1)
+                natDexArray[count++] = i * 8 + j + 1;
+            tmp >>= 1;
         }
-    };
-    return species;
+    }
+    if (count <= 1)
+    {
+        Free(natDexArray);
+        return excludedSpecies;
+    }
+    do {
+        selectedNatDex = natDexArray[RandomUniform(RNG_NONE, 0, count - 1)];
+    } while (selectedNatDex == excludexNatDex);
+    Free(natDexArray);
+    return NationalPokedexNumToSpecies(selectedNatDex);
 }
 
 static void Script_FindFirstEmptyNormalTVShowSlot(void)
@@ -3098,7 +3038,7 @@ static void GetNicknameSubstring(u8 varIdx, u8 whichPosition, u8 charParam, u16 
             buff[1] = GetSpeciesName(species)[strlen - (whichPosition + 1)];
         }
     }
-    StringCopy(gTVStringVarPtrs[varIdx], buff);
+    StringCopy(GetStringVar(varIdx), buff);
 }
 
 // Unused script special
@@ -4465,6 +4405,7 @@ static void DoTVShowTheNameRaterShow(void)
     case 12:
         state = 18;
         sTVShowState = 18;
+        [[fallthrough]];
     case 18:
         TVShowConvertInternationalString(gStringVar1, show->nameRaterShow.pokemonName, show->nameRaterShow.pokemonNameLanguage);
         TVShowDone();
@@ -4855,24 +4796,7 @@ static void DoTVShowPokemonContestLiveUpdates(void)
         }
         break;
     case CONTESTLIVE_STATE_BETTER_ROUND1:
-        switch (show->contestLiveUpdates.category)
-        {
-        case CONTEST_CATEGORY_COOL:
-            StringCopy(gStringVar1, gText_Cool);
-            break;
-        case CONTEST_CATEGORY_BEAUTY:
-            StringCopy(gStringVar1, gText_Beauty);
-            break;
-        case CONTEST_CATEGORY_CUTE:
-            StringCopy(gStringVar1, gText_Cute);
-            break;
-        case CONTEST_CATEGORY_SMART:
-            StringCopy(gStringVar1, gText_Smart);
-            break;
-        case CONTEST_CATEGORY_TOUGH:
-            StringCopy(gStringVar1, gText_Tough);
-            break;
-        }
+        StringCopy(gStringVar1, gContestCategoryInfo[show->contestLiveUpdates.category].text);
         StringCopy(gStringVar2, GetSpeciesName(show->contestLiveUpdates.winningSpecies));
         switch (show->contestLiveUpdates.winnerAppealFlag)
         {
@@ -4916,24 +4840,7 @@ static void DoTVShowPokemonContestLiveUpdates(void)
         break;
     case CONTESTLIVE_STATE_EXCITING_APPEAL:
         StringCopy(gStringVar2, GetSpeciesName(show->contestLiveUpdates.winningSpecies));
-        switch (show->contestLiveUpdates.category)
-        {
-        case CONTEST_CATEGORY_COOL:
-            sTVShowState = CONTESTLIVE_STATE_COOL;
-            break;
-        case CONTEST_CATEGORY_BEAUTY:
-            sTVShowState = CONTESTLIVE_STATE_BEAUTIFUL;
-            break;
-        case CONTEST_CATEGORY_CUTE:
-            sTVShowState = CONTESTLIVE_STATE_CUTE;
-            break;
-        case CONTEST_CATEGORY_SMART:
-            sTVShowState = CONTESTLIVE_STATE_SMART;
-            break;
-        case CONTEST_CATEGORY_TOUGH:
-            sTVShowState = CONTESTLIVE_STATE_TOUGH;
-            break;
-        }
+        sTVShowState = gContestCategoryInfo[show->contestLiveUpdates.category].tvShowState;
         break;
     case CONTESTLIVE_STATE_COOL:
         StringCopy(gStringVar2, GetSpeciesName(show->contestLiveUpdates.winningSpecies));
@@ -4957,24 +4864,7 @@ static void DoTVShowPokemonContestLiveUpdates(void)
         break;
     case CONTESTLIVE_STATE_VERY_EXCITING_APPEAL:
         StringCopy(gStringVar2, GetSpeciesName(show->contestLiveUpdates.winningSpecies));
-        switch (show->contestLiveUpdates.category)
-        {
-        case CONTEST_CATEGORY_COOL:
-            sTVShowState = CONTESTLIVE_STATE_VERY_COOL;
-            break;
-        case CONTEST_CATEGORY_BEAUTY:
-            sTVShowState = CONTESTLIVE_STATE_VERY_BEAUTIFUL;
-            break;
-        case CONTEST_CATEGORY_CUTE:
-            sTVShowState = CONTESTLIVE_STATE_VERY_CUTE;
-            break;
-        case CONTEST_CATEGORY_SMART:
-            sTVShowState = CONTESTLIVE_STATE_VERY_SMART;
-            break;
-        case CONTEST_CATEGORY_TOUGH:
-            sTVShowState = CONTESTLIVE_STATE_VERY_TOUGH;
-            break;
-        }
+        sTVShowState = gContestCategoryInfo[show->contestLiveUpdates.category].tvShowStateExciting;
         break;
     case CONTESTLIVE_STATE_VERY_COOL:
         StringCopy(gStringVar2, GetSpeciesName(show->contestLiveUpdates.winningSpecies));
@@ -6634,6 +6524,7 @@ static void DoTVShowLilycoveContestLady(void)
     case CONTESTLADYLIVE_STATE_WON:
     case CONTESTLADYLIVE_STATE_LOST:
         TVShowConvertInternationalString(gStringVar3, show->contestLady.playerName, show->contestLady.language);
+        [[fallthrough]];
     case CONTESTLADYLIVE_STATE_LOST_BADLY:
         TVShowConvertInternationalString(gStringVar2, show->contestLady.nickname, show->contestLady.pokemonNameLanguage);
         TVShowDone();

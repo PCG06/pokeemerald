@@ -147,7 +147,7 @@ static void OakOldManBufferRunCommand(enum BattlerId battler)
 static void HandleInputChooseAction(enum BattlerId battler)
 {
     // Like player, but specifically for Rival in Oak's Lab
-    u16 itemId = gBattleResources->bufferA[battler][2] | (gBattleResources->bufferA[battler][3] << 8);
+    enum Item itemId = gBattleResources->bufferA[battler][2] | (gBattleResources->bufferA[battler][3] << 8);
 
     DoBounceEffect(battler, BOUNCE_HEALTHBOX, 7, 1);
     DoBounceEffect(battler, BOUNCE_MON, 7, 1);
@@ -214,10 +214,10 @@ static void HandleInputChooseAction(enum BattlerId battler)
     }
     else if (JOY_NEW(B_BUTTON))
     {
-        if ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
+        if (HasAnyBattleFlags(BATTLE_TYPE_DOUBLE)
          && GetBattlerPosition(battler) == B_POSITION_PLAYER_RIGHT
          && !(gAbsentBattlerFlags & (1 << GetBattlerAtPosition(B_POSITION_PLAYER_LEFT)))
-         && !(gBattleTypeFlags & BATTLE_TYPE_MULTI))
+         && !HasAnyBattleFlags(BATTLE_TYPE_MULTI))
         {
             if (gBattleResources->bufferA[battler][1] == B_ACTION_USE_ITEM)
             {
@@ -246,7 +246,7 @@ static void SimulateInputChooseAction(enum BattlerId battler)
     case 0:
         gBattleStruct->simulatedInputState2 = 64;
         ++gBattleStruct->simulatedInputState0;
-        // fall through
+        [[fallthrough]];
     case 1:
         if (--gBattleStruct->simulatedInputState2 == 0)
         {
@@ -314,7 +314,7 @@ static void WaitForMonSelection(enum BattlerId battler)
         if (gPartyMenuUseExitCallback == TRUE)
             BtlController_EmitChosenMonReturnValue(battler, 1, gSelectedMonPartyId, gBattlePartyCurrentOrder);
         else
-            BtlController_EmitChosenMonReturnValue(battler, 1, 6, NULL);
+            BtlController_EmitChosenMonReturnValue(battler, 1, PARTY_SLOT_NONE, NULL);
         OakOldManBufferExecCompleted(battler);
     }
 }
@@ -326,7 +326,7 @@ static void OpenBagAndChooseItem(enum BattlerId battler)
         gBattlerControllerFuncs[battler] = CompleteWhenChoseItem;
         ReshowBattleScreenDummy();
         CloseMainBattleScreen();
-        if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+        if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
             CB2_BagMenuFromBattle();
         else
             InitOldManBag();
@@ -339,7 +339,7 @@ static void CompleteWhenChoseItem(enum BattlerId battler)
     {
         if (IS_FRLG && !BtlCtrl_OakOldMan_TestState2Flag(FIRST_BATTLE_MSG_FLAG_HP_RESTORE)
          && gSpecialVar_ItemId == ITEM_POTION
-         && gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+         && HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
         {
             BtlCtrl_OakOldMan_SetState2Flag(FIRST_BATTLE_MSG_FLAG_HP_RESTORE);
             gBattlerControllerFuncs[battler] = PrintOakText_KeepAnEyeOnHP;
@@ -359,19 +359,19 @@ static void Intro_TryShinyAnimShowHealthbox(enum BattlerId battler)
     if (!gBattleSpritesDataPtr->healthBoxesData[battler].triedShinyMonAnim
      && !gBattleSpritesDataPtr->healthBoxesData[battler].ballAnimActive)
         TryShinyAnimation(battler, &party[gBattlerPartyIndexes[battler]]);
-    if (!gBattleSpritesDataPtr->healthBoxesData[BATTLE_PARTNER(battler)].triedShinyMonAnim
-     && !gBattleSpritesDataPtr->healthBoxesData[BATTLE_PARTNER(battler)].ballAnimActive)
-        TryShinyAnimation(BATTLE_PARTNER(battler), &party[gBattlerPartyIndexes[BATTLE_PARTNER(battler)]]);
-    if (!gBattleSpritesDataPtr->healthBoxesData[battler].ballAnimActive && !gBattleSpritesDataPtr->healthBoxesData[BATTLE_PARTNER(battler)].ballAnimActive)
+    if (!gBattleSpritesDataPtr->healthBoxesData[GetPartnerBattler(battler)].triedShinyMonAnim
+     && !gBattleSpritesDataPtr->healthBoxesData[GetPartnerBattler(battler)].ballAnimActive)
+        TryShinyAnimation(GetPartnerBattler(battler), &party[gBattlerPartyIndexes[GetPartnerBattler(battler)]]);
+    if (!gBattleSpritesDataPtr->healthBoxesData[battler].ballAnimActive && !gBattleSpritesDataPtr->healthBoxesData[GetPartnerBattler(battler)].ballAnimActive)
     {
-        if (IsDoubleBattle() && !(gBattleTypeFlags & BATTLE_TYPE_MULTI))
+        if (IsDoubleBattle() && !HasAnyBattleFlags(BATTLE_TYPE_MULTI))
         {
-            DestroySprite(&gSprites[gBattleControllerData[BATTLE_PARTNER(battler)]]);
-            UpdateHealthboxAttribute(gHealthboxSpriteIds[BATTLE_PARTNER(battler)],
-                                     &party[gBattlerPartyIndexes[BATTLE_PARTNER(battler)]],
+            DestroySprite(&gSprites[gBattleControllerData[GetPartnerBattler(battler)]]);
+            UpdateHealthboxAttribute(gHealthboxSpriteIds[GetPartnerBattler(battler)],
+                                     &party[gBattlerPartyIndexes[GetPartnerBattler(battler)]],
                                      HEALTHBOX_ALL);
-            StartHealthboxSlideIn(BATTLE_PARTNER(battler));
-            SetHealthboxSpriteVisible(gHealthboxSpriteIds[BATTLE_PARTNER(battler)]);
+            StartHealthboxSlideIn(GetPartnerBattler(battler));
+            SetHealthboxSpriteVisible(gHealthboxSpriteIds[GetPartnerBattler(battler)]);
         }
         DestroySprite(&gSprites[gBattleControllerData[battler]]);
         UpdateHealthboxAttribute(gHealthboxSpriteIds[battler],
@@ -393,12 +393,12 @@ static void Intro_WaitForShinyAnimAndHealthbox(enum BattlerId battler)
         r4 = TRUE;
     if (r4
      && gBattleSpritesDataPtr->healthBoxesData[battler].finishedShinyMonAnim
-     && gBattleSpritesDataPtr->healthBoxesData[BATTLE_PARTNER(battler)].finishedShinyMonAnim)
+     && gBattleSpritesDataPtr->healthBoxesData[GetPartnerBattler(battler)].finishedShinyMonAnim)
     {
         gBattleSpritesDataPtr->healthBoxesData[battler].triedShinyMonAnim = FALSE;
         gBattleSpritesDataPtr->healthBoxesData[battler].finishedShinyMonAnim = FALSE;
-        gBattleSpritesDataPtr->healthBoxesData[BATTLE_PARTNER(battler)].triedShinyMonAnim = FALSE;
-        gBattleSpritesDataPtr->healthBoxesData[BATTLE_PARTNER(battler)].finishedShinyMonAnim = FALSE;
+        gBattleSpritesDataPtr->healthBoxesData[GetPartnerBattler(battler)].triedShinyMonAnim = FALSE;
+        gBattleSpritesDataPtr->healthBoxesData[GetPartnerBattler(battler)].finishedShinyMonAnim = FALSE;
         FreeSpriteTilesByTag(ANIM_TAG_GOLD_STARS);
         FreeSpritePaletteByTag(ANIM_TAG_GOLD_STARS);
         CreateTask(Task_PlayerController_RestoreBgmAfterCry, 10);
@@ -579,7 +579,7 @@ static void PrintOakTextWithMainBgDarkened(enum BattlerId battler, const u8 *tex
                 OakOldManBufferExecCompleted(battler);
             else
                 OpponentBufferExecCompleted(battler);
-            gBattleCommunication[MSG_DISPLAY] = 0;
+            gBattleCommunication[MSG_DISPLAY] = MSG_DISPLAY_CONTINUE;
             gBattleStruct->simulatedInputState0 = 0;
         }
         break;
@@ -666,7 +666,7 @@ static void PrintOakText_KeepAnEyeOnHP(enum BattlerId battler)
 void OakOldManBufferExecCompleted(enum BattlerId battler)
 {
     gBattlerControllerFuncs[battler] = OakOldManBufferRunCommand;
-    if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+    if (HasAnyBattleFlags(BATTLE_TYPE_LINK))
     {
         u8 playerId = GetMultiplayerId();
 
@@ -683,7 +683,7 @@ static void OakOldManHandleDrawTrainerPic(enum BattlerId battler)
 {
     enum TrainerPicID trainerPicId;
 
-    if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+    if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
         trainerPicId = GetPlayerTrainerPic(gSaveBlock2Ptr->playerGender, GAME_VERSION);
     else
         trainerPicId = TRAINER_PIC_OLD_MAN;
@@ -695,7 +695,7 @@ static void OakOldManHandleTrainerSlide(enum BattlerId battler)
 {
     enum TrainerPicID trainerPicId;
 
-    if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+    if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
         trainerPicId = GetPlayerTrainerPic(gSaveBlock2Ptr->playerGender, GAME_VERSION);
     else
         trainerPicId = TRAINER_PIC_OLD_MAN;
@@ -710,7 +710,7 @@ static void OakOldManHandlePrintString(enum BattlerId battler)
     gBattle_BG0_X = 0;
     gBattle_BG0_Y = 0;
     stringId = (u16 *)(&gBattleResources->bufferA[battler][2]);
-    if (gBattleTypeFlags & BATTLE_TYPE_CATCH_TUTORIAL && *stringId == 1)
+    if (HasAnyBattleFlags(BATTLE_TYPE_CATCH_TUTORIAL) && *stringId == 1)
     {
         OakOldManBufferExecCompleted(battler);
     }
@@ -721,7 +721,7 @@ static void OakOldManHandlePrintString(enum BattlerId battler)
         //     BattlePutTextOnWindow(gDisplayedStringBattle, (B_WIN_MSG | B_TEXT_FLAG_NPC_CONTEXT_FONT));
         // else
             BattlePutTextOnWindow(gDisplayedStringBattle, B_WIN_MSG);
-        if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+        if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
         {
             switch (*stringId)
             {
@@ -762,7 +762,7 @@ static void HandleChooseActionAfterDma3(enum BattlerId battler)
     {
         gBattle_BG0_X = 0;
         gBattle_BG0_Y = 160;
-        if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+        if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
             gBattlerControllerFuncs[battler] = HandleInputChooseAction;
         else
             gBattlerControllerFuncs[battler] = SimulateInputChooseAction;
@@ -779,7 +779,7 @@ static void OakOldManHandleChooseAction(enum BattlerId battler)
     for (i = 0; i < MAX_MON_MOVES; ++i)
         ActionSelectionDestroyCursorAt((u8)i);
     ActionSelectionCreateCursorAt(gActionSelectionCursor[battler], 0);
-    if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+    if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
     {
         PREPARE_MON_NICK_BUFFER(gBattleTextBuff1, battler, gBattlerPartyIndexes[battler]);
         BattleStringExpandPlaceholdersToDisplayedString(gText_WhatWillPkmnDo);
@@ -801,7 +801,7 @@ static void OakHandleChooseMove_WaitDma3(enum BattlerId battler)
 
 static void OakOldManHandleChooseMove(enum BattlerId battler)
 {
-    if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+    if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
     {
         InitMoveSelectionsVarsAndStrings(battler);
         gBattlerControllerFuncs[battler] = OakHandleChooseMove_WaitDma3;
@@ -814,7 +814,7 @@ static void OakOldManHandleChooseMove(enum BattlerId battler)
             InitMoveSelectionsVarsAndStrings(battler);
             ++gBattleStruct->simulatedInputState1;
             gBattleStruct->simulatedInputState3 = 80;
-            // fall through
+            [[fallthrough]];
         case 1:
             if (--gBattleStruct->simulatedInputState3 == 0)
             {
@@ -845,7 +845,7 @@ static void OakOldManHandleChoosePokemon(enum BattlerId battler)
     gBattleControllerData[battler] = CreateTask(TaskDummy, 0xFF);
     gTasks[gBattleControllerData[battler]].data[0] = gBattleResources->bufferA[battler][1];
     *(&gBattleStruct->battlerPreventingSwitchout) = gBattleResources->bufferA[battler][8];
-    *(&gBattleStruct->prevSelectedPartySlot) = gBattleResources->bufferA[battler][2];
+    gBattleStruct->prevSelectedPartySlot = (enum PartySlot)gBattleResources->bufferA[battler][2];
     *(&gBattleStruct->abilityPreventingSwitchout) = (gBattleResources->bufferA[battler][3] & 0xFF) | (gBattleResources->bufferA[battler][7] << 8);
     for (i = 0; i < 3; ++i)
         gBattlePartyCurrentOrder[i] = gBattleResources->bufferA[battler][4 + i];
@@ -871,7 +871,7 @@ static void OakOldManHandleFaintingCry(enum BattlerId battler)
 
 static void OakOldManHandleIntroTrainerBallThrow(enum BattlerId battler)
 {
-    if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+    if (HasAnyBattleFlags(BATTLE_TYPE_FIRST_BATTLE))
     {
         enum TrainerPicID trainerPicID = GetPlayerTrainerPic(gSaveBlock2Ptr->playerGender, GAME_VERSION);
         const u16 *trainerPal = GetTrainerBackPicPalette(trainerPicID);
@@ -931,7 +931,7 @@ static void OakOldManHandleEndLinkBattle(enum BattlerId battler)
     FadeOutMapMusic(5);
     BeginFastPaletteFade(3);
     OakOldManBufferExecCompleted(battler);
-    if (!(gBattleTypeFlags & BATTLE_TYPE_IS_MASTER) && gBattleTypeFlags & BATTLE_TYPE_LINK)
+    if (!HasAnyBattleFlags(BATTLE_TYPE_IS_MASTER) && HasAnyBattleFlags(BATTLE_TYPE_LINK))
         gBattlerControllerFuncs[battler] = OakOldManSetBattleEndCallbacks;
 }
 

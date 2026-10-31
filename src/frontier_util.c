@@ -51,18 +51,7 @@ struct FrontierBrainMon
     u8 fixedIV;
     u8 nature;
     u8 evs[NUM_STATS];
-    u16 moves[MAX_MON_MOVES];
-};
-
-struct FrontierBrain
-{
-    u16 trainerId;
-    u8 objEventGfx;
-    u8 isFemale;
-    const u8 *lostTexts[2];
-    const u8 *wonTexts[2];
-    u16 battledBit[2];
-    u8 streakAppearances[4];
+    enum Move moves[MAX_MON_MOVES];
 };
 
 // This file's functions.
@@ -98,7 +87,7 @@ static void ShowArenaResultsWindow(void);
 static void ShowPyramidResultsWindow(void);
 static void ShowLinkContestResultsWindow(void);
 static void CopyFrontierBrainText(bool8 playerWonText);
-static u16 *MakeCaughtBannesSpeciesList(u32 totalBannedSpecies);
+static u16 *MakeCaughtBannedSpeciesList(u32 totalBannedSpecies);
 static void PrintBannedSpeciesName(u8 windowId, u32 itemId, u8 y);
 static void Task_BannedSpeciesWindowInput(u8 taskId);
 
@@ -121,6 +110,8 @@ const struct FrontierBrain gFrontierBrainInfo[NUM_FRONTIER_FACILITIES] =
         },
         .battledBit = {1 << 0, 1 << 1},
         .streakAppearances = {35, 70, 35, 1},
+        .goldSymbolFlag = FLAG_SYS_TOWER_GOLD,
+        .silverSymbolFlag = FLAG_SYS_TOWER_SILVER,
     },
     [FRONTIER_FACILITY_DOME] =
     {
@@ -143,6 +134,8 @@ const struct FrontierBrain gFrontierBrainInfo[NUM_FRONTIER_FACILITIES] =
         },
         .battledBit = {1 << 2, 1 << 3},
         .streakAppearances = {4, 9, 5, 0},
+        .goldSymbolFlag = FLAG_SYS_DOME_GOLD,
+        .silverSymbolFlag = FLAG_SYS_DOME_SILVER,
     },
     [FRONTIER_FACILITY_PALACE] =
     {
@@ -167,6 +160,8 @@ const struct FrontierBrain gFrontierBrainInfo[NUM_FRONTIER_FACILITIES] =
         },
         .battledBit = {1 << 4, 1 << 5},
         .streakAppearances = {21, 42, 21, 1},
+        .goldSymbolFlag = FLAG_SYS_PALACE_GOLD,
+        .silverSymbolFlag = FLAG_SYS_PALACE_SILVER,
     },
     [FRONTIER_FACILITY_ARENA] =
     {
@@ -191,6 +186,8 @@ const struct FrontierBrain gFrontierBrainInfo[NUM_FRONTIER_FACILITIES] =
         },
         .battledBit = {1 << 6, 1 << 7},
         .streakAppearances = {28, 56, 28, 1},
+        .goldSymbolFlag = FLAG_SYS_ARENA_GOLD,
+        .silverSymbolFlag = FLAG_SYS_ARENA_SILVER,
     },
     [FRONTIER_FACILITY_FACTORY] =
     {
@@ -213,6 +210,8 @@ const struct FrontierBrain gFrontierBrainInfo[NUM_FRONTIER_FACILITIES] =
         },
         .battledBit = {1 << 8, 1 << 9},
         .streakAppearances = {21, 42, 21, 1},
+        .goldSymbolFlag = FLAG_SYS_FACTORY_GOLD,
+        .silverSymbolFlag = FLAG_SYS_FACTORY_SILVER,
     },
     [FRONTIER_FACILITY_PIKE] =
     {
@@ -229,6 +228,8 @@ const struct FrontierBrain gFrontierBrainInfo[NUM_FRONTIER_FACILITIES] =
         },
         .battledBit = {1 << 10, 1 << 11},
         .streakAppearances = {28, 140, 56, 1},
+        .goldSymbolFlag = FLAG_SYS_PIKE_GOLD,
+        .silverSymbolFlag = FLAG_SYS_PIKE_SILVER,
     },
     [FRONTIER_FACILITY_PYRAMID] =
     {
@@ -253,6 +254,8 @@ const struct FrontierBrain gFrontierBrainInfo[NUM_FRONTIER_FACILITIES] =
         },
         .battledBit = {1 << 12, 1 << 13},
         .streakAppearances = {21, 70, 35, 0},
+        .goldSymbolFlag = FLAG_SYS_PYRAMID_GOLD,
+        .silverSymbolFlag = FLAG_SYS_PYRAMID_SILVER,
     },
 };
 
@@ -1817,14 +1820,14 @@ void CopyFrontierTrainerText(u8 whichText, u16 trainerId)
         }
         else if (trainerId < TRAINER_RECORD_MIXING_APPRENTICE)
         {
-            if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+            if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
                 FrontierSpeechToString(GetRecordedBattleEasyChatSpeech());
             else
                 FrontierSpeechToString(gSaveBlock2Ptr->frontier.towerRecords[trainerId - TRAINER_RECORD_MIXING_FRIEND].speechWon);
         }
         else
         {
-            if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+            if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
                 FrontierSpeechToString(GetRecordedBattleEasyChatSpeech());
             else
                 FrontierSpeechToString(gSaveBlock2Ptr->apprentices[trainerId - TRAINER_RECORD_MIXING_APPRENTICE].speechWon);
@@ -1847,14 +1850,14 @@ void CopyFrontierTrainerText(u8 whichText, u16 trainerId)
         }
         else if (trainerId < TRAINER_RECORD_MIXING_APPRENTICE)
         {
-            if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+            if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
                 FrontierSpeechToString(GetRecordedBattleEasyChatSpeech());
             else
                 FrontierSpeechToString(gSaveBlock2Ptr->frontier.towerRecords[trainerId - TRAINER_RECORD_MIXING_FRIEND].speechLost);
         }
         else
         {
-            if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+            if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
             {
                 trainerId = GetRecordedBattleApprenticeId();
                 FrontierSpeechToString(gApprentices[trainerId].speechLost);
@@ -2022,7 +2025,7 @@ static void GiveFacilitySymbol(void)
 
 static void CheckBattleTypeFlag(void)
 {
-    if (gBattleTypeFlags & gSpecialVar_0x8005)
+    if (HasAnyBattleFlags(gSpecialVar_0x8005))
         gSpecialVar_Result = TRUE;
     else
         gSpecialVar_Result = FALSE;
@@ -2043,7 +2046,7 @@ static void AppendCaughtBannedMonSpeciesName(enum Species species, u8 count, s32
     StringAppend(gStringVar1, GetSpeciesName(species));
 }
 
-static void AppendIfValid(enum Species species, u16 heldItem, u16 hp, enum FrontierLevelMode lvlMode, u8 monLevel, u16 *speciesArray, u16 *itemsArray, u8 *count)
+static void AppendIfValid(enum Species species, enum Item heldItem, u16 hp, enum FrontierLevelMode lvlMode, u8 monLevel, enum Species *speciesArray, enum Item *itemsArray, u8 *count)
 {
     s32 i = 0;
 
@@ -2077,7 +2080,7 @@ static void AppendIfValid(enum Species species, u16 heldItem, u16 hp, enum Front
 // The names of ineligible Pokémon that have been caught are also buffered to print
 static void CheckPartyIneligibility(void)
 {
-    u16 speciesArray[PARTY_SIZE];
+    enum Species speciesArray[PARTY_SIZE];
     enum Item itemArray[PARTY_SIZE];
     s32 monId = 0;
     s32 toChoose = 0;
@@ -2145,7 +2148,7 @@ static void CheckPartyIneligibility(void)
         {
             if (!IsSpeciesEnabled(i))
                 continue;
-            baseSpecies = GET_BASE_SPECIES_ID(i);
+            baseSpecies = GetBaseSpecies(i);
             if (baseSpecies == i && gSpeciesInfo[baseSpecies].isFrontierBanned)
             {
                 if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(baseSpecies), FLAG_GET_CAUGHT))
@@ -2158,7 +2161,7 @@ static void CheckPartyIneligibility(void)
             enum Species species = GetMonData(&gParties[B_TRAINER_PLAYER][i], MON_DATA_SPECIES_OR_EGG);
             if (species == SPECIES_EGG || species == SPECIES_NONE)
                 continue;
-            if (gSpeciesInfo[GET_BASE_SPECIES_ID(species)].isFrontierBanned)
+            if (gSpeciesInfo[GetBaseSpecies(species)].isFrontierBanned)
             {
                 bool32 addToList = TRUE;
                 for (j = 0; j < totalPartyBanned; j++)
@@ -2547,7 +2550,7 @@ enum TrainerPicID GetFrontierBrainTrainerPicIndex(void)
 {
     s32 facility;
 
-    if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+    if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
         facility = GetRecordedBattleFrontierFacility();
     else
         facility = VarGet(VAR_FRONTIER_FACILITY);
@@ -2559,7 +2562,7 @@ enum TrainerClassID GetFrontierBrainTrainerClass(void)
 {
     s32 facility;
 
-    if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+    if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
         facility = GetRecordedBattleFrontierFacility();
     else
         facility = VarGet(VAR_FRONTIER_FACILITY);
@@ -2573,7 +2576,7 @@ void CopyFrontierBrainTrainerName(u8 *dst)
     s32 facility;
     const u8 *trainerName;
 
-    if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+    if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
         facility = GetRecordedBattleFrontierFacility();
     else
         facility = VarGet(VAR_FRONTIER_FACILITY);
@@ -2610,7 +2613,7 @@ void CreateFrontierBrainPokemon(void)
     s32 symbol = GetFronterBrainSymbol();
 
     if (facility == FRONTIER_FACILITY_DOME)
-        selectedMonBits = GetDomeTrainerSelectedMons(TrainerIdToDomeTournamentId(TRAINER_FRONTIER_BRAIN));
+        selectedMonBits = GetDomeTrainerSelectedMons(TRAINER_FRONTIER_BRAIN);
     else
         selectedMonBits = (1 << FRONTIER_PARTY_SIZE) - 1; // all 3 mons selected
 
@@ -2662,7 +2665,7 @@ void SetFrontierBrainObjEventGfx(u8 facility)
     VarSet(VAR_OBJ_GFX_ID_0, gFrontierBrainInfo[facility].objEventGfx);
 }
 
-u16 GetFrontierBrainMonMove(u8 monId, u8 moveSlotId)
+u16 GetFrontierBrainMonMove(u8 monId, enum MoveSlot moveSlotId)
 {
     s32 facility = VarGet(VAR_FRONTIER_FACILITY);
     s32 symbol = GetFronterBrainSymbol();
@@ -2711,7 +2714,7 @@ static void CopyFrontierBrainText(bool8 playerWonText)
     s32 facility;
     s32 symbol;
 
-    if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+    if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
     {
         facility = GetRecordedBattleFrontierFacility();
         symbol = GetRecordedBattleFronterBrainSymbol();
@@ -3046,14 +3049,14 @@ u8 GetFrontierTrainerFrontSpriteId(u16 trainerId)
     }
     else if (trainerId < TRAINER_RECORD_MIXING_APPRENTICE)
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
             return gFacilityClassToPicIndex[GetRecordedBattleRecordMixFriendClass()];
         else
             return gFacilityClassToPicIndex[gSaveBlock2Ptr->frontier.towerRecords[trainerId - TRAINER_RECORD_MIXING_FRIEND].facilityClass];
     }
     else
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
             return gFacilityClassToPicIndex[gApprentices[GetRecordedBattleApprenticeId()].facilityClass];
         else
             return gFacilityClassToPicIndex[gApprentices[gSaveBlock2Ptr->apprentices[trainerId - TRAINER_RECORD_MIXING_APPRENTICE].id].facilityClass];
@@ -3088,7 +3091,7 @@ enum TrainerClassID GetFrontierOpponentClass(u16 trainerId)
     }
     else if (trainerId < TRAINER_RECORD_MIXING_APPRENTICE)
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
         {
             trainerClass = gFacilityClassToTrainerClass[GetRecordedBattleRecordMixFriendClass()];
         }
@@ -3099,7 +3102,7 @@ enum TrainerClassID GetFrontierOpponentClass(u16 trainerId)
     }
     else
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
         {
             trainerClass = gFacilityClassToTrainerClass[gApprentices[GetRecordedBattleApprenticeId()].facilityClass];
         }
@@ -3131,14 +3134,14 @@ u8 GetFrontierTrainerFacilityClass(u16 trainerId)
     }
     else if (trainerId < TRAINER_RECORD_MIXING_APPRENTICE)
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
             facilityClass = GetRecordedBattleRecordMixFriendClass();
         else
             facilityClass = gSaveBlock2Ptr->frontier.towerRecords[trainerId - TRAINER_RECORD_MIXING_FRIEND].facilityClass;
     }
     else
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
             facilityClass = gApprentices[GetRecordedBattleApprenticeId()].facilityClass;
         else
             facilityClass = gApprentices[gSaveBlock2Ptr->apprentices[trainerId - TRAINER_RECORD_MIXING_APPRENTICE].id].facilityClass;
@@ -3177,7 +3180,7 @@ void GetFrontierTrainerName(u8 *dst, u16 trainerId)
     }
     else if (trainerId < TRAINER_RECORD_MIXING_APPRENTICE)
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
         {
             GetRecordedBattleRecordMixFriendName(dst);
             return;
@@ -3193,7 +3196,7 @@ void GetFrontierTrainerName(u8 *dst, u16 trainerId)
     {
         u8 id, language;
 
-        if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
+        if (HasAnyBattleFlags(BATTLE_TYPE_RECORDED))
         {
             id = GetRecordedBattleApprenticeId();
             language = GetRecordedBattleApprenticeLanguage();
@@ -3346,16 +3349,16 @@ u16 FacilityClassToGraphicsId(u8 facilityClass)
 #define tScrollOffset data[3]
 #define tListPointerElemId 4
 
-static u16 *MakeCaughtBannesSpeciesList(u32 totalBannedSpecies)
+static u16 *MakeCaughtBannedSpeciesList(u32 totalBannedSpecies)
 {
     u32 count = 0;
     u16 *list = AllocZeroed(sizeof(u16) * totalBannedSpecies);
-    for (u32 i = 0; i < NUM_SPECIES; i++)
+    for (enum Species i = 0; i < NUM_SPECIES; i++)
     {
         if (!IsSpeciesEnabled(i))
             continue;
 
-        enum Species baseSpecies = GET_BASE_SPECIES_ID(i);
+        enum Species baseSpecies = GetBaseSpecies(i);
         if (baseSpecies == i && gSpeciesInfo[baseSpecies].isFrontierBanned)
         {
             if (GetSetPokedexFlag(SpeciesToNationalPokedexNum(baseSpecies), FLAG_GET_CAUGHT))
@@ -3396,7 +3399,7 @@ void ShowBattleFrontierCaughtBannedSpecies(void)
     DrawStdWindowFrame(windowId, FALSE);
     listTemplate.windowId = windowId;
 
-    u16 *listItems = MakeCaughtBannesSpeciesList(totalCaughtBanned);
+    u16 *listItems = MakeCaughtBannedSpeciesList(totalCaughtBanned);
     u32 inputTaskId = CreateTask(Task_BannedSpeciesWindowInput, 3);
     gTasks[inputTaskId].tWindowId = windowId;
     gSpecialVar_0x8006 = inputTaskId;

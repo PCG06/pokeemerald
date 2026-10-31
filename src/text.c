@@ -62,7 +62,7 @@ static EWRAM_DATA u16 sFontHalfRowLookupTable[0x100];
 static EWRAM_DATA union TextColor sLastTextColor;
 
 EWRAM_DATA const struct FontInfo *gFonts = NULL;
-EWRAM_DATA bool8 gDisableTextPrinters = 0;
+EWRAM_DATA bool8 gDisableTextPrinters = FALSE;
 EWRAM_DATA TextFlags gTextFlags = {0};
 IWRAM_DATA struct TextGlyph gCurGlyph = {0};
 
@@ -358,7 +358,7 @@ void DeactivateAllTextPrinters(void)
     FreeFinishedTextPrinters();
 }
 
-u16 AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str, u8 x, u8 y, u8 speed, void (*callback)(struct TextPrinterTemplate *, u16))
+bool16 AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str, u8 x, u8 y, u8 speed, TextPrinterCallback callback)
 {
     struct TextPrinterTemplate printerTemplate;
 
@@ -376,7 +376,7 @@ u16 AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str, u8 x, u8 
     return AddTextPrinter(&printerTemplate, speed, callback);
 }
 
-u16 AddSpriteTextPrinterParametrerized(u8 spriteId, u8 fontId, const u8 *str, u8 x, u8 y, u8 speed, void (*callback)(struct TextPrinterTemplate *, u16))
+bool16 AddSpriteTextPrinterParameterized(u8 spriteId, u8 fontId, const u8 *str, u8 x, u8 y, u8 speed, TextPrinterCallback callback)
 {
     struct TextPrinterTemplate printerTemplate;
 
@@ -457,7 +457,7 @@ void AddSpriteTextPrinterParameterized6(u8 spriteId, u8 fontId, u8 left, u8 top,
     AddTextPrinter(&printer, speed, NULL);
 }
 
-bool32 AddTextPrinter(struct TextPrinterTemplate *printerTemplate, u8 speed, void (*callback)(struct TextPrinterTemplate *, u16))
+bool32 AddTextPrinter(struct TextPrinterTemplate *printerTemplate, u8 speed, TextPrinterCallback callback)
 {
     if (!gFonts)
         return FALSE;
@@ -553,6 +553,8 @@ void RunTextPrinters(void)
                         case SPRITE_TEXT_PRINTER:
                             break;
                         }
+                        if (currentPrinter->callback != NULL)
+                            currentPrinter->callback(&currentPrinter->printerTemplate, renderState);
                         break;
                     case RENDER_UPDATE:
                         if (currentPrinter->callback != NULL)
@@ -1338,13 +1340,15 @@ static u16 RenderText(struct TextPrinter *textPrinter)
             return RENDER_UPDATE;
         }
 
-        if (!(gBattleTypeFlags & BATTLE_TYPE_RECORDED) && gTextFlags.autoScroll)
+        if (!HasAnyBattleFlags(BATTLE_TYPE_RECORDED) && gTextFlags.autoScroll)
             textPrinter->delayCounter = 3;
         else
             textPrinter->delayCounter = textPrinter->textSpeed;
 
-        currChar = *textPrinter->printerTemplate.currentChar;
-        textPrinter->printerTemplate.currentChar++;
+        do {
+            currChar = *textPrinter->printerTemplate.currentChar;
+            textPrinter->printerTemplate.currentChar++;
+        } while (currChar == CHAR_ZWS);
 
         switch (currChar)
         {
@@ -1792,6 +1796,9 @@ static u32 (*GetFontWidthFunc(u8 fontId))(u16, bool32)
 
 s32 GetGlyphWidth(u16 glyphId, bool32 isJapanese, u8 fontId)
 {
+    if (!isJapanese && glyphId == CHAR_ZWS)
+        return 0;
+
     u32 (*func)(u16 fontId, bool32 isJapanese);
 
     func = GetFontWidthFunc(fontId);
@@ -1851,6 +1858,7 @@ s32 GetStringWidth(u8 fontId, const u8 *str, s16 letterSpacing)
             default:
                 return 0;
             }
+            [[fallthrough]];
         case CHAR_DYNAMIC:
             if (bufferPointer == NULL)
                 bufferPointer = DynamicPlaceholderTextUtil_GetPlaceholderPtr(*++str);
@@ -1878,9 +1886,11 @@ s32 GetStringWidth(u8 fontId, const u8 *str, s16 letterSpacing)
             case EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW:
             case EXT_CTRL_CODE_TEXT_COLORS:
                 ++str;
+                [[fallthrough]];
             case EXT_CTRL_CODE_PLAY_BGM:
             case EXT_CTRL_CODE_PLAY_SE:
                 ++str;
+                [[fallthrough]];
             case EXT_CTRL_CODE_BACKGROUND:
             case EXT_CTRL_CODE_COLOR:
             case EXT_CTRL_CODE_SHADOW:
@@ -2065,6 +2075,7 @@ u8 RenderTextHandleBold(u8 *pixels, u8 fontId, u8 *str)
             case EXT_CTRL_CODE_PLAY_BGM:
             case EXT_CTRL_CODE_PLAY_SE:
                 ++strPos;
+                [[fallthrough]];
             case EXT_CTRL_CODE_PALETTE:
             case EXT_CTRL_CODE_PAUSE:
             case EXT_CTRL_CODE_ESCAPE:
@@ -2137,19 +2148,9 @@ u8 DrawKeypadIcon(u8 windowId, u8 keypadIconId, u16 x, u16 y)
     return sKeypadIcons[keypadIconId].width;
 }
 
-u8 GetKeypadIconTileOffset(u8 keypadIconId)
-{
-    return sKeypadIcons[keypadIconId].tileOffset;
-}
-
 u8 GetKeypadIconWidth(u8 keypadIconId)
 {
     return sKeypadIcons[keypadIconId].width;
-}
-
-u8 GetKeypadIconHeight(u8 keypadIconId)
-{
-    return sKeypadIcons[keypadIconId].height;
 }
 
 void SetDefaultFontsPointer(void)

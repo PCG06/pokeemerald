@@ -162,10 +162,10 @@ string generate_map_header_text(Json map_data, Json layouts_data) {
     else
         text << "\t.4byte NULL\n";
 
-    text << "\t.2byte " << json_to_string(map_data, "music") << "\n"
-         << "\t.2byte " << json_to_string(layout, "id") << "\n"
+    text << "\t.2byte " << json_to_string(map_data, "music") << "\n";
+
+    text << "\t.2byte " << json_to_string(layout, "id") << "\n"
          << "\t.byte "  << json_to_string(map_data, "region_map_section") << "\n"
-         << "\t.byte "  << json_to_string(map_data, "requires_flash") << "\n"
          << "\t.byte "  << json_to_string(map_data, "weather") << "\n"
          << "\t.byte "  << json_to_string(map_data, "map_type") << "\n";
 
@@ -175,7 +175,10 @@ string generate_map_header_text(Json map_data, Json layouts_data) {
     else
         text << "\t.byte " << floor_number << "\n";
 
-    text << "\t.byte 0\n";
+    if (!map_data["night_music"].is_null())
+        text << "\t.2byte " << json_to_string(map_data, "night_music") << "\n";
+    else
+        text << "\t.2byte MUS_NONE\n";
 
     if (version == "ruby")
         text << "\t.byte " << json_to_string(map_data, "show_map_name") << "\n";
@@ -187,9 +190,10 @@ string generate_map_header_text(Json map_data, Json layouts_data) {
              << "allow_running=" << json_to_string(map_data, "allow_running") << ", "
              << "show_map_name=" << json_to_string(map_data, "show_map_name") << ", ";
         if (map_data.object_items().find("write_specialvar_iseffect") != map_data.object_items().end())
-            text << "write_specialvar_iseffect=" << json_to_string(map_data, "write_specialvar_iseffect") << "\n";
+            text << "write_specialvar_iseffect=" << json_to_string(map_data, "write_specialvar_iseffect") << ", ";
         else
-            text  << "write_specialvar_iseffect=FALSE" << "\n";
+            text  << "write_specialvar_iseffect=FALSE" << ", ";
+        text << "requires_flash=" << json_to_string(map_data, "requires_flash") << "\n";
     }
 
      text << "\t.byte " << json_to_string(map_data, "battle_scene") << "\n\n";
@@ -260,6 +264,17 @@ string generate_map_events_text(Json map_data) {
 
             // If no type field is present, assume it's a regular object event.
             if (type == "" || type == "object") {
+                string script = json_to_string(obj_event, "script");
+                string trainerSightOr = json_to_string(obj_event, "trainer_sight_or_berry_tree_id");
+                if (script == "EventScript_RockSmash")
+                {
+                    string rockSmashItemTable = json_to_string(obj_event, "rock_smash_item_table", true);
+                    if (rockSmashItemTable == "")
+                        rockSmashItemTable = "ROCK_SMASH_ITEM_TABLE_COUNT";
+                    trainerSightOr = trainerSightOr + " | (" + rockSmashItemTable + " << 8)";
+                }
+
+
                 text << "\tobject_event " << i + 1 << ", "
                      << json_to_string(obj_event, "graphics_id") << ", "
                      << json_to_string(obj_event, "x") << ", "
@@ -269,8 +284,8 @@ string generate_map_events_text(Json map_data) {
                      << json_to_string(obj_event, "movement_range_x") << ", "
                      << json_to_string(obj_event, "movement_range_y") << ", "
                      << json_to_string(obj_event, "trainer_type") << ", "
-                     << json_to_string(obj_event, "trainer_sight_or_berry_tree_id") << ", "
-                     << json_to_string(obj_event, "script") << ", "
+                     << trainerSightOr << ", "
+                     << script << ", "
                      << json_to_string(obj_event, "flag") << "\n";
             } else if (type == "clone") {
                 text << "\tclone_event " << i + 1 << ", "
@@ -839,7 +854,10 @@ string generate_layouts_table_text(Json layouts_data) {
             continue;
         string layout_version = json_to_string(layout, "layout_version", true);
         if (layout_version.empty()) {
-            layout_version = "emerald";
+            if (version == "emerald")
+                layout_version = "emerald";
+            else if (version == "firered")
+                layout_version = "frlg";
         }
         if ((version == "emerald" && layout_version != "emerald") || (version == "firered" && layout_version != "frlg")) {
             text << "\t.4byte NULL\n";

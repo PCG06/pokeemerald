@@ -126,7 +126,7 @@ static void Intro_WaitForHealthbox(enum BattlerId battler)
 {
     bool32 finished = FALSE;
 
-    if (!IsDoubleBattle() || (IsDoubleBattle() && (gBattleTypeFlags & BATTLE_TYPE_MULTI)))
+    if (!IsDoubleBattle() || HasAnyBattleFlags(BATTLE_TYPE_MULTI))
     {
         if (gSprites[gHealthboxSpriteIds[battler]].callback == SpriteCallbackDummy)
             finished = TRUE;
@@ -134,7 +134,7 @@ static void Intro_WaitForHealthbox(enum BattlerId battler)
     else
     {
         if (gSprites[gHealthboxSpriteIds[battler]].callback == SpriteCallbackDummy
-            && gSprites[gHealthboxSpriteIds[BATTLE_PARTNER(battler)]].callback == SpriteCallbackDummy)
+            && gSprites[gHealthboxSpriteIds[GetPartnerBattler(battler)]].callback == SpriteCallbackDummy)
         {
             finished = TRUE;
         }
@@ -154,7 +154,7 @@ static void Intro_WaitForHealthbox(enum BattlerId battler)
 void Controller_PlayerPartnerShowIntroHealthbox(enum BattlerId battler)
 {
     if (!gBattleSpritesDataPtr->healthBoxesData[battler].ballAnimActive
-        && !gBattleSpritesDataPtr->healthBoxesData[BATTLE_PARTNER(battler)].ballAnimActive
+        && !gBattleSpritesDataPtr->healthBoxesData[GetPartnerBattler(battler)].ballAnimActive
         && gSprites[gBattleControllerData[battler]].callback == SpriteCallbackDummy
         && gSprites[gBattlerSpriteIds[battler]].callback == SpriteCallbackDummy
         && ++gBattleSpritesDataPtr->healthBoxesData[battler].introEndDelay != 1)
@@ -162,12 +162,12 @@ void Controller_PlayerPartnerShowIntroHealthbox(enum BattlerId battler)
         gBattleSpritesDataPtr->healthBoxesData[battler].introEndDelay = 0;
         TryShinyAnimation(battler, GetBattlerMon(battler));
 
-        if (IsDoubleBattle() && !(gBattleTypeFlags & BATTLE_TYPE_MULTI))
+        if (IsDoubleBattle() && !HasAnyBattleFlags(BATTLE_TYPE_MULTI))
         {
-            DestroySprite(&gSprites[gBattleControllerData[BATTLE_PARTNER(battler)]]);
-            UpdateHealthboxAttribute(gHealthboxSpriteIds[BATTLE_PARTNER(battler)], GetBattlerMon(BATTLE_PARTNER(battler)), HEALTHBOX_ALL);
-            StartHealthboxSlideIn(BATTLE_PARTNER(battler));
-            SetHealthboxSpriteVisible(gHealthboxSpriteIds[BATTLE_PARTNER(battler)]);
+            DestroySprite(&gSprites[gBattleControllerData[GetPartnerBattler(battler)]]);
+            UpdateHealthboxAttribute(gHealthboxSpriteIds[GetPartnerBattler(battler)], GetBattlerMon(GetPartnerBattler(battler)), HEALTHBOX_ALL);
+            StartHealthboxSlideIn(GetPartnerBattler(battler));
+            SetHealthboxSpriteVisible(gHealthboxSpriteIds[GetPartnerBattler(battler)]);
         }
 
         DestroySprite(&gSprites[gBattleControllerData[battler]]);
@@ -184,7 +184,7 @@ void Controller_PlayerPartnerShowIntroHealthbox(enum BattlerId battler)
 void PlayerPartnerBufferExecCompleted(enum BattlerId battler)
 {
     gBattlerControllerFuncs[battler] = PlayerPartnerBufferRunCommand;
-    if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+    if (HasAnyBattleFlags(BATTLE_TYPE_LINK))
     {
         u8 playerId = GetMultiplayerId();
 
@@ -201,7 +201,7 @@ static enum TrainerPicID PlayerPartnerGetTrainerBackPicId(enum DifficultyLevel d
 {
     enum TrainerPicID trainerPicId;
 
-    if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)
+    if (HasAnyBattleFlags(BATTLE_TYPE_INGAME_PARTNER))
         trainerPicId = gBattlePartners[difficulty][gPartnerTrainerId - TRAINER_PARTNER(PARTNER_NONE)].trainerPic;
     else
         trainerPicId = GetPlayerTrainerPic(gSaveBlock2Ptr->playerGender, GAME_VERSION);
@@ -274,57 +274,28 @@ static void PlayerPartnerHandleChooseAction(enum BattlerId battler)
 
 static void PlayerPartnerHandleChooseMove(enum BattlerId battler)
 {
-    u32 chosenMoveIndex;
-    struct ChooseMoveStruct *moveInfo = (struct ChooseMoveStruct *)(&gBattleResources->bufferA[battler][4]);
-
-    chosenMoveIndex = gAiBattleData->chosenMoveIndex[battler];
-    gBattlerTarget = gAiBattleData->chosenTarget[battler];
-    enum MoveTarget moveTarget = GetBattlerMoveTargetType(battler, moveInfo->moves[chosenMoveIndex]);
-
-    if (moveTarget == TARGET_USER || moveTarget == TARGET_USER_OR_ALLY)
-    {
-        gBattlerTarget = battler;
-    }
-    else if (moveTarget == TARGET_BOTH)
-    {
-        gBattlerTarget = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
-        if (gAbsentBattlerFlags & (1u << gBattlerTarget))
-            gBattlerTarget = GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
-    }
-    // If partner can and should use a gimmick (considering trainer data), do it
-    enum Gimmick usableGimmick = gBattleStruct->gimmick.usableGimmick[battler];
-    if (usableGimmick != GIMMICK_NONE && IsAIUsingGimmick(battler) && !HasTrainerUsedGimmick(battler, usableGimmick))
-    {
-        gBattleStruct->gimmick.toActivate |= 1u << battler;
-        BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_EXEC_SCRIPT, (chosenMoveIndex) | (RET_GIMMICK) | (gBattlerTarget << 8));
-    }
-    else
-    {
-        SetAIUsingGimmick(battler, NO_GIMMICK);
-        BtlController_EmitTwoReturnValues(battler, B_COMM_TO_ENGINE, B_ACTION_EXEC_SCRIPT, (chosenMoveIndex) | (gBattlerTarget << 8));
-    }
-
+    SetFinalChosenTarget(battler, TRUE);
     BtlController_Complete(battler);
 }
 
 static void PlayerPartnerHandleChoosePokemon(enum BattlerId battler)
 {
-    s32 chosenMonId;
+    enum PartySlot chosenMonId;
     // Choosing Revival Blessing target
     if (gBattleResources->bufferA[battler][1] == PARTY_ACTION_CHOOSE_FAINTED_MON)
     {
         chosenMonId = gSelectedMonPartyId = GetFirstFaintedPartyIndex(battler);
     }
     // Switching out
-    else if (gBattleStruct->monToSwitchIntoId[battler] >= PARTY_SIZE || !IsValidForBattle(&gParties[B_TRAINER_PARTNER][gBattleStruct->monToSwitchIntoId[battler]]))
+    else if (gBattleStruct->monToSwitchIntoId[battler] >= PARTY_SLOT_NONE || !IsValidForBattle(&gParties[B_TRAINER_PARTNER][gBattleStruct->monToSwitchIntoId[battler]]))
     {
         chosenMonId = GetMostSuitableMonToSwitchInto(battler, SWITCH_AFTER_KO);
-        if (chosenMonId == PARTY_SIZE || !IsValidForBattle(&gParties[B_TRAINER_PARTNER][chosenMonId])) // just switch to the next mon
+        if (chosenMonId == PARTY_SLOT_NONE || !IsValidForBattle(&gParties[B_TRAINER_PARTNER][chosenMonId])) // just switch to the next mon
         {
             enum BattlerId battler1 = GetBattlerAtPosition(B_POSITION_PLAYER_LEFT);
             enum BattlerId battler2 = IsDoubleBattle() ? GetBattlerAtPosition(B_POSITION_PLAYER_RIGHT) : battler1;
 
-            for (chosenMonId = 0; chosenMonId < PARTY_SIZE; chosenMonId++)
+            for (chosenMonId = PARTY_SLOT_0; chosenMonId < PARTY_SIZE; chosenMonId++)
             {
                 if (GetMonData(&gParties[B_TRAINER_PARTNER][chosenMonId], MON_DATA_HP) != 0
                     && !(chosenMonId == gBattlerPartyIndexes[battler1] && BattlersShareParty(battler, battler1))
@@ -339,7 +310,7 @@ static void PlayerPartnerHandleChoosePokemon(enum BattlerId battler)
     else // Mon to switch out has been already chosen.
     {
         chosenMonId = gBattleStruct->monToSwitchIntoId[battler];
-        gBattleStruct->AI_monToSwitchIntoId[battler] = PARTY_SIZE;
+        gBattleStruct->AI_monToSwitchIntoId[battler] = PARTY_SLOT_NONE;
         gBattleStruct->monToSwitchIntoId[battler] = chosenMonId;
     }
     #if TESTING

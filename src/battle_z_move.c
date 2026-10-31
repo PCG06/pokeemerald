@@ -117,12 +117,12 @@ bool32 CanUseZMove(enum BattlerId battler)
 
     // Check if Player has Z-Power Ring.
     if (!TESTING && (position == B_POSITION_PLAYER_LEFT
-        || (!(gBattleTypeFlags & BATTLE_TYPE_MULTI) && position == B_POSITION_PLAYER_RIGHT))
+        || (!HasAnyBattleFlags(BATTLE_TYPE_MULTI) && position == B_POSITION_PLAYER_RIGHT))
         && !CheckBagHasItem(ITEM_Z_POWER_RING, 1))
         return FALSE;
 
     // Add '| BATTLE_TYPE_FRONTIER' to below if issues occur
-    if (gBattleTypeFlags & (BATTLE_TYPE_SAFARI | BATTLE_TYPE_CATCH_TUTORIAL))
+    if (HasAnyBattleFlags(BATTLE_TYPE_SAFARI | BATTLE_TYPE_CATCH_TUTORIAL))
         return FALSE;
 
     // Check if Trainer has already used a Z-Move.
@@ -183,7 +183,7 @@ bool32 IsViableZMove(enum BattlerId battler, enum Move move)
 
     enum BattlerPosition position = GetBattlerPosition(battler);
     // Check if Player has Z-Power Ring.
-    if ((position == B_POSITION_PLAYER_LEFT || (!(gBattleTypeFlags & BATTLE_TYPE_MULTI) && position == B_POSITION_PLAYER_RIGHT))
+    if ((position == B_POSITION_PLAYER_LEFT || (!HasAnyBattleFlags(BATTLE_TYPE_MULTI) && position == B_POSITION_PLAYER_RIGHT))
         && !CheckBagHasItem(ITEM_Z_POWER_RING, 1))
     {
         return FALSE;
@@ -214,7 +214,7 @@ void AssignUsableZMoves(enum BattlerId battler, enum Move *moves)
     }
 }
 
-bool32 TryChangeZTrigger(enum BattlerId battler, u32 moveIndex)
+bool32 TryChangeZTrigger(enum BattlerId battler, enum MoveSlot moveIndex)
 {
     bool32 viableZMove = (gBattleStruct->zmove.possibleZMoves[battler] & (1u << moveIndex)) != 0;
 
@@ -251,7 +251,7 @@ enum Move GetTypeBasedZMove(enum Move move)
 
     // Z-Weather Ball changes types, however Revelation Dance, -ate ability affected moves, and Hidden Power do not
     if (gBattleStruct->dynamicMoveType && GetMoveEffect(move) == EFFECT_WEATHER_BALL)
-        moveType = gBattleStruct->dynamicMoveType & DYNAMIC_TYPE_MASK;
+        moveType = gBattleStruct->dynamicMoveType;
 
     // Get Z-Move from type
     if (gTypesInfo[moveType].zMove == MOVE_NONE) // failsafe
@@ -409,7 +409,7 @@ static void ZMoveSelectionDisplayPpNumber(enum BattlerId battler)
     if (gBattleResources->bufferA[battler][2] == TRUE) // Check if we didn't want to display pp number
         return;
 
-    SetPpNumbersPaletteInMoveSelection(battler);
+    SetPPNumbersPaletteInMoveSelection(battler);
     txtPtr = ConvertIntToDecimalStringN(gDisplayedStringBattle, 1, STR_CONV_MODE_RIGHT_ALIGN, 2);
     *(txtPtr)++ = CHAR_SLASH;
     ConvertIntToDecimalStringN(txtPtr, 1, STR_CONV_MODE_RIGHT_ALIGN, 2);
@@ -489,9 +489,9 @@ void SetZEffect(const u8 *nextInstr)
         break;
     }
     case Z_EFFECT_BOOST_CRITS:
-        if (!(gBattleMons[gBattlerAttacker].volatiles.dragonCheer || gBattleMons[gBattlerAttacker].volatiles.focusEnergy))
+        if (!gBattleMons[gBattlerAttacker].volatiles.criticalHitBoost)
         {
-            gBattleMons[gBattlerAttacker].volatiles.focusEnergy = TRUE;
+            gBattleMons[gBattlerAttacker].volatiles.criticalHitBoost = CRIT_BOOST_TWO_STAGES;
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_Z_BOOST_CRITS;
             BattleScriptPush(nextInstr);
             gBattlescriptCurrInstr = BattleScript_ZEffectPrintString;

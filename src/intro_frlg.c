@@ -11,6 +11,7 @@
 #include "intro_frlg.h"
 #include "malloc.h"
 #include "menu.h"
+#include "multiboot_pokemon_colosseum.h"
 #include "new_game.h"
 #include "palette.h"
 #include "random.h"
@@ -245,9 +246,6 @@ static void SpriteCB_NidorinoCry(struct Sprite *sprite);
 static void SpriteCB_NidorinoRecoil(struct Sprite *sprite);
 static void SpriteCB_NidorinoHop(struct Sprite *sprite);
 static void SpriteCB_NidorinoAttack(struct Sprite *sprite);
-
-extern const u32 gMultiBootProgram_PokemonColosseum_Start[];
-extern const u32 gMultiBootProgram_PokemonColosseum_End[];
 
 static const u16 sCopyright_Pal[] = INCGFX_U16("graphics/intro_frlg/copyright.pal", ".gbapal");
 static const u32 sCopyright_Gfx[]  = INCGFX_U32("graphics/intro_frlg/copyright.png", ".4bpp.smol");
@@ -952,7 +950,7 @@ bool8 SetUpCopyrightScreenFrlg(void)
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_1D_MAP | DISPCNT_BG0_ON);
         SetSerialCallback(SerialCB_CopyrightScreen);
         GameCubeMultiBoot_Init(&sGcmb);
-        // fallthrough
+        [[fallthrough]];
     default:
         UpdatePaletteFade();
         gMain.state++;
@@ -976,7 +974,7 @@ bool8 SetUpCopyrightScreenFrlg(void)
                 {
                     if (*(u32 *)(EWRAM_START + 0xAC) == COLOSSEUM_GAME_CODE)
                     {
-                        CpuCopy16(gMultiBootProgram_PokemonColosseum_Start, (void *)EWRAM_START, 0x28000);
+                        CpuCopy16(&gMultiBootProgram_PokemonColosseum_Start, (void *)EWRAM_START, sizeof(gMultiBootProgram_PokemonColosseum_Start));
                         *(u32 *)(EWRAM_START + 0xAC) = COLOSSEUM_GAME_CODE;
                     }
                     GameCubeMultiBoot_ExecuteProgram(&sGcmb);
@@ -1004,7 +1002,7 @@ void CB2_SetUpIntroFrlg(void)
     {
     default:
         gMain.state = 0;
-        // fallthrough
+        [[fallthrough]];
     case 0:
         SetVBlankCallback(NULL);
         SetGpuReg(REG_OFFSET_DISPCNT, 0);
@@ -1520,11 +1518,11 @@ static void Scene2_CreateMonSprites(struct IntroSequenceData * this)
     this->scene2GengarSprite = NULL;
     this->scene2NidorinoSprite = NULL;
 
-    spriteId = CreateSprite(&sSpriteTemplate_Scene2_Nidorino, 168, 80, 11);
+    spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Scene2_Nidorino, 168, 80, 11);
     if (spriteId != MAX_SPRITES)
         this->scene2NidorinoSprite = &gSprites[spriteId];
 
-    spriteId = CreateSprite(&sSpriteTemplate_Scene2_Gengar, 72, 80, 12);
+    spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Scene2_Gengar, 72, 80, 12);
     if (spriteId != MAX_SPRITES)
         this->scene2GengarSprite = &gSprites[spriteId];
 }
@@ -1664,7 +1662,7 @@ static bool8 Scene3_IsGengarMidBounce(void)
 // The small clump of grass that passes by in the foreground during the fight
 static void Scene3_CreateGrassSprite(struct IntroSequenceData * this)
 {
-    u8 spriteId = CreateSprite(&sSpriteTemplate_Grass, 296, 112, 7);
+    u8 spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Grass, 296, 112, 7);
     if (spriteId != MAX_SPRITES)
     {
         this->scene3GrassSprite = &gSprites[spriteId];
@@ -1688,7 +1686,7 @@ static void SpriteCB_Grass(struct Sprite *sprite)
         sBaseX = sprite->x << 5;
         sVeloc = 160;
         sState++;
-        // fallthrough
+        [[fallthrough]];
     case 1:
         sBaseX -= sVeloc;
         sprite->x = sBaseX >> 5;
@@ -1862,7 +1860,7 @@ static void Scene3_CreateGengarSprite(struct IntroSequenceData * this)
     {
         int x = (i & 1) * 48 + 49;
         int y = (i / 2) * 64 + 72;
-        u8 spriteId = CreateSprite(&sSpriteTemplate_Scene3_Gengar, x, y, 8);
+        u8 spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Scene3_Gengar, x, y, 8);
         if (spriteId != MAX_SPRITES)
         {
             StartSpriteAnim(&gSprites[spriteId], i);
@@ -1950,7 +1948,7 @@ static void GFScene_LoadGfxCreateStar(void)
     sStarSparklesYprecision = 5;
     if (sStarSparklesRngSeed == 0)
         sStarSparklesRngSeed = 354128453;
-    spriteId = CreateSprite(&sSpriteTemplate_Star, 248, 55, 0);
+    spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Star, 248, 55, 0);
     if (spriteId != MAX_SPRITES)
     {
         gSprites[spriteId].sStar_BaseX = 248 << 4;
@@ -1983,7 +1981,7 @@ static void GFScene_CreateStarSparkle(s16 x, s16 y, u16 random)
     y += yMod;
     if (x > 0 && x < DISPLAY_WIDTH)
     {
-        spriteId = CreateSprite(&sSpriteTemplate_SparklesSmall, x, y, 1);
+        spriteId = CreateSpriteUnchecked(&sSpriteTemplate_SparklesSmall, x, y, 1);
         if (spriteId != MAX_SPRITES)
         {
             gSprites[spriteId].sSmSparkleStar_BaseX = x << sStarSparklesXprecision;
@@ -2200,7 +2198,7 @@ static void Scene3_Task_GengarAttack(u8 taskId)
 static void Scene3_CreateGengarSwipeSprites(void)
 {
     u8 spriteId = CreateSprite(&sSpriteTemplate_GengarSwipe, 132, 78, 6); // Implicitly ANIM_SWIPE_TOP
-    spriteId = CreateSprite(&sSpriteTemplate_GengarSwipe, 132, 118, 6);
+    spriteId = CreateSpriteUnchecked(&sSpriteTemplate_GengarSwipe, 132, 118, 6);
     if (spriteId != MAX_SPRITES)
     {
         gSprites[spriteId].oam.shape = SPRITE_SHAPE(32x16);
@@ -2232,7 +2230,7 @@ static void Scene3_Task_GengarEnter(u8 taskId)
     case 0:
         tSpeed = 0x400;
         tState++;
-        // fallthrough
+        [[fallthrough]];
     case 1:
         // Don't decelerate for the first 40 movements
         if (++tMoves >= 40 && tSpeed > 16)
@@ -2588,7 +2586,7 @@ static void CreateNidorinoRecoilDustSprites(s16 x, s16 y, s16 seed)
     // Only one of each pair will be visible at a time.
     for (i = 0; i < 2; i++)
     {
-        spriteId = CreateSprite(&sSpriteTemplate_NidorinoRecoilDust, x - 22, y + 24, 10);
+        spriteId = CreateSpriteUnchecked(&sSpriteTemplate_NidorinoRecoilDust, x - 22, y + 24, 10);
         if (spriteId != MAX_SPRITES)
         {
             gSprites[spriteId].sSpeedX = (seed % 13) + 8;
@@ -2609,7 +2607,7 @@ static void SpriteCB_RecoilDust(struct Sprite *sprite)
         sX = sprite->x << 4;
         sY = sprite->y << 4;
         sprite->sState++;
-        // fallthrough
+        [[fallthrough]];
     case 1:
         sX -= sSpeedX;
         sY += sSpeedY;

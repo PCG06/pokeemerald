@@ -219,8 +219,8 @@ SINGLE_BATTLE_TEST("Fling doesn't consume the item if the user is asleep/frozen/
             TURN { MOVE(player, MOVE_FLING, WITH_RNG(RNG_FROZEN, FALSE)); }
             TURN { MOVE(player, MOVE_FLING, WITH_RNG(RNG_FROZEN, TRUE)); }
         } else if (status == STATUS1_PARALYSIS) {
-            TURN { MOVE(player, MOVE_FLING, WITH_RNG(RNG_PARALYSIS, FALSE)); }
             TURN { MOVE(player, MOVE_FLING, WITH_RNG(RNG_PARALYSIS, TRUE)); }
+            TURN { MOVE(player, MOVE_FLING, WITH_RNG(RNG_PARALYSIS, FALSE)); }
         } else {
             TURN { MOVE(player, MOVE_FLING); }
             TURN { MOVE(player, MOVE_FLING); }
@@ -482,13 +482,6 @@ SINGLE_BATTLE_TEST("Fling - thrown berry's effect activates for the target even 
         ANIMATION(ANIM_TYPE_MOVE, MOVE_FLING, player);
         HP_BAR(opponent);
         if (effect == HOLD_EFFECT_RESTORE_HP) {
-            if (item == ITEM_ORAN_BERRY) {
-                MESSAGE("The opposing Wobbuffet restored its health using its Oran Berry!");
-            } else if (item == ITEM_SITRUS_BERRY) {
-                MESSAGE("The opposing Wobbuffet restored its health using its Sitrus Berry!");
-            } else {
-                MESSAGE("Wobbuffet restored its health using its Enigma Berry!");
-            }
             HP_BAR(opponent);
         }
         else if (effect == HOLD_EFFECT_RESTORE_PP) {
@@ -513,23 +506,15 @@ SINGLE_BATTLE_TEST("Fling - thrown berry's effect activates for the target even 
         else if (statId != 0) {
             ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_STATS_CHANGE, opponent);
             if (statId == STAT_ATK) {
-                MESSAGE("The Liechi Berry boosted the opposing Wobbuffet's Attack!");
+                MESSAGE("The opposing Wobbuffet's Attack rose!");
             } else if (statId == STAT_DEF) {
-                if (item == ITEM_GANLON_BERRY) {
-                    MESSAGE("The Ganlon Berry boosted the opposing Wobbuffet's Defense!");
-                } else {
-                    MESSAGE("The Kee Berry boosted the opposing Wobbuffet's Defense!");
-                }
+                MESSAGE("The opposing Wobbuffet's Defense rose!");
             } else if (statId == STAT_SPDEF) {
-                if (item == ITEM_APICOT_BERRY) {
-                    MESSAGE("The Apicot Berry boosted the opposing Wobbuffet's Sp. Def!");
-                } else {
-                    MESSAGE("The Maranga Berry boosted the opposing Wobbuffet's Sp. Def!");
-                }
+                MESSAGE("The opposing Wobbuffet's Sp. Def rose!");
             } else if (statId == STAT_SPEED) {
-                MESSAGE("The Salac Berry boosted the opposing Wobbuffet's Speed!");
+                MESSAGE("The opposing Wobbuffet's Speed rose!");
             } else if (statId == STAT_SPATK) {
-                MESSAGE("The Petaya Berry boosted the opposing Wobbuffet's Sp. Atk!");
+                MESSAGE("The opposing Wobbuffet's Sp. Atk rose!");
             }
         }
     } THEN {
@@ -715,5 +700,23 @@ SINGLE_BATTLE_TEST("Fling - White Herb effect should not remove the target's hel
     } THEN {
         EXPECT_EQ(opponent->statStages[STAT_ATK], DEFAULT_STAT_STAGE);
         EXPECT_EQ(opponent->item, ITEM_RAZOR_CLAW);
+    }
+}
+
+SINGLE_BATTLE_TEST("Fling - Berries removed after eating a berry don't activate Cheek Pouch")
+{
+    GIVEN {
+        ASSUME(GetItemPocket(ITEM_SITRUS_BERRY) == POCKET_BERRIES);
+        ASSUME(GetItemPocket(ITEM_FIGY_BERRY) == POCKET_BERRIES);
+        PLAYER(SPECIES_DEDENNE) { Ability(ABILITY_CHEEK_POUCH); Item(ITEM_SITRUS_BERRY); HP(1); }
+        OPPONENT(SPECIES_WOBBUFFET) { Item(ITEM_FIGY_BERRY); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_TRICK); MOVE(player, MOVE_FLING); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_GENERAL, B_ANIM_HELD_ITEM_BERRY, player);
+        ABILITY_POPUP(player, ABILITY_CHEEK_POUCH);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_TRICK, opponent);
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_FLING, player);
+        NOT ABILITY_POPUP(player, ABILITY_CHEEK_POUCH);
     }
 }

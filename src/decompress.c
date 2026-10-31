@@ -1168,7 +1168,7 @@ void LoadSpecialPokePicIsEgg(void *dest, enum Species species, u32 personality, 
             DecompressDataWithHeaderWram(gSpeciesInfo[SPECIES_NONE].backPic, dest);
     }
 
-    if (ShouldDrawSpotsOnSpecies(species) && isFrontPic)
+    if (ShouldDrawSpotsOnSpecies(species) && isFrontPic && !isEgg)
     {
         DrawPokemonSpotsBothFrames(personality, species, dest);
     }
@@ -1402,4 +1402,26 @@ void FastLZ77UnCompWram(const u32 *src, void *dest)
 
     CopyFuncToIwram(funcBuffer, LZ77UnCompWRAMOptimized, LZ77UnCompWRAMOptimized_end);
     SwitchToArmCallFastLZ77(src, dest, (void *) funcBuffer);
+}
+
+void RlFastUncomp(const u8 *src, u8 *dst, u32 frame, u16 size)
+{
+    void RlFastUncompUnsafe(const u8 *src, u32 frame, u8 *dst);
+
+    u16 uncompSize = GetRlFastUncompSize(src);
+    assertf(size == uncompSize, "RlFast uncomp size does not match. exp:%d, act: %d", size, uncompSize)
+    {
+        return;
+    }
+    RlFastUncompUnsafe(src, frame, dst);
+}
+
+u16 GetRlFastUncompSize(const u8 *src)
+{
+    return (src[0] + 1) * TILE_SIZE_4BPP;
+}
+
+u8 GetRlFastUncompFrames(const u8 *src)
+{
+    return src[1];
 }

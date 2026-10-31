@@ -341,11 +341,6 @@ void SetHBlankCallback(IntrCallback callback)
     gMain.hblankCallback = callback;
 }
 
-void SetVCountCallback(IntrCallback callback)
-{
-    gMain.vcountCallback = callback;
-}
-
 void RestoreSerialTimer3IntrHandlers(void)
 {
     gIntrTable[1] = SerialIntr;
@@ -382,7 +377,7 @@ static void VBlankIntr(void)
     m4aSoundMain();
     TryReceiveLinkBattleData();
 
-    if (!gTestRunnerEnabled && (!gMain.inBattle || !(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_RECORDED))))
+    if (!gTestRunnerEnabled && (!gMain.inBattle || !HasAnyBattleFlags(BATTLE_TYPE_LINK | BATTLE_TYPE_FRONTIER | BATTLE_TYPE_RECORDED)))
         AdvanceRandom();
 
     UpdateWirelessStatusIndicatorSprite();
