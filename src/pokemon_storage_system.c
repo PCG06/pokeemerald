@@ -481,7 +481,7 @@ struct PokemonStorageSystemData
     const u16 *displayMonPalette;
     u32 displayMonPersonality;
     enum Species displayMonSpecies;
-    u16 displayMonItemId;
+    enum Item displayMonItemId;
     u16 displayUnusedVar;
     bool8 setMosaic;
     u8 displayMonMarkings;
@@ -526,7 +526,7 @@ struct PokemonStorageSystemData
     u8 inBoxMovingMode;
     u16 multiMoveWindowId;
     struct ItemIcon itemIcons[MAX_ITEM_ICONS];
-    u16 movingItemId;
+    enum Item movingItemId;
     u16 itemInfoWindowOffset;
     u16 displayMonPalOffset;
     u16 *displayMonTilePtr;
@@ -547,7 +547,7 @@ EWRAM_DATA static u8 sCurrentBoxOption = 0;
 EWRAM_DATA static u8 sDepositBoxId = 0;
 EWRAM_DATA static u8 sWhichToReshow = 0;
 EWRAM_DATA static u8 sLastUsedBox = 0;
-EWRAM_DATA static u16 sMovingItemId = 0;
+EWRAM_DATA static enum Item sMovingItemId = ITEM_NONE;
 EWRAM_DATA static struct Pokemon sSavedMovingMon = {0};
 EWRAM_DATA static s8 sCursorArea = 0;
 EWRAM_DATA static s8 sCursorPosition = 0;
@@ -622,6 +622,7 @@ static void RemoveMenu(void);
 static void InitMonIconFields(void);
 static void SpriteCB_BoxMonIconScrollOut(struct Sprite *);
 static void GetIncomingBoxMonData(u8);
+static void CreatePartyMonSprite(u8, bool8);
 static void CreatePartyMonsSprites(bool8);
 static void CompactPartySprites(void);
 static u8 GetNumPartySpritesCompacting(void);
@@ -715,7 +716,7 @@ static void MoveHeldItemWithPartyMenu(void);
 static bool8 IsItemIconAnimActive(void);
 static bool8 IsMovingItem(void);
 static const u8 *GetMovingItemName(void);
-static u16 GetMovingItemId(void);
+static enum Item GetMovingItemId(void);
 static void PrintItemDescription(void);
 static void InitItemInfoWindow(void);
 static bool8 UpdateItemInfoWindowSlideIn(void);
@@ -2050,11 +2051,8 @@ static void InitStartingPosData(void)
 
 static void SetMonIconTransparency(void)
 {
-    if (sStorage->boxOption == OPTION_MOVE_ITEMS)
-    {
-        SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL);
-        SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(7, 11));
-    }
+    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL);
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(7, 11));
     SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG_ALL_ON | DISPCNT_OBJ_1D_MAP);
 }
 
@@ -3978,7 +3976,7 @@ static void CreateDisplayMonSprite(void)
         if (palSlot == 0xFF)
             break;
 
-        spriteId = CreateSprite(&template, 40, 48, 0);
+        spriteId = CreateSpriteUnchecked(&template, 40, 48, 0);
         if (spriteId == MAX_SPRITES)
             break;
 
@@ -4741,6 +4739,40 @@ static void SetBoxMonIconObjMode(u8 boxPosition, u8 objMode)
         sStorage->boxMonsSprites[boxPosition]->oam.objMode = objMode;
 }
 
+static void  CreatePartyMonSprite(u8 partyPosition, bool8 visible)
+{
+    struct Pokemon *partyPokemon = &gParties[B_TRAINER_PLAYER][partyPosition];
+
+    enum Species species = GetMonData(partyPokemon, MON_DATA_SPECIES);
+    bool32 isEgg = GetMonData(partyPokemon, MON_DATA_IS_EGG);
+    u32 personality = GetMonData(partyPokemon, MON_DATA_PERSONALITY);
+
+    if (partyPosition == 0)
+        sStorage->partySprites[0] = CreateMonIconSprite(species, personality, 104, 64, 1, 12, isEgg);
+    else
+        sStorage->partySprites[partyPosition] = CreateMonIconSprite(species, personality, 152,  8 * (3 * (partyPosition - 1)) + 16, 1, 12, isEgg);
+
+    struct Sprite *partySprite = sStorage->partySprites[partyPosition];
+
+    if (!visible)
+    {
+        partySprite->y -= DISPLAY_HEIGHT;
+        partySprite->invisible = TRUE;
+    }
+
+    if (sStorage->boxOption == OPTION_MOVE_ITEMS)
+    {
+        if (partySprite != NULL && GetMonData(partyPokemon, MON_DATA_HELD_ITEM) == ITEM_NONE)
+            partySprite->oam.objMode = ST_OAM_OBJ_BLEND;
+    }
+
+    if (sStorage->boxOption == OPTION_SELECT_MON)
+    {
+        if (partySprite != NULL && IsBoxMonExcluded(&(partyPokemon->box)))
+            partySprite->oam.objMode = ST_OAM_OBJ_BLEND;
+    }
+}
+
 static void CreatePartyMonsSprites(bool8 visible)
 {
     u16 i, count;
@@ -5103,24 +5135,23 @@ static void SpriteCB_HeldMon(struct Sprite *sprite)
     sprite->y = sStorage->cursorSprite->y + sStorage->cursorSprite->y2 + 4;
 }
 
-static u16 TryLoadMonIconTiles(enum Species species, u32 personality, bool32 isEgg)
+static u32 MakeIconIdFromSpeciesAndIconType(enum Species species, enum SpeciesIconType iconType)
 {
-    u16 i, offset;
+    if (iconType == FEMALE_ICON)
+        return (species | (1 << 15));
+    if (iconType == EGG_ICON)
+        return (species | (1 << 14));
+    return species;
+}
 
-#if P_GENDER_DIFFERENCES
-    // Treat female mons as a seperate species as they may have a different icon than males
-    if (gSpeciesInfo[species].iconSpriteFemale != NULL && IsPersonalityFemale(species, personality))
-        species |= (1 << 15);
-#endif
+static u16 TryLoadMonIconTiles(enum Species species, enum SpeciesIconType iconType)
+{
+    u32 i, offset;
+    u32 iconId = MakeIconIdFromSpeciesAndIconType(species, iconType);
 
-    // Treat eggs as a seperate species as they might have unique sprites
-    if (isEgg)
-        species |= (1 << 14);
-
-    // Search icon list for this species
     for (i = 0; i < MAX_MON_ICONS; i++)
     {
-        if (sStorage->iconSpeciesList[i] == species)
+        if (sStorage->iconSpeciesList[i] == iconId)
             break;
     }
 
@@ -5140,32 +5171,22 @@ static u16 TryLoadMonIconTiles(enum Species species, u32 personality, bool32 isE
     }
 
     // Add species to icon list and load tiles
-    sStorage->iconSpeciesList[i] = species;
+    sStorage->iconSpeciesList[i] = iconId;
     sStorage->numIconsPerSpecies[i]++;
     offset = 16 * i;
     species &= SPECIES_MASK;
-    CpuCopy32(GetMonIconTilesIsEgg(species, personality, isEgg), (void *)(OBJ_VRAM0) + offset * TILE_SIZE_4BPP, 0x200);
+    CpuCopy32(GetMonIconTilesByIconType(species, iconType), (void *)(OBJ_VRAM0) + offset * TILE_SIZE_4BPP, 0x200);
 
     return offset;
 }
 
-static void RemoveSpeciesFromIconList(enum Species species)
+static void RemoveSpeciesFromIconList(enum Species species, enum SpeciesIconType iconType)
 {
-    u16 i;
-    bool8 hasFemale = FALSE;
+    u32 iconId = MakeIconIdFromSpeciesAndIconType(species, iconType);
 
-    for (i = 0; i < MAX_MON_ICONS; i++)
+    for (u32 i = 0; i < MAX_MON_ICONS; i++)
     {
-        if (sStorage->iconSpeciesList[i] == (species | 0x8000))
-        {
-            hasFemale = TRUE;
-            break;
-        }
-    }
-
-    for (i = 0; i < MAX_MON_ICONS; i++)
-    {
-        if (sStorage->iconSpeciesList[i] == species && !hasFemale)
+        if (sStorage->iconSpeciesList[i] == iconId)
         {
             if (--sStorage->numIconsPerSpecies[i] == 0)
                 sStorage->iconSpeciesList[i] = SPECIES_NONE;
@@ -5179,19 +5200,27 @@ static struct Sprite *CreateMonIconSprite(enum Species species, u32 personality,
     u16 tileNum;
     u8 spriteId;
     struct SpriteTemplate template = sSpriteTemplate_MonIcon;
+    u32 iconType = NORMAL_ICON;
 
     species = GetIconSpecies(species, personality);
     if (isEgg)
     {
         if (gSpeciesInfo[species].eggId != EGG_ID_NONE)
+        {
             template.paletteTag = PALTAG_MON_ICON_0 + gEggDatas[gSpeciesInfo[species].eggId].eggIconPalIndex;
+            iconType = EGG_ICON;
+        }
         else
+        {
+            species = SPECIES_EGG;
             template.paletteTag = PALTAG_MON_ICON_0 + gSpeciesInfo[SPECIES_EGG].iconPalIndex;
+        }
     }
 #if P_GENDER_DIFFERENCES
     else if (gSpeciesInfo[species].iconSpriteFemale != NULL && IsPersonalityFemale(species, personality))
     {
         template.paletteTag = PALTAG_MON_ICON_0 + gSpeciesInfo[species].iconPalIndexFemale;
+        iconType = FEMALE_ICON;
     }
 #endif
     else
@@ -5199,26 +5228,28 @@ static struct Sprite *CreateMonIconSprite(enum Species species, u32 personality,
         template.paletteTag = PALTAG_MON_ICON_0 + gSpeciesInfo[species].iconPalIndex;
     }
 
-    tileNum = TryLoadMonIconTiles(species, personality, isEgg);
+    tileNum = TryLoadMonIconTiles(species, iconType);
     if (tileNum == 0xFFFF)
         return NULL;
 
-    spriteId = CreateSprite(&template, x, y, subpriority);
+    spriteId = CreateSpriteUnchecked(&template, x, y, subpriority);
     if (spriteId == MAX_SPRITES)
     {
-        RemoveSpeciesFromIconList(species);
+        RemoveSpeciesFromIconList(species, iconType);
         return NULL;
     }
 
     gSprites[spriteId].oam.tileNum = tileNum;
     gSprites[spriteId].oam.priority = oamPriority;
     gSprites[spriteId].data[0] = species;
+    gSprites[spriteId].data[1] = iconType;
+
     return &gSprites[spriteId];
 }
 
 static void DestroyBoxMonIcon(struct Sprite *sprite)
 {
-    RemoveSpeciesFromIconList(sprite->data[0]);
+    RemoveSpeciesFromIconList(sprite->data[0], sprite->data[1]);
     DestroySprite(sprite);
 }
 
@@ -5686,7 +5717,7 @@ static void CreateBoxScrollArrows(void)
     LoadSpriteSheet(&sSpriteSheet_Arrow);
     for (i = 0; i < 2; i++)
     {
-        u8 spriteId = CreateSprite(&sSpriteTemplate_Arrow, 92 + i * 136, 28, 22);
+        u8 spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Arrow, 92 + i * 136, 28, 22);
         if (spriteId != MAX_SPRITES)
         {
             struct Sprite *sprite = &gSprites[spriteId];
@@ -5810,7 +5841,7 @@ static void SpriteCB_Arrow(struct Sprite *sprite)
 // Arrows for Deposit/Jump Box selection
 static struct Sprite *CreateChooseBoxArrows(u16 x, u16 y, u8 animId, u8 priority, u8 subpriority)
 {
-    u8 spriteId = CreateSprite(&sSpriteTemplate_Arrow, x, y, subpriority);
+    u8 spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Arrow, x, y, subpriority);
     if (spriteId == MAX_SPRITES)
         return NULL;
 
@@ -7928,7 +7959,7 @@ static void CreateCursorSprites(void)
     sStorage->cursorPalNums[1] = IndexOfSpritePaletteTag(PALTAG_MISC_1); // Yellow hand, when auto-action is on
 
     GetCursorCoordsByPos(sCursorArea, sCursorPosition, &x, &y);
-    spriteId = CreateSprite(&sSpriteTemplate_Cursor, x, y, 6);
+    spriteId = CreateSpriteUnchecked(&sSpriteTemplate_Cursor, x, y, 6);
     if (spriteId != MAX_SPRITES)
     {
         sStorage->cursorSprite = &gSprites[spriteId];
@@ -7953,7 +7984,7 @@ static void CreateCursorSprites(void)
         priority = 2;
     }
 
-    spriteId = CreateSprite(&sSpriteTemplate_CursorShadow, 0, 0, subpriority);
+    spriteId = CreateSpriteUnchecked(&sSpriteTemplate_CursorShadow, 0, 0, subpriority);
     if (spriteId != MAX_SPRITES)
     {
         sStorage->cursorShadowSprite = &gSprites[spriteId];
@@ -7995,11 +8026,6 @@ static void GetCursorBoxColumnAndRow(u8 *column, u8 *row)
 static void StartCursorAnim(u8 animNum)
 {
     StartSpriteAnim(sStorage->cursorSprite, animNum);
-}
-
-static u8 UNUSED GetMovingMonOriginalBoxId(void)
-{
-    return sMovingMonOrigBoxId;
 }
 
 static void SetCursorPriorityTo1(void)
@@ -8865,7 +8891,7 @@ static void CreateItemIconSprites(void)
 
 static void TryLoadItemIconAtPos(u8 cursorArea, u8 cursorPos)
 {
-    u16 heldItem;
+    enum Item heldItem;
 
     if (sStorage->boxOption != OPTION_MOVE_ITEMS)
         return;
@@ -9110,7 +9136,7 @@ static const u8 *GetMovingItemName(void)
     return GetItemName(sStorage->movingItemId);
 }
 
-static u16 GetMovingItemId(void)
+static enum Item GetMovingItemId(void)
 {
     return sStorage->movingItemId;
 }
@@ -9497,19 +9523,6 @@ static void SpriteCB_ItemIcon_HideParty(struct Sprite *sprite)
 //  SECTION: General utility
 //------------------------------------------------------------------------------
 
-
-// Leftover from FRLG
-static void UNUSED BackupPokemonStorage(void/*struct PokemonStorage * dest*/)
-{
-    //*dest = *gPokemonStoragePtr;
-}
-
-// Leftover from FRLG
-static void UNUSED RestorePokemonStorage(void/*struct PokemonStorage * src*/)
-{
-    //*gPokemonStoragePtr = *src;
-}
-
 // Functions here are general utility functions.
 u8 StorageGetCurrentBox(void)
 {
@@ -9568,12 +9581,6 @@ void SetBoxMonAt(u8 boxId, u8 boxPosition, struct BoxPokemon *src)
 {
     if (boxId < TOTAL_BOXES_COUNT && boxPosition < IN_BOX_COUNT)
         gPokemonStoragePtr->boxes[boxId][boxPosition] = *src;
-}
-
-void CopyBoxMonAt(u8 boxId, u8 boxPosition, struct BoxPokemon *dst)
-{
-    if (boxId < TOTAL_BOXES_COUNT && boxPosition < IN_BOX_COUNT)
-        *dst = gPokemonStoragePtr->boxes[boxId][boxPosition];
 }
 
 void ZeroBoxMonAt(u8 boxId, u8 boxPosition)
@@ -9687,24 +9694,6 @@ u32 CountStorageNonEggMons(void)
         {
             if (GetBoxMonData(&gPokemonStoragePtr->boxes[i][j], MON_DATA_SANITY_HAS_SPECIES)
                 && !GetBoxMonData(&gPokemonStoragePtr->boxes[i][j], MON_DATA_SANITY_IS_EGG))
-                count++;
-        }
-    }
-
-    return count;
-}
-
-u32 CountAllStorageMons(void)
-{
-    s32 i, j;
-    u32 count = 0;
-
-    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
-    {
-        for (j = 0; j < IN_BOX_COUNT; j++)
-        {
-            if (GetBoxMonData(&gPokemonStoragePtr->boxes[i][j], MON_DATA_SANITY_HAS_SPECIES)
-                || GetBoxMonData(&gPokemonStoragePtr->boxes[i][j], MON_DATA_SANITY_IS_EGG))
                 count++;
         }
     }
@@ -10078,8 +10067,8 @@ void UpdateSpeciesSpritePSS(struct BoxPokemon *boxMon)
         // Recreate icon sprite
         if (sInPartyMenu)
         {
-            DestroyAllPartyMonIcons();
-            CreatePartyMonsSprites(TRUE);
+            DestroyPartyMonIcon(sCursorPosition);
+            CreatePartyMonSprite(sCursorPosition, TRUE);
         }
         else
         {
